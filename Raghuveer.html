@@ -659,7 +659,7 @@
                 html += `<div class="cart-row"><span>${k} x ${cart[k].qty}</span><span>₹${cart[k].total}</span></div>`;
                 subTotal += cart[k].total; 
                 totalItems += cart[k].qty;
-                packTotal += cart[k].isPizza ? (cart[k].qty * 10) : (cart[k].qty * 5);
+                packTotal += cart[k].isPizza ? (cart[k].qty * 10) : (cart[k].qty * 10);
             }
             
             const grandTotal = totalItems > 0 ? (subTotal + packTotal + 10 + 5) : 0;
