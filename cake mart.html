@@ -2,367 +2,98 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cake Mart - Premium Bakery & Cafe</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cake Mart | Coming Soon</title>
     <style>
         :root {
-            --primary: #e5990d; --accent: #ff9800; --bg: #fffbf5;
-            --text: #333; --white: #ffffff; --gray: #f4f4f4;
-            --success: #27ae60; --danger: #e74c3c;
-        }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; overflow-x: hidden; }
-        
-        /* --- ADMIN STAR --- */
-        #admin-star {
-            position: fixed; bottom: 20px; right: 20px; z-index: 9999;
-            font-size: 20px; opacity: 0.1; background: white;
-            width: 45px; height: 45px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; cursor: pointer;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            --gold: #e5990d;
+            --white: #ffffff;
+            --dark: #121212;
         }
 
-        #admin-panel {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: white; z-index: 10000; padding: 20px; overflow-y: auto; box-sizing: border-box;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        /* --- HERO SECTION --- */
-        #hero-page {
-            height: 100vh; width: 100%;
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1550617931-e17a7b70dce2?auto=format&fit=crop&w=1500&q=80');
-            background-size: cover; background-position: center;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            text-align: center; color: white; position: fixed; top: 0; left: 0; z-index: 3000;
-            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        #hero-page.hidden { transform: translateY(-100%); }
-
-        .explore-btn {
-            margin-top: 25px; background: var(--accent); color: white;
-            padding: 15px 45px; font-size: 1.2rem; font-weight: bold;
-            border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        body, html {
+            height: 100%;
+            width: 100%;
+            font-family: 'Optima', 'Didot', 'Playfair Display', serif;
+            background-color: var(--dark);
+            overflow: hidden; /* Keeps the page still and aesthetic */
         }
 
-        /* --- MENU SECTION --- */
-        #menu-page { display: none; max-width: 900px; margin: 0 auto; padding-bottom: 450px; }
-        
-        .tabs-container { 
-            position: sticky; top: 0; background: white; display: flex; 
-            overflow-x: auto; padding: 15px; gap: 12px; z-index: 1000; 
-            box-shadow: 0 2px 15px rgba(0,0,0,0.1); scrollbar-width: none; 
-        }
-        .tabs-container::-webkit-scrollbar { display: none; }
-        
-        .tab-btn { 
-            background: var(--gray); border: none; padding: 10px 22px; 
-            border-radius: 30px; white-space: nowrap; font-weight: 600; cursor: pointer; 
-            transition: 0.3s; font-size: 0.9rem;
-        }
-        .tab-btn.active { background: var(--primary); color: white; transform: scale(1.05); }
-
-        .category-header { padding: 20px 15px 10px; font-size: 1.4rem; color: var(--primary); border-bottom: 2px solid var(--accent); margin: 10px 15px; text-transform: uppercase; }
-
-        .menu-item { 
-            background: white; padding: 18px; margin: 12px 15px; 
-            border-radius: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.06); 
-        }
-        
-        .item-main { display: flex; justify-content: space-between; align-items: center; }
-        .item-name { font-weight: 700; font-size: 1rem; color: #333; }
-        .item-price { color: #000; font-weight: 800; font-size: 1.1rem; }
-
-        .qty-controls { display: flex; align-items: center; gap: 15px; margin-top: 10px; justify-content: flex-end; }
-        .qty-btn { background: var(--white); color: var(--primary); border: 2px solid var(--primary); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-weight: bold; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; }
-
-        /* --- CART POPUP --- */
-        .cart-popup {
-            position: fixed; bottom: 0; left: 50%; transform: translateX(-50%) translateY(100%);
-            width: 100%; max-width: 550px; background: white; border-top-left-radius: 30px; border-top-right-radius: 30px;
-            padding: 25px; transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            z-index: 4000; box-sizing: border-box; box-shadow: 0 -10px 30px rgba(0,0,0,0.2);
-        }
-        .cart-popup.active { transform: translateX(-50%) translateY(0); }
-
-        .delivery-input { 
-            width: 100%; padding: 14px; margin-bottom: 10px; border: 1px solid #ddd; 
-            border-radius: 12px; outline: none; box-sizing: border-box; font-size: 1rem;
-        }
-        .loc-btn { 
-            background: #2196F3; color: white; border: none; padding: 15px; 
-            width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; 
-            margin-bottom: 15px; font-size: 1rem;
-        }
-        .confirm-btn { 
-            background: var(--success); color: white; border: none; padding: 18px; 
-            width: 100%; border-radius: 15px; font-weight: 900; font-size: 1.2rem; 
-            display: none; cursor: pointer; text-transform: uppercase;
+        /* --- THE BACKGROUND --- */
+        .main-container {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                        url('https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=2000');
+            background-size: cover;
+            background-position: center;
+            color: var(--white);
         }
 
-        #success-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 9999; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        /* --- TYPOGRAPHY --- */
+        .brand-name {
+            font-size: 4rem;
+            font-weight: 300;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .status-text {
+            font-size: 1.2rem;
+            letter-spacing: 4px;
+            color: var(--gold);
+            text-transform: uppercase;
+            margin-bottom: 50px;
+            font-style: italic;
+        }
+
+        /* --- THE BUTTON --- */
+        .back-btn {
+            background: transparent;
+            color: var(--white);
+            border: 1px solid var(--white);
+            padding: 15px 40px;
+            font-size: 0.85rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-decoration: none; /* Removes underline from link */
+            transition: all 0.4s ease;
+            cursor: pointer;
+        }
+
+        .back-btn:hover {
+            background: var(--white);
+            color: var(--dark);
+        }
+
+        /* Responsive scaling for mobile */
+        @media (max-width: 600px) {
+            .brand-name { font-size: 2.5rem; letter-spacing: 5px; }
+            .status-text { font-size: 1rem; letter-spacing: 2px; }
+        }
     </style>
 </head>
 <body>
 
-    <div id="admin-star" onclick="openAdmin()">★</div>
-
-    <div id="admin-panel">
-        <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:15px; border-bottom: 1px solid #ddd;">
-            <h2 style="margin:0; color:var(--primary)">Cake Mart Admin</h2>
-            <button onclick="document.getElementById('admin-panel').style.display='none'" style="padding:10px 20px; background:#333; color:white; border:none; border-radius:8px;">EXIT</button>
-        </div>
-        <div id="admin-list"></div>
+    <div class="main-container">
+        <h1 class="brand-name">Cake Mart</h1>
+        
+        <p class="status-text">Coming Soon</p>
+        
+        <a href="newhome (1).html" class="back-btn">Back to Homepage</a>
     </div>
 
-    <div id="success-screen">
-        <div style="background: #e8f5e9; width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
-            <span style="color: #27ae60; font-size: 3rem;">✔</span>
-        </div>
-        <h2 style="margin:0;">ORDER RECEIVED!</h2>
-        <p style="color:#666; padding: 0 20px;">Cake Mart is now preparing your delicacies.</p>
-        <button class="explore-btn" onclick="location.reload()">New Order</button>
-    </div>
-
-    <section id="hero-page">
-        <h1 style="font-size: 3.5rem; margin: 0; letter-spacing: 1px;">CAKE MART</h1>
-        <p style="font-size: 1.1rem; margin-top: 10px; opacity: 0.9;">European Pastries & Gourmet Delights</p>
-        <div style="height:2px; width:50px; background:var(--accent); margin: 20px 0;"></div>
-        <button class="explore-btn" onclick="openMenu()">Explore Menu</button>
-    </section>
-
-    <main id="menu-page">
-        <div class="tabs-container" id="tabs"></div>
-        <div style="padding:15px;"><img id="cat-banner" style="width:100%; height:200px; object-fit:cover; border-radius:20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);" src=""></div>
-        
-        <h2 id="cat-title" class="category-header"></h2>
-        <div id="items-container"></div>
-
-        <div class="cart-popup" id="cart-popup">
-            <div style="font-weight:bold; margin-bottom:15px; font-size: 1.1rem; border-bottom: 1px solid #eee; padding-bottom: 10px; color: var(--primary);">Checkout Details</div>
-            
-            <input type="text" id="cust-name" class="delivery-input" placeholder="Full Name" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
-            <input type="tel" id="cust-phone" class="delivery-input" placeholder="10-Digit Phone" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-            
-            <button class="loc-btn" id="loc-btn" onclick="getGPS()">📍 Tap to Share Delivery Location</button>
-            
-            <div id="cart-summary" style="max-height: 100px; overflow-y: auto; font-size: 0.9rem; margin-bottom: 12px; padding: 10px; background: #fafafa; border-radius: 10px; border-left: 3px solid var(--primary);"></div>
-            
-            <div style="border-top: 1px dashed #ccc; padding: 10px 0; font-size: 0.85rem; color: #777;">
-                <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Eco-Packing Charges</span><span id="pack-charge">₹0</span></div>
-                <div style="display:flex; justify-content:space-between;"><span>Delivery & Service</span><span>₹15</span></div>
-            </div>
-
-            <div style="display:flex; justify-content:space-between; font-weight:900; color:#000; font-size:1.4rem; margin-bottom: 15px;">
-                <span>GRAND TOTAL</span><span>₹<span id="grand-total">0</span></span>
-            </div>
-            
-            <button id="confirm-btn" class="confirm-btn" onclick="submitOrder()">Place Order Now</button>
-        </div>
-    </main>
-
-<script>
-     SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2CcnPwPfW3lFfxQKf7x0-oarxx28K4K2INt8yFAl1d5hwdCwJpITJdFYJxrOuDwDm/exec";
-    const ENTRY_DETAILS = "entry.1304197339";
-    const ENTRY_TOTAL = "entry.248975380";
-    const ENTRY_HOTEL = "entry.164020655";
-
-    let cart = {}; let gpsLink = "";
-    let disabledItems = JSON.parse(localStorage.getItem('cakemart_status')) || {};
-
-    const menuData = {
-        "FRIED CHICKEN": [
-            { id: "fc1", name: "Fried Chicken 2 PCS", price: 110 },
-            { id: "fc2", name: "Fried Chicken 4 PCS", price: 200 },
-            { id: "fc3", name: "Fried Chicken 8 PCS", price: 380 }
-        ],
-        "CHICKEN PIZZAS": [
-            { id: "cp1", name: "Normal Chicken Pizza", price: 200 },
-            { id: "cp2", name: "SP Chicken Pizza", price: 240 },
-            { id: "cp3", name: "Butter Chicken Pizza", price: 240 },
-            { id: "cp4", name: "BBQ Chicken Pizza", price: 230 },
-            { id: "cp5", name: "Extra Cheese Add-on", price: 30 }
-        ],
-        "VEG PIZZAS": [
-            { id: "vp1", name: "Classic Veg Pizza", price: 150 },
-            { id: "vp2", name: "SP Veg Pizza", price: 220 },
-            { id: "vp3", name: "Tomato Pizza", price: 180 },
-            { id: "vp3b", name: "Onion Pizza", price: 150 },
-            { id: "vp4", name: "Sweet Corn Pizza", price: 180 },
-            { id: "vp5", name: "Veg Overload Pizza", price: 220 },
-            { id: "vp6", name: "Onion Capsicum Pizza", price: 180 },
-            { id: "vp7", name: "Plain Cheese Pizza", price: 180 },
-            { id: "vp8", name: "Paneer Pizza", price: 180 }
-        ],
-        "ARTISAN BURGERS": [
-            { id: "br1", name: "Gourmet Veg Burger", price: 80 },
-            { id: "br2", name: "Paneer / Cheese Burger", price: 100 },
-            { id: "br3", name: "Signature Chicken Burger", price: 110 },
-            { id: "br4", name: "Zingar Chicken Burger", price: 160 }
-        ],
-        "WRAPS & SANDWICH": [
-            { id: "sw1", name: "Tortilla / Paratta Wrap", price: 100 },
-            { id: "sw2", name: "Club Sandwich (Veg/Chik)", price: 120 },
-            { id: "sw3", name: "Samoona Sandwich", price: 80 },
-            { id: "pf1", name: "Butter Puffs", price: 25 }
-        ],
-        "STARTERS": [
-            { id: "ch1", name: "French Fries", price: 90 },
-            { id: "ch2", name: "Loaded Fries", price: 120 },
-            { id: "ch3", name: "Momos (Veg/Chicken)", price: 100 },
-            { id: "ch4", name: "Shawarma Roll", price: 120 }
-        ],
-        "BEVERAGES": [
-            { id: "bv1", name: "Fruit Juice / Shakes", price: 80 },
-            { id: "bv2", name: "Cold Coffee / Boost", price: 70 },
-            { id: "bv3", name: "Mojitos (All Flavors)", price: 70 },
-            { id: "bv4", name: "Lassi (Mango/Pista)", price: 70 }
-        ],
-        "DESSERTS": [
-            { id: "ds1", name: "Normal Falooda", price: 90 },
-            { id: "ds2", name: "Royal Dry Fruit Falooda", price: 140 },
-            { id: "ds3", name: "Gourmet Scoop Icecream", price: 60 }
-        ]
-    };
-
-    const categoryImages = {
-        "FRIED CHICKEN": "https://images.unsplash.com/photo-1569058242253-92a9c71f9867?w=800",
-        "CHICKEN PIZZAS": "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800",
-        "VEG PIZZAS": "https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=800",
-        "ARTISAN BURGERS": "https://images.unsplash.com/photo-1550547660-d9450f859349?w=800",
-        "WRAPS & SANDWICH": "https://images.unsplash.com/photo-1553909489-cd47e0907980?w=800",
-        "STARTERS": "https://images.unsplash.com/photo-1626132646549-9403883a9925?w=800",
-        "BEVERAGES": "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=800",
-        "DESSERTS": "https://images.unsplash.com/photo-1587314168485-3236d6710814?w=800"
-    };
-
-    function openAdmin() {
-        if(prompt("Enter Admin PIN:") === "20106669") {
-            const list = document.getElementById('admin-list'); list.innerHTML = "";
-            document.getElementById('admin-panel').style.display = 'block';
-            for(let cat in menuData) {
-                list.innerHTML += `<div style="background:#f4f4f4; padding:10px; font-weight:bold; margin-top:10px;">${cat}</div>`;
-                menuData[cat].forEach(item => {
-                    const isOff = disabledItems[item.id];
-                    list.innerHTML += `<div style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid #eee;">
-                        <span>${item.name}</span>
-                        <button onclick="toggle('${item.id}', this)" style="background:${isOff?'#e74c3c':'#27ae60'}; color:white; border:none; padding:6px 15px; border-radius:5px;">${isOff?'HIDDEN':'ACTIVE'}</button>
-                    </div>`;
-                });
-            }
-        }
-    }
-
-    function toggle(id, btn) {
-        if(disabledItems[id]) { delete disabledItems[id]; btn.innerText="ACTIVE"; btn.style.background="#27ae60"; }
-        else { disabledItems[id]=true; btn.innerText="HIDDEN"; btn.style.background="#e74c3c"; }
-        localStorage.setItem('cakemart_status', JSON.stringify(disabledItems));
-    }
-
-    function openMenu() {
-        document.getElementById('hero-page').classList.add('hidden');
-        setTimeout(() => {
-            document.getElementById('hero-page').style.display = 'none';
-            document.getElementById('menu-page').style.display = 'block';
-            renderTabs();
-        }, 800);
-    }
-
-    function renderTabs() {
-        const tabs = document.getElementById('tabs'); tabs.innerHTML = "";
-        Object.keys(menuData).forEach((cat, i) => {
-            const btn = document.createElement('button');
-            btn.className = "tab-btn" + (i===0?" active":""); btn.innerText = cat;
-            btn.onclick = (e) => {
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                e.target.classList.add('active'); renderItems(cat);
-                window.scrollTo({top: 0, behavior: 'smooth'});
-            };
-            tabs.appendChild(btn);
-        });
-        renderItems(Object.keys(menuData)[0]);
-    }
-
-    function renderItems(cat) {
-        document.getElementById('cat-title').innerText = cat;
-        document.getElementById('cat-banner').src = categoryImages[cat];
-        const container = document.getElementById('items-container'); container.innerHTML = "";
-        
-        menuData[cat].forEach(item => {
-            if(disabledItems[item.id]) return;
-            const currentQty = cart[item.id] ? cart[item.id].qty : 0;
-
-            container.innerHTML += `
-                <div class="menu-item" id="item-card-${item.id}">
-                    <div class="item-main">
-                        <span class="item-name">${item.name}</span>
-                        <span class="item-price">₹${item.price}</span>
-                    </div>
-                    <div class="qty-controls">
-                        <button class="qty-btn" onclick="modifyQty('${item.id}', '${item.name}', ${item.price}, -1)">-</button>
-                        <span id="qty-count-${item.id}" style="font-weight:bold; min-width:25px; text-align:center;">${currentQty}</span>
-                        <button class="qty-btn" onclick="modifyQty('${item.id}', '${item.name}', ${item.price}, 1)">+</button>
-                    </div>
-                </div>
-            `;
-        });
-    }
-
-    function modifyQty(id, name, price, change) {
-        if(!cart[id]) {
-            cart[id] = { name: name, price: price, qty: 0, isPizza: name.toLowerCase().includes('pizza') };
-        }
-        cart[id].qty += change;
-        if(cart[id].qty <= 0) delete cart[id];
-        
-        const countDisplay = document.getElementById(`qty-count-${id}`);
-        if(countDisplay) countDisplay.innerText = cart[id] ? cart[id].qty : 0;
-        updateGlobalCart();
-    }
-
-    function updateGlobalCart() {
-        let subtotal = 0, itemCount = 0, listHtml = "", packTotal = 0;
-        for(let id in cart) { 
-            itemCount += cart[id].qty;
-            const cost = cart[id].qty * cart[id].price;
-            subtotal += cost;
-            packTotal += cart[id].isPizza ? (cart[id].qty * 10) : (cart[id].qty * 5);
-            listHtml += `<div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>${cart[id].name} (x${cart[id].qty})</span><span>₹${cost}</span></div>`; 
-        }
-        document.getElementById('cart-summary').innerHTML = listHtml || "No items selected";
-        document.getElementById('pack-charge').innerText = "₹" + packTotal;
-        document.getElementById('grand-total').innerText = itemCount > 0 ? (subtotal + packTotal + 15) : 0;
-        document.getElementById('cart-popup').classList.toggle('active', itemCount > 0);
-    }
-
-    function getGPS() {
-        const btn = document.getElementById('loc-btn'); btn.innerText = "🛰️ ACCESSING SATELLITE...";
-        navigator.geolocation.getCurrentPosition((p) => {
-            gpsLink = `http://maps.google.com/?q=${p.coords.latitude},${p.coords.longitude}`;
-            btn.style.background = "#27ae60"; btn.innerText = "✅ LOCATION LOCKED";
-            document.getElementById('confirm-btn').style.display = "block";
-        }, () => { alert("Please enable GPS for delivery."); btn.innerText = "📍 Tap to Retry Location"; }, {enableHighAccuracy: true});
-    }
-
-    async function submitOrder() {
-        const n = document.getElementById('cust-name').value;
-        const p = document.getElementById('cust-phone').value;
-        if(!n || p.length < 10) return alert("Enter Name and 10-digit Phone.");
-
-        const btn = document.getElementById('confirm-btn');
-        btn.innerText = "SENDING..."; btn.disabled = true;
-
-        let itemsSummary = ""; for(let id in cart) itemsSummary += `${cart[id].name}(x${cart[id].qty}), `;
-        const finalDetails = `NAME: ${n} | TEL: ${p} | LOC: ${gpsLink} | ORDER: ${itemsSummary.slice(0, -2)}`;
-
-        const formData = new URLSearchParams();
-        formData.append(ENTRY_HOTEL, "Cake Mart");
-        formData.append(ENTRY_DETAILS, finalDetails);
-        formData.append(ENTRY_TOTAL, "₹" + document.getElementById('grand-total').innerText);
-
-        try {
-            await fetch(FORM_URL, { method: 'POST', body: formData, mode: 'no-cors' });
-            document.getElementById('success-screen').style.display = "flex";
-        } catch(e) { alert("Network Busy. Try again."); btn.disabled = false; btn.innerText = "Place Order Now"; }
-    }
-</script>
 </body>
 </html>
