@@ -156,7 +156,8 @@
             
             <div style="border-top: 1px dashed #ccc; padding: 10px 0; font-size: 0.9rem; color: #777;">
                 <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>Convenience Fee</span><span>₹5</span></div>
-                <div style="display:flex; justify-content:space-between;"><span>Delivery Service</span><span>₹10</span></div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>Delivery Service</span><span>₹10</span></div>
+                <div style="display:flex; justify-content:space-between;"><span>GST (5%)</span><span>₹<span id="gst-amount">0</span></span></div>
             </div>
 
             <div style="display:flex; justify-content:space-between; font-weight:900; color:var(--primary); font-size:1.5rem; margin-bottom: 15px;">
@@ -396,17 +397,17 @@
         "SOUPS": "https://tse2.mm.bing.net/th/id/OIP.oRISYhUxwpTtPbD-ka6C2gHaEJ?pid=Api&P=0&h=180",
         "SALADS": "https://images.unsplash.com/photo-1540420773420-3366772f4999?q=80&w=800&auto=format&fit=crop",
         "NOODLES": "https://images.unsplash.com/photo-1585032226651-759b368d7246?q=80&w=800&auto=format&fit=crop",
-        "CURD": "https://www.indianhealthyrecipes.com/wp-content/uploads/2022/02/sweet-lassi-recipe.jpg",
+        "CURD": "https://tse3.mm.bing.net/th/id/OIP.eGtBAVpv3WdQsCv6t6LUOwHaLJ?pid=Api&P=0&h=180",
         "KEBABS": "https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?q=80&w=800&auto=format&fit=crop",
-        "KAJU": "https://tse1.mm.bing.net/th/id/OIP.kI9U49XWpC6i3GZ8l_MshwHaEK?rs=1&pid=ImgDetMain",
+        "KAJU": "https://i.pinimg.com/originals/c8/0f/15/c80f15e27763822c6057ccb15668acff.webp",
         "SPECIAL DISHES": "https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=800&q=80",
-        "VEG-DISHES": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=800&auto=format&fit=crop",
+        "VEG-DISHES": "https://shwetainthekitchen.com/wp-content/uploads/2023/03/mixed-vegetable-curry.jpg",
         "PANEER": "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?q=80&w=800&auto=format&fit=crop",
-        "SWEET DISHES": "https://images.unsplash.com/photo-1601050690597-df056fb47091?q=80&w=800&auto=format&fit=crop",
-        "DAAL": "https://images.unsplash.com/photo-1546833999-b9f581a1996d?q=80&w=800&auto=format&fit=crop",
-        "MUSHROOM": "https://images.unsplash.com/photo-1512058560366-cd24270083cd?q=80&w=800&auto=format&fit=crop",
-        "PALAK": "https://www.archanaskitchen.com/images/archanaskitchen/1-Author/Jyothi_Rajesh/Lehsuni_Palak.jpg",
-        "INDIAN RICE": "https://skydecklounge.in/wp-content/uploads/2022/01/Tandoori-Roti-Butter.jpg",
+        "SWEET DISHES": "https://i.ytimg.com/vi/6PEbjuDGWS0/maxresdefault.jpg",
+        "DAAL": "https://www.indianveggiedelight.com/wp-content/uploads/2022/12/dal-fry-stovetop-featured.jpg",
+        "MUSHROOM": "https://insanelygoodrecipes.com/wp-content/uploads/2020/11/Fried-Mushrooms-with-Herbs.png",
+        "PALAK": "https://img.freepik.com/premium-photo/lasooni-palak-recipe-dhaba-style-garlic-spinach-curry-indian-main-course-served-with-naan_466689-85138.jpg",
+        "INDIAN RICE": "https://tse1.mm.bing.net/th/id/OIP.ELTYHuwJWM3L7_7x1Wc8cwHaEO?pid=Api&P=0&h=180",
         "CHINESE RICE": "https://images.unsplash.com/photo-1603133872878-684f208fb84b?q=80&w=800&auto=format&fit=crop",
         "ROTI": "https://skydecklounge.in/wp-content/uploads/2022/01/Tandoori-Roti-Butter.jpg",
         "HOT BEVERAGES": "https://www.indianhealthyrecipes.com/wp-content/uploads/2023/05/indian-masala-chai-tea.jpg",
@@ -511,7 +512,7 @@
         const card = document.getElementById(`item-card-${id}`);
         const size = card.getAttribute('data-size');
         const price = parseInt(card.getAttribute('data-price'));
-        const cartKey = id + (size || ""); // Unique key for half/full items
+        const cartKey = id + (size || ""); 
 
         if(!cart[cartKey]) {
             cart[cartKey] = { name: baseName + (size ? ` (${size})` : ""), price: price, qty: 0, originId: id };
@@ -520,7 +521,6 @@
         cart[cartKey].qty += change;
         if(cart[cartKey].qty <= 0) delete cart[cartKey];
 
-        // Update individual item view (shows sum of half and full for that item name)
         let totalQtyForThisItem = 0;
         for(let k in cart) { if(cart[k].originId === id) totalQtyForThisItem += cart[k].qty; }
         document.getElementById(`qty-count-${id}`).innerText = totalQtyForThisItem;
@@ -536,8 +536,16 @@
             subtotal += cost; 
             listHtml += `<div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>${cart[key].name} x ${cart[key].qty}</span><span>₹${cost}</span></div>`; 
         }
+
+        // GST and Fees Logic
+        const gstAmount = Math.round(subtotal * 0.05); // 5% GST
+        const deliveryCharge = 10;
+        const convenienceFee = 5;
+
         document.getElementById('cart-summary').innerHTML = listHtml || "Your cart is empty";
-        document.getElementById('grand-total').innerText = itemCount > 0 ? (subtotal + 15) : 0;
+        document.getElementById('gst-amount').innerText = gstAmount;
+        document.getElementById('grand-total').innerText = itemCount > 0 ? (subtotal + gstAmount + deliveryCharge + convenienceFee) : 0;
+        
         document.getElementById('cart-popup').classList.toggle('active', itemCount > 0);
         if(itemCount === 0) resetGPSUI();
     }
