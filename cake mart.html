@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cake Mart | Premium Bakery & Cafe</title>
+    <style>
+        :root {
+            --primary: #d35400; /* Richer European Orange/Brown */
+            --dark: #2c3e50;
+            --light: #fdfefe;
+            --danger: #c0392b;
+            --success: #27ae60;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Playfair Display', serif, -apple-system, sans-serif;
+            margin: 0;
+            background-color: var(--light);
+            color: var(--dark);
+            scroll-behavior: smooth;
+        }
+
+        /* --- ADMIN INTERFACE --- */
+        #admin-star { position: fixed; bottom: 20px; right: 20px; z-index: 9999; font-size: 24px; cursor: pointer; opacity: 0.2; background: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        #admin-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 10000; padding: 20px; overflow-y: auto; }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding-bottom: 15px; margin-bottom: 20px; }
+        .admin-item-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #eee; }
+        .status-btn { padding: 8px 15px; border: none; border-radius: 5px; font-weight: bold; font-size: 12px; cursor: pointer; min-width: 70px; }
+        .btn-on { background: var(--success); color: white; }
+        .btn-off { background: var(--danger); color: white; }
+
+        /* --- UI ELEMENTS --- */
+        #landing-page { 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1550617931-e17a7b70dce2?w=1200'); /* European Cake Shop */
+            background-size: cover; 
+            background-position: center; 
+            text-align: center; 
+            padding: 20px; 
+        }
+        .cafe-title { color: white; font-size: 3.5rem; margin: 0; font-weight: 800; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .enter-btn { margin-top: 25px; background: var(--primary); color: white; padding: 18px 60px; border-radius: 50px; border: none; font-size: 1.1rem; font-weight: 700; text-transform: uppercase; cursor: pointer; transition: 0.3s; }
+
+        #menu-container { display: none; padding-bottom: 50vh; }
+        .category-nav { position: sticky; top: 0; z-index: 1000; background: white; display: flex; overflow-x: auto; padding: 12px 8px; gap: 8px; border-bottom: 1px solid #ddd; scrollbar-width: none; }
+        .category-nav::-webkit-scrollbar { display: none; }
+        .nav-item { padding: 8px 16px; background: #f2f2f2; border-radius: 20px; white-space: nowrap; font-size: 0.85rem; text-decoration: none; color: #444; font-weight: 700; }
+
+        .section-img { width: 100%; height: 180px; object-fit: cover; display: block; }
+        .section-header { padding: 18px; font-size: 1.4rem; font-weight: 800; color: var(--primary); background: white; border-bottom: 1px solid #eee; text-transform: uppercase; letter-spacing: 1px; }
+
+        .menu-card { background: white; margin-bottom: 1px; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .item-name { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; display: block; color: #333; }
+        
+        .price-text { font-weight: 800; font-size: 1.1rem; color: #000; display: block; }
+        .qty-box { display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-top: 5px; }
+        .btn-circle { width: 30px; height: 30px; border-radius: 50%; border: 1.5px solid var(--primary); background: white; color: var(--primary); font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+        #cart-box { position: fixed; bottom: 0; left: 0; width: 100%; max-height: 85vh; background: white; box-shadow: 0 -5px 25px rgba(0,0,0,0.2); z-index: 2000; display: none; flex-direction: column; border-top-left-radius: 25px; border-top-right-radius: 25px; padding: 20px; }
+        .details-input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 10px; font-size: 1rem; }
+        .loc-btn { background: #2980b9; color: white; border: none; padding: 14px; border-radius: 10px; font-weight: 700; margin-bottom: 12px; width: 100%; cursor: pointer; }
+        #cart-items-list { flex-grow: 1; overflow-y: auto; font-size: 0.9rem; margin-bottom: 12px; border-bottom: 1px solid #eee; max-height: 180px; }
+        .cart-row { display: flex; justify-content: space-between; padding: 6px 0; }
+        .fee-row { display: flex; justify-content: space-between; padding: 3px 0; font-size: 0.8rem; color: #7f8c8d; }
+        .cart-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 15px; }
+        .order-btn { background: var(--success); color: white; border: none; padding: 14px 30px; border-radius: 10px; font-weight: 800; font-size: 1.1rem; display: none; cursor: pointer; }
+
+        #success-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 5000; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
+        footer { padding: 50px 20px 180px; text-align: center; background: #fafafa; font-size: 0.85rem; color: #95a5a6; border-top: 1px solid #eee; }
+    </style>
+</head>
+<body>
+
+    <div id="admin-star" onclick="checkAdmin()">★</div>
+
+    <div id="admin-panel">
+        <div class="admin-header">
+            <h2 style="margin:0; color:var(--primary)">Cake Mart Inventory</h2>
+            <button onclick="closeAdmin()" style="padding:10px; border-radius:8px; border:none; background:#333; color:white;">CLOSE</button>
+        </div>
+        <div id="admin-controls-list"></div>
+    </div>
+
+    <div id="success-overlay">
+        <h2 style="color: var(--success);">✔ Order Confirmed!</h2>
+        <p>Your Cake Mart treasures are being prepared.</p>
+        <button class="enter-btn" onclick="location.reload()">Return to Shop</button>
+    </div>
+
+    <div id="landing-page">
+        <h1 class="cafe-title">Cake Mart</h1>
+        <p style="color:white; font-size: 1.2rem;">European Pastries & Gourmet Delights</p>
+        <button class="enter-btn" onclick="openMenu()">Explore Menu</button>
+    </div>
+
+    <div id="menu-container">
+        <div class="category-nav">
+            <a href="#fried-chicken" class="nav-item">Fried Chicken</a>
+            <a href="#chicken-pizzas" class="nav-item">Chicken Pizzas</a>
+            <a href="#veg-pizzas" class="nav-item">Veg Pizzas</a>
+            <a href="#burgers" class="nav-item">Burgers</a>
+            <a href="#sandwiches" class="nav-item">Wraps & Sandwiches</a>
+            <a href="#chats" class="nav-item">Starters & Sides</a>
+            <a href="#beverages" class="nav-item">Beverages & Shakes</a>
+            <a href="#desserts" class="nav-item">Desserts & Falooda</a>
+        </div>
+
+        <section id="fried-chicken">
+            <img src="https://images.unsplash.com/photo-1569058242253-92a9c71f9867?w=800" class="section-img">
+            <div class="section-header">Crispy Fried Chicken</div>
+            <div id="list-fried-chicken"></div>
+        </section>
+
+        <section id="chicken-pizzas">
+            <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800" class="section-img">
+            <div class="section-header">Chicken Pizzas</div>
+            <div id="list-chicken-pizzas"></div>
+        </section>
+
+        <section id="veg-pizzas">
+            <img src="https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=800" class="section-img">
+            <div class="section-header">Veg Pizzas</div>
+            <div id="list-veg-pizzas"></div>
+        </section>
+
+        <section id="burgers">
+            <img src="https://images.unsplash.com/photo-1550547660-d9450f859349?w=800" class="section-img">
+            <div class="section-header">Artisan Burgers</div>
+            <div id="list-burgers"></div>
+        </section>
+
+        <section id="sandwiches">
+            <img src="https://images.unsplash.com/photo-1553909489-cd47e0907980?w=800" class="section-img">
+            <div class="section-header">Wraps & Sandwiches</div>
+            <div id="list-sandwiches"></div>
+        </section>
+
+        <section id="chats">
+            <img src="https://images.unsplash.com/photo-1626132646549-9403883a9925?w=800" class="section-img">
+            <div class="section-header">Chats & Starters</div>
+            <div id="list-chats"></div>
+        </section>
+
+        <section id="beverages">
+            <img src="https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=800" class="section-img">
+            <div class="section-header">European Beverages</div>
+            <div id="list-beverages"></div>
+        </section>
+
+        <section id="desserts">
+            <img src="https://images.unsplash.com/photo-1587314168485-3236d6710814?w=800" class="section-img">
+            <div class="section-header">Sweet Finishes</div>
+            <div id="list-desserts"></div>
+        </section>
+
+        <footer>
+            <p><strong>Cake Mart - The European Bakery</strong></p>
+            <p>Packing: Pizza ₹10 | Others ₹5<br>Delivery: ₹10 | Convenience: ₹5</p>
+        </footer>
+    </div>
+
+    <div id="cart-box">
+        <div style="font-weight: 800; margin-bottom: 12px; color: var(--primary); font-size: 1.2rem;">Your Selection</div>
+        
+        <input type="text" id="cust-name" class="details-input" placeholder="Guest Name" 
+               oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '');">
+        
+        <input type="tel" id="cust-phone" class="details-input" placeholder="10-Digit Phone" maxlength="10" 
+               oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+
+        <button id="loc-btn" class="loc-btn" onclick="getLocation()">📍 Set Delivery Location</button>
+        <div id="cart-items-list"></div>
+        <div id="fees-container">
+            <div class="fee-row"><span>Eco-Packing Charge</span><span id="pack-total">₹0</span></div>
+            <div class="fee-row"><span>Service & Delivery</span><span>₹15</span></div>
+        </div>
+        <div class="cart-footer">
+            <div>
+                <span id="cart-total-qty" style="font-size: 0.9rem; color: #7f8c8d;">0 Items</span><br>
+                <span style="font-size: 1.4rem; font-weight: 800;">Total: ₹<span id="cart-total-price">0</span></span>
+            </div>
+            <button id="main-order-btn" class="order-btn" onclick="placeOrder()">Place Order</button>
+        </div>
+    </div>
+
+    <script>
+        const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfYGXB2Lim7wtiFCYy8U7MtV9DN9X2Tm7zSkx-qYxPLSLRcUg/formResponse";
+        const ENTRY_DETAILS = "entry.1304197339";
+        const ENTRY_TOTAL = "entry.248975380";
+        const ENTRY_HOTEL = "entry.164020655";
+
+        let userLocation = "";
+        let cart = {};
+        let unavailableItems = JSON.parse(localStorage.getItem('cakemart_unavailable')) || {};
+
+        const finalMenu = {
+            "fried_chicken": [
+                { id: "fc1", name: "Fried Chicken 2 PCS", p: 110 },
+                { id: "fc2", name: "Fried Chicken 4 PCS", p: 200 },
+                { id: "fc3", name: "Fried Chicken 8 PCS", p: 380 }
+            ],
+            "chicken_pizzas": [
+                { id: "cp1", name: "Normal Chicken Pizza", p: 200 },
+                { id: "cp2", name: "SP Chicken Pizza", p: 240 },
+                { id: "cp3", name: "Butter Chicken Pizza", p: 240 },
+                { id: "cp4", name: "BBQ Chicken Pizza", p: 230 },
+                { id: "cp5", name: "Extra Cheese Add-on", p: 30 }
+            ],
+            "veg_pizzas": [
+                { id: "vp1", name: "Classic Veg Pizza", p: 150 },
+                { id: "vp2", name: "SP Veg Pizza", p: 220 },
+                { id: "vp3", name: "Tomato  Pizza", p: 180 },
+                { id: "vp3b", name: "onion  Pizza", p: 150 },
+                { id: "vp4", name: "Sweet Corn Pizza", p: 180 },
+                { id: "vp5", name: "Veg Overload Pizza", p: 220 },
+                { id: "vp6", name: "onion capsicum Pizza", p: 180 },
+                { id: "vp7", name: "Plane chees Pizza", p: 180 },
+                { id: "vp8", name: "paneer Pizza", p: 180 },
+                { id: "vp9", name: "veg overlod  Pizza", p: 220 }
+            ],
+            "burgers": [
+                { id: "br1", name: "Gourmet Veg Burger", p: 80 },
+                { id: "br2", name: "Paneer / Cheese Burger", p: 100 },
+                { id: "br3", name: "Signature Chicken Burger", p: 110 },
+                { id: "br4", name: "Zingar Chicken Burger", p: 160 }
+            ],
+            "sandwiches": [
+                { id: "sw1", name: "Tortilla / Paratta Wrap", p: 100 },
+                { id: "sw2", name: "Club Sandwich (Veg/Chicken)", p: 120 },
+                { id: "sw3", name: "Samoona Sandwich", p: 80 },
+                { id: "pf1", name: "Butter Puffs (Egg/Veg/Paneer)", p: 25 }
+            ],
+            "chats": [
+                { id: "ch1", name: "French Fries (Classic/Masala)", p: 90 },
+                { id: "ch2", name: "Loaded Fries", p: 120 },
+                { id: "ch3", name: "Momos (Veg/Chicken)", p: 100 },
+                { id: "ch4", name: "Shawarma Roll", p: 120 }
+            ],
+            "beverages": [
+                { id: "bv1", name: "Fruit Juice / Shakes", p: 80 },
+                { id: "bv2", name: "Cold Coffee / Boost", p: 70 },
+                { id: "bv3", name: "Mojitos (All Flavors)", p: 70 },
+                { id: "bv4", name: "Lassi (Mango/Pista/Fruit)", p: 70 }
+            ],
+            "desserts": [
+                { id: "ds1", name: "Normal Falooda", p: 90 },
+                { id: "ds2", name: "Royal / Dry Fruit Falooda", p: 140 },
+                { id: "ds3", name: "Gourmet Scoop Icecream", p: 60 }
+            ]
+        };
+
+        function checkAdmin() {
+            const pass = prompt("Enter Cake Mart Admin Code:");
+            if (pass === "20106669") openAdmin();
+        }
+
+        function openAdmin() {
+            const panel = document.getElementById('admin-panel');
+            const listContainer = document.getElementById('admin-controls-list');
+            listContainer.innerHTML = "";
+            panel.style.display = 'block';
+            for(let cat in finalMenu) {
+                listContainer.innerHTML += `<h3 style="background:#eee; padding:8px;">${cat.replace('_',' ').toUpperCase()}</h3>`;
+                finalMenu[cat].forEach(item => {
+                    const isOff = unavailableItems[item.id] === true;
+                    listContainer.innerHTML += `<div class="admin-item-row"><span>${item.name}</span><button class="status-btn ${isOff ? 'btn-off' : 'btn-on'}" onclick="toggleVisibility('${item.id}', this)">${isOff ? 'OFF' : 'ON'}</button></div>`;
+                });
+            }
+        }
+
+        function toggleVisibility(id, btn) {
+            if (unavailableItems[id]) { delete unavailableItems[id]; btn.innerText = "ON"; btn.className = "status-btn btn-on"; }
+            else { unavailableItems[id] = true; btn.innerText = "OFF"; btn.className = "status-btn btn-off"; }
+            localStorage.setItem('cakemart_unavailable', JSON.stringify(unavailableItems));
+            renderAll();
+        }
+
+        function closeAdmin() { document.getElementById('admin-panel').style.display = 'none'; }
+        function openMenu() { document.getElementById('landing-page').style.display = 'none'; document.getElementById('menu-container').style.display = 'block'; renderAll(); }
+
+        function renderAll() {
+            renderList('list-fried-chicken', finalMenu.fried_chicken);
+            renderList('list-chicken-pizzas', finalMenu.chicken_pizzas);
+            renderList('list-veg-pizzas', finalMenu.veg_pizzas);
+            renderList('list-burgers', finalMenu.burgers);
+            renderList('list-sandwiches', finalMenu.sandwiches);
+            renderList('list-chats', finalMenu.chats);
+            renderList('list-beverages', finalMenu.beverages);
+            renderList('list-desserts', finalMenu.desserts);
+        }
+
+        function renderList(id, list) {
+            const container = document.getElementById(id);
+            container.innerHTML = '';
+            list.forEach(item => {
+                if (unavailableItems[item.id]) return;
+                container.innerHTML += `
+                    <div class="menu-card" data-name="${item.name}" data-price="${item.p}">
+                        <div><span class="item-name">${item.name}</span></div>
+                        <div style="text-align:right">
+                            <span class="price-text">₹${item.p}</span>
+                            <div class="qty-box">
+                                <button class="btn-circle" onclick="q(this,-1)">-</button>
+                                <span class="qty-val">0</span>
+                                <button class="btn-circle" onclick="q(this,1)">+</button>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function q(btn, change) {
+            const card = btn.closest('.menu-card');
+            const span = card.querySelector('.qty-val');
+            let val = parseInt(span.innerText) + change;
+            if (val < 0) val = 0;
+            span.innerText = val;
+            updateCartData(card.getAttribute('data-name'), parseInt(card.getAttribute('data-price')), val);
+        }
+
+        function updateCartData(name, price, qty) {
+            if (qty > 0) cart[name] = { qty, price, total: qty * price, isPizza: name.toLowerCase().includes('pizza') };
+            else delete cart[name];
+            renderCart();
+        }
+
+        function renderCart() {
+            const box = document.getElementById('cart-box');
+            const list = document.getElementById('cart-items-list');
+            let html = ''; let subTotal = 0; let totalItems = 0; let packTotal = 0;
+            for (let k in cart) {
+                html += `<div class="cart-row"><span>${k} x ${cart[k].qty}</span><span>₹${cart[k].total}</span></div>`;
+                subTotal += cart[k].total; totalItems += cart[k].qty;
+                packTotal += cart[k].isPizza ? (cart[k].qty * 10) : (cart[k].qty * 5);
+            }
+            const grandTotal = totalItems > 0 ? (subTotal + packTotal + 15) : 0;
+            list.innerHTML = html;
+            document.getElementById('pack-total').innerText = "₹" + packTotal;
+            document.getElementById('cart-total-price').innerText = grandTotal;
+            document.getElementById('cart-total-qty').innerText = totalItems + " Items";
+            box.style.display = totalItems > 0 ? 'flex' : 'none';
+        }
+
+        function getLocation() {
+            const btn = document.getElementById('loc-btn');
+            btn.innerText = "🛰️ Connecting to Satellite...";
+            navigator.geolocation.getCurrentPosition((pos) => {
+                userLocation = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+                btn.style.background = "#27ae60"; btn.innerText = "✅ Location Locked";
+                document.getElementById('main-order-btn').style.display = 'block';
+            }, () => { alert("Please allow location access for delivery."); btn.innerText = "📍 Retry Location Share"; });
+        }
+
+        function placeOrder() {
+            const name = document.getElementById('cust-name').value;
+            const phone = document.getElementById('cust-phone').value;
+            if(!name || phone.length < 10) return alert("Please provide valid Name & Phone.");
+            
+            let itemsSummary = ""; 
+            for (let k in cart) { itemsSummary += `${k}(${cart[k].qty}), `; }
+            const fullDetails = `NAME: ${name} | TEL: ${phone} | LOC: ${userLocation} | ORDER: ${itemsSummary}`;
+
+            const formData = new URLSearchParams();
+            formData.append(ENTRY_HOTEL, "Cake Mart");
+            formData.append(ENTRY_DETAILS, fullDetails);
+            formData.append(ENTRY_TOTAL, "₹" + document.getElementById('cart-total-price').innerText);
+
+            fetch(FORM_URL, { method: 'POST', mode: 'no-cors', body: formData })
+            .then(() => { document.getElementById('success-overlay').style.display = 'flex'; });
+        }
+    </script>
+</body>
+</html>
