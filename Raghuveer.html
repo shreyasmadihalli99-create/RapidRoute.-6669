@@ -342,14 +342,11 @@
     </div>
 
     <script>
-        const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfYGXB2Lim7wtiFCYy8U7MtV9DN9X2Tm7zSkx-qYxPLSLRcUg/formResponse";
-        const ENTRY_DETAILS = "entry.1304197339";
-        const ENTRY_TOTAL = "entry.248975380";
-        const ENTRY_HOTEL = "entry.164020655";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2CcnPwPfW3lFfxQKf7x0-oarxx28K4K2INt8yFAl1d5hwdCwJpITJdFYJxrOuDwDm/exec";
+    let userLocationURL = "";
+    let cart = {};
+    let disabledItems = JSON.parse(localStorage.getItem('raghuveer_disabled')) || {};
 
-        let userLocation = "";
-        let cart = {};
-        let unavailableItems = JSON.parse(localStorage.getItem('raghuveer_unavailable')) || {};
 
         const finalMenu = {
             pizzas: [
