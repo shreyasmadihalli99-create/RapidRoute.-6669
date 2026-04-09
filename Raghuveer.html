@@ -342,11 +342,12 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2CcnPwPfW3lFfxQKf7x0-oarxx28K4K2INt8yFAl1d5hwdCwJpITJdFYJxrOuDwDm/exec";
-    let userLocationURL = "";
-    let cart = {};
-    let disabledItems = JSON.parse(localStorage.getItem('vaibhav_disabled')) || {};
-
+        // --- PASTE YOUR NEW GOOGLE SCRIPT URL HERE ---
+        const SCRIPT_URL = "YOUR_NEW_GOOGLE_SCRIPT_URL_HERE"; 
+        
+        let userLocationURL = "";
+        let cart = {};
+        let unavailableItems = JSON.parse(localStorage.getItem('raghuveer_unavailable')) || {};
 
         const finalMenu = {
             pizzas: [
@@ -471,6 +472,7 @@
                 { id: "co10", name: "Special Combo B (Spl Pizza M+Fries+Coffee)", p: 450 }
             ]
         };
+
         function checkAdmin() {
             const pass = prompt("Enter Access Code:");
             if (pass === "20106669") openAdmin();
@@ -563,10 +565,7 @@
                 subTotal += cart[k].total; totalItems += cart[k].qty;
             }
 
-            // Packing: ₹10 per item
             let packTotal = totalItems * 10;
-
-            // Delivery Logic: <=100 -> ₹15, >100 -> 15%
             let deliveryFee = 0;
             if(totalItems > 0) {
                 if(subTotal <= 100) {
@@ -592,7 +591,7 @@
             const btn = document.getElementById('loc-btn');
             btn.innerText = "🔍 Accessing Location...";
             navigator.geolocation.getCurrentPosition((pos) => {
-                userLocation = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+                userLocationURL = `http://maps.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
                 btn.style.background = "#27ae60";
                 btn.innerText = "✅ Location Locked";
                 document.getElementById('main-order-btn').style.display = 'block';
@@ -603,21 +602,30 @@
             const name = document.getElementById('cust-name').value;
             const phone = document.getElementById('cust-phone').value;
             if(!name || phone.length < 10) return alert("Please enter Name and 10-digit Phone.");
+            if(!userLocationURL) return alert("Please share your location for delivery by clicking the button.");
 
-            let details = `NEW ORDER\n----------\nCustomer: ${name}\nPhone: ${phone}\nLocation: ${userLocation}\n\nItems:\n`;
+            const mainBtn = document.getElementById('main-order-btn');
+            mainBtn.innerText = "Sending Order...";
+            mainBtn.disabled = true;
+
+            let details = `NEW ORDER\n----------\nCustomer: ${name}\nPhone: ${phone}\nLocation: ${userLocationURL}\n\nItems:\n`;
             for(let k in cart) details += `- ${k} x ${cart[k].qty} (₹${cart[k].total})\n`;
             details += `\nPacking: ${document.getElementById('pack-total').innerText}`;
             details += `\nDelivery: ${document.getElementById('delivery-total').innerText}`;
 
             const body = new FormData();
-            body.append(ENTRY_DETAILS, details);
-            body.append(ENTRY_TOTAL, "₹" + document.getElementById('cart-total-price').innerText);
-            body.append(ENTRY_HOTEL, "Raghuveer Café");
+            body.append("details", details);
+            body.append("total", "₹" + document.getElementById('cart-total-price').innerText);
+            body.append("hotel", "Raghuveer Café");
 
-            fetch(FORM_URL, { method: 'POST', mode: 'no-cors', body })
+            fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body })
             .then(() => {
                 document.getElementById('success-overlay').style.display = 'flex';
                 window.scrollTo(0,0);
+            }).catch(err => {
+                alert("There was an issue sending your order. Please try again.");
+                mainBtn.innerText = "Confirm & Pay";
+                mainBtn.disabled = false;
             });
         }
     </script>
