@@ -33,11 +33,10 @@
             width: 50px;
             height: 50px;
             z-index: 9999;
-            opacity: 0; /* Completely invisible to customers */
+            opacity: 0; 
             cursor: pointer;
         }
 
-        /* --- ADMIN PANEL SYSTEM --- */
         #admin-panel {
             display: none;
             position: fixed;
@@ -119,33 +118,13 @@
             font-weight: 600;
             transition: 0.3s;
         }
-        .tab-btn.active {
-            background: var(--primary);
-            color: var(--white);
-        }
+        .tab-btn.active { background: var(--primary); color: var(--white); }
 
-        .category-img-wrapper {
-            padding: 15px;
-            text-align: center;
-        }
-        
-        .category-banner {
-            width: 100%;
-            height: 220px;
-            object-fit: cover;
-            border-radius: 15px;
-            background-color: #eee;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
+        .category-img-wrapper { padding: 15px; text-align: center; }
+        .category-banner { width: 100%; height: 220px; object-fit: cover; border-radius: 15px; background-color: #eee; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
 
         .menu-section { padding: 0 15px; }
-        .category-header {
-            color: var(--primary);
-            border-bottom: 2px solid var(--accent);
-            padding-bottom: 5px;
-            margin-bottom: 15px;
-            font-size: 1.4rem;
-        }
+        .category-header { color: var(--primary); border-bottom: 2px solid var(--accent); padding-bottom: 5px; margin-bottom: 15px; font-size: 1.4rem; }
 
         .menu-item {
             display: flex;
@@ -161,24 +140,8 @@
         .item-name { font-weight: 700; flex: 2; font-size: 0.95rem; }
         .price-align { font-weight: bold; color: var(--primary); margin-right: 15px; }
 
-        .qty-box {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: var(--gray);
-            padding: 5px 8px;
-            border-radius: 20px;
-        }
-        .qty-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            width: 26px;
-            height: 26px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-weight: bold;
-        }
+        .qty-box { display: flex; align-items: center; gap: 10px; background: var(--gray); padding: 5px 8px; border-radius: 20px; }
+        .qty-btn { background: var(--primary); color: white; border: none; width: 26px; height: 26px; border-radius: 50%; cursor: pointer; font-weight: bold; }
 
         .cart-popup {
             position: fixed;
@@ -198,38 +161,14 @@
         }
         .cart-popup.active { transform: translateX(-50%) translateY(0); }
 
-        .delivery-input {
-            width: 100%; padding: 12px; margin-bottom: 10px; 
-            border: 1.5px solid #eee; border-radius: 10px;
-            font-size: 1rem; box-sizing: border-box; outline: none;
-        }
+        .delivery-input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1.5px solid #eee; border-radius: 10px; font-size: 1rem; box-sizing: border-box; outline: none; }
 
-        .loc-btn {
-            background: #2196F3; color: white; border: none; padding: 12px;
-            width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; margin-bottom: 15px;
-        }
+        .loc-btn { background: #2196F3; color: white; border: none; padding: 12px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; margin-bottom: 15px; }
         .loc-btn.verified { background: #2e7d32; }
 
-        .checkout-btn {
-            background: #d32f2f;
-            color: white;
-            border: none;
-            padding: 15px;
-            width: 100%;
-            border-radius: 12px;
-            font-weight: bold;
-            font-size: 1.1rem;
-            cursor: pointer;
-            display: none; 
-        }
+        .checkout-btn { background: #d32f2f; color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; font-weight: bold; font-size: 1.1rem; cursor: pointer; display: none; }
 
-        .fee-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.9rem;
-            color: #666;
-            margin-top: 4px;
-        }
+        .fee-row { display: flex; justify-content: space-between; font-size: 0.9rem; color: #666; margin-top: 4px; }
 
         #success-overlay {
             display: none;
@@ -256,7 +195,6 @@
             <button class="checkout-btn" style="display:block;" onclick="checkAdminCode()">Login</button>
             <button class="checkout-btn" style="display:block; background:#666; margin-top:10px;" onclick="closeAdmin()">Cancel</button>
         </div>
-
         <div id="admin-stock-content" style="display:none;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
                 <h2 style="margin:0;">Stock Manager</h2>
@@ -280,11 +218,9 @@
 
     <main id="menu-page">
         <div class="tabs-container" id="tabs"></div>
-
         <div class="category-img-wrapper">
             <img id="category-image" class="category-banner" src="" alt="Category Banner">
         </div>
-
         <div class="menu-section">
             <h2 id="current-category-name" class="category-header">Morning</h2>
             <div id="menu-items-container"></div>
@@ -292,34 +228,29 @@
 
         <div class="cart-popup" id="cart-popup">
             <div style="font-weight:bold; border-bottom:1px solid #ddd; padding-bottom:10px; margin-bottom: 10px;">Delivery Details</div>
-            
-            <input type="text" id="cust-name" class="delivery-input" placeholder="Your Name (Letters Only)" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
-            <input type="tel" id="cust-phone" class="delivery-input" placeholder="Mobile Number (10 Digits Only)" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-
+            <input type="text" id="cust-name" class="delivery-input" placeholder="Your Name" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
+            <input type="tel" id="cust-phone" class="delivery-input" placeholder="Mobile Number" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
             <button class="loc-btn" id="loc-btn" onclick="getLocation()">📍 Share Location (Required)</button>
 
             <div id="cart-items-container" style="max-height: 15vh; overflow-y: auto; margin-bottom: 10px;"></div>
             
-            <div class="fee-row"><span>Convenience Fee</span><span>₹5</span></div>
-            <div class="fee-row"><span>Delivery Charge</span><span>₹10</span></div>
+            <div class="fee-row"><span id="delivery-label">Delivery Charge</span><span id="delivery-charge-total">₹0</span></div>
 
             <div style="display:flex; justify-content:space-between; font-weight:bold; color:var(--primary); font-size:1.3rem; margin: 10px 0;">
                 <span>Total</span>
                 <span>₹<span id="cart-grand-total">0</span></span>
             </div>
-            
             <button id="order-btn" class="checkout-btn" onclick="checkoutOrder()">Place Order</button>
         </div>
     </main>
 
 <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2CcnPwPfW3lFfxQKf7x0-oarxx28K4K2INt8yFAl1d5hwdCwJpITJdFYJxrOuDwDm/exec";
-    
     let userLocationURL = "";
     let disabledItems = JSON.parse(localStorage.getItem('daneshwari_stock')) || {};
 
     const menu = {
-        "Morning": [
+          "Morning": [
             {name: "Poha", price: 25},
             {name: "Chapati Baji (Full)", price: 50},
             {name: "Chapati Baji (Half)", price: 35},
@@ -348,14 +279,10 @@
     };
 
     let cart = {};
-    const CONVENIENCE_FEE = 5;
-    const DELIVERY_CHARGE = 10;
 
-    // --- ADMIN LOGIC ---
     function openAdmin() {
         document.getElementById('admin-panel').style.display = 'block';
         document.getElementById('admin-login-screen').style.display = 'block';
-        document.getElementById('admin-stock-content').style.display = 'none';
     }
 
     function checkAdminCode() {
@@ -385,14 +312,7 @@
     }
 
     function closeAdmin() { document.getElementById('admin-panel').style.display = 'none'; location.reload(); }
-
-    function openMenu() {
-        document.getElementById('hero-page').classList.add('hidden');
-        setTimeout(() => {
-            document.getElementById('hero-page').style.display = 'none';
-            document.getElementById('menu-page').style.display = 'block';
-        }, 600);
-    }
+    function openMenu() { document.getElementById('hero-page').classList.add('hidden'); setTimeout(() => { document.getElementById('hero-page').style.display = 'none'; document.getElementById('menu-page').style.display = 'block'; }, 600); }
 
     function renderTabs() {
         const container = document.getElementById('tabs');
@@ -417,13 +337,11 @@
         const container = document.getElementById('menu-items-container');
         container.innerHTML = '';
         menu[cat].forEach(item => {
-            if(disabledItems[item.name]) return; // Skip if disabled
+            if(disabledItems[item.name]) return;
             const currentQty = cart[item.name] ? cart[item.name].qty : 0;
             const div = document.createElement('div');
             div.className = 'menu-item';
-            div.innerHTML = `
-                <div class="item-name">${item.name}</div>
-                <div class="price-align">₹${item.price}</div>
+            div.innerHTML = `<div class="item-name">${item.name}</div><div class="price-align">₹${item.price}</div>
                 <div class="qty-box">
                     <button class="qty-btn" onclick="updateCart('${item.name}', ${item.price}, -1)">-</button>
                     <span>${currentQty}</span>
@@ -442,18 +360,40 @@
     }
 
     function calculateTotal() {
-        let itemsSubtotal = 0; let cartHTML = ''; let count = 0;
+        let itemsSubtotal = 0; 
+        let totalItemsCount = 0; 
+        let cartHTML = ''; 
+        let uniqueItems = 0;
+
         for (let key in cart) {
             if (cart[key].qty > 0) {
-                count++;
+                uniqueItems++;
                 let itemTotal = cart[key].qty * cart[key].price;
                 itemsSubtotal += itemTotal;
+                totalItemsCount += cart[key].qty;
                 cartHTML += `<div style="display:flex; justify-content:space-between; font-size:0.9rem;"><span>${key} x ${cart[key].qty}</span><span>₹${itemTotal}</span></div>`;
             }
         }
+
+        // --- DELIVERY LOGIC AS REQUESTED ---
+        let deliveryCharge = 0;
+        if (totalItemsCount > 0) {
+            if (itemsSubtotal <= 100) {
+                deliveryCharge = 15; // Fixed ₹15 if total is 100 or less
+                document.getElementById('delivery-label').innerText = "Delivery Charge (Fixed)";
+            } else {
+                deliveryCharge = Math.round(itemsSubtotal * 0.15); // 15% if total is above 100
+                document.getElementById('delivery-label').innerText = "Delivery Charge (15%)";
+            }
+        }
+
+        // Grand Total (Packing charge removed)
+        const grandTotal = itemsSubtotal > 0 ? (itemsSubtotal + deliveryCharge) : 0;
+
         document.getElementById('cart-items-container').innerHTML = cartHTML;
-        document.getElementById('cart-grand-total').innerText = itemsSubtotal > 0 ? (itemsSubtotal + CONVENIENCE_FEE + DELIVERY_CHARGE) : 0;
-        document.getElementById('cart-popup').classList.toggle('active', count > 0);
+        document.getElementById('delivery-charge-total').innerText = "₹" + deliveryCharge;
+        document.getElementById('cart-grand-total').innerText = grandTotal;
+        document.getElementById('cart-popup').classList.toggle('active', uniqueItems > 0);
     }
 
     function getLocation() {
@@ -465,28 +405,21 @@
                 btn.innerText = "✅ Location Locked";
                 btn.classList.add('verified');
                 document.getElementById('order-btn').style.display = 'block';
-            }, () => alert("Please enable GPS."), {enableHighAccuracy: true});
+            }, () => alert("Enable GPS for delivery."), {enableHighAccuracy: true});
         }
     }
 
-    // --- NEW CHECKOUT LOGIC ---
     async function checkoutOrder() {
         const name = document.getElementById('cust-name').value.trim();
         const phone = document.getElementById('cust-phone').value.trim();
-
-        if(!name || phone.length < 10) return alert("Fill Name & Mobile.");
-
+        if(!name || phone.length < 10) return alert("Fill Name & 10-digit Mobile.");
+        
         const grandTotal = document.getElementById('cart-grand-total').innerText;
-
         let orderSummary = "";
-        for (let k in cart) {
-            if(cart[k].qty > 0) {
-                orderSummary += `${k}(x${cart[k].qty}), `;
-            }
-        }
+        for (let k in cart) if(cart[k].qty > 0) orderSummary += `${k}(x${cart[k].qty}), `;
 
         const payload = {
-            hotel: "Hotel Daneshwari", // Adjusted for this specific page
+            hotel: "Hotel Daneshwari",
             name: name,
             phone: phone,
             items: orderSummary.slice(0, -2),
@@ -494,18 +427,13 @@
             location: userLocationURL
         };
 
-        const btn = document.getElementById('order-btn'); // Matched ID
+        const btn = document.getElementById('order-btn');
         btn.innerText = "Processing...";
         btn.disabled = true;
 
         try {
-            await fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify(payload)
-            });
-
-            document.getElementById('success-overlay').style.display = 'flex'; // Matched ID
-
+            await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
+            document.getElementById('success-overlay').style.display = 'flex';
         } catch (e) {
             alert("Error. Try again.");
             btn.disabled = false;
