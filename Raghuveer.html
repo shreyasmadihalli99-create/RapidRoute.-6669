@@ -23,7 +23,7 @@
             scroll-behavior: smooth;
         }
 
-        /* --- ADMIN INTERFACE STYLES --- */
+        /* --- ADMIN INTERFACE --- */
         #admin-star {
             position: fixed;
             bottom: 20px;
@@ -31,7 +31,7 @@
             z-index: 9999;
             font-size: 24px;
             cursor: pointer;
-            opacity: 0.2; /* Very faint so customers don't notice */
+            opacity: 0.2;
             background: white;
             border-radius: 50%;
             width: 40px;
@@ -81,8 +81,8 @@
 
         .btn-on { background: var(--success); color: white; }
         .btn-off { background: var(--danger); color: white; }
-        /* -------------------------- */
 
+        /* --- UI ELEMENTS --- */
         #landing-page {
             height: 100vh;
             display: flex;
@@ -98,6 +98,7 @@
         }
 
         .cafe-title { color: white; font-size: 2.8rem; margin: 0; font-weight: 800; }
+        
         .enter-btn {
             margin-top: 25px;
             background: var(--primary);
@@ -111,7 +112,7 @@
             cursor: pointer;
         }
 
-        #menu-container { display: none; padding-bottom: 50vh; }
+        #menu-container { display: none; padding-bottom: 350px; }
 
         .category-nav {
             position: sticky;
@@ -123,9 +124,7 @@
             padding: 12px 8px;
             gap: 8px;
             border-bottom: 1px solid #ddd;
-            scrollbar-width: none;
         }
-        .category-nav::-webkit-scrollbar { display: none; }
 
         .nav-item {
             padding: 8px 16px;
@@ -138,7 +137,6 @@
             font-weight: 700;
         }
 
-        .section-img { width: 100%; height: 130px; object-fit: cover; display: block; }
         .section-header {
             padding: 15px;
             font-size: 1.3rem;
@@ -146,6 +144,7 @@
             color: var(--primary);
             background: white;
             border-bottom: 1px solid #eee;
+            margin-top: 10px;
         }
 
         .menu-card {
@@ -179,6 +178,7 @@
         .size-pill.active { background: white; color: var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 
         .price-text { font-weight: 800; font-size: 1.1rem; color: #000; display: block; }
+        
         .qty-box {
             display: flex;
             align-items: center;
@@ -186,6 +186,7 @@
             gap: 12px;
             margin-top: 5px;
         }
+        
         .btn-circle {
             width: 28px;
             height: 28px;
@@ -205,8 +206,6 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            height: auto;
-            max-height: 85vh;
             background: white;
             box-shadow: 0 -5px 20px rgba(0,0,0,0.15);
             z-index: 2000;
@@ -234,29 +233,11 @@
             font-size: 0.85rem;
             margin-bottom: 10px;
             border-bottom: 1px solid #eee;
-            max-height: 200px;
+            max-height: 150px;
         }
 
-        .cart-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 4px 0;
-        }
-
-        .fee-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 2px 0;
-            font-size: 0.75rem;
-            color: #777;
-        }
-
-        .cart-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 10px;
-        }
+        .cart-row { display: flex; justify-content: space-between; padding: 4px 0; }
+        .fee-row { display: flex; justify-content: space-between; padding: 2px 0; font-size: 0.75rem; color: #777; }
 
         .order-btn {
             background: #27ae60;
@@ -282,8 +263,6 @@
             text-align: center;
             padding: 20px;
         }
-
-        footer { padding: 40px 20px 150px; text-align: center; background: white; font-size: 0.8rem; color: #888; }
     </style>
 </head>
 <body>
@@ -295,20 +274,19 @@
             <h2 style="margin:0; color:var(--primary)">Inventory Control</h2>
             <button onclick="closeAdmin()" style="padding:10px; border-radius:8px; border:none; background:#333; color:white;">CLOSE</button>
         </div>
-        <p style="font-size:0.85rem; color:#777;">Toggle items OFF to hide them from the customer menu.</p>
         <div id="admin-controls-list"></div>
     </div>
 
     <div id="success-overlay">
         <h2 style="color: #27ae60;">✔ Order Received!</h2>
-        <p>Your order has been sent directly to our kitchen. Please wait for delivery.</p>
-        <button class="enter-btn" onclick="location.reload()">Back to Menu</button>
+        <p>Your meal is being prepared. Thank you!</p>
+        <button class="enter-btn" onclick="location.reload()">New Order</button>
     </div>
 
     <div id="landing-page">
         <h1 class="cafe-title">Raghuveer Cafe</h1>
-        <p style="color:white">Fresh Flavours, Fast Delivery</p>
-        <button class="enter-btn" onclick="openMenu()">Explore Menu</button>
+        <p style="color:white">Hot & Fresh delivered to your door</p>
+        <button class="enter-btn" onclick="openMenu()">View Menu</button>
     </div>
 
     <div id="menu-container">
@@ -322,92 +300,72 @@
             <a href="#maggie" class="nav-item">Maggie</a>
             <a href="#nuggets" class="nav-item">Nuggets</a>
             <a href="#frankie" class="nav-item">Frankie</a>
-            <a href="#coffee" class="nav-item">Cold Coffee</a>
-            <a href="#milkshakes" class="nav-item">Milkshakes</a>
-            <a href="#mastani" class="nav-item">Mastani</a>
-            <a href="#hotcoffee" class="nav-item">Hot Coffee</a>
-            <a href="#cadb" class="nav-item">Cad-B</a>
-            <a href="#mocktails" class="nav-item">Mocktails</a>
+            <a href="#beverages" class="nav-item">Beverages</a>
             <a href="#combos" class="nav-item">Combos</a>
         </div>
 
-        <section id="pizzas">
-            <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500" class="section-img">
-            <div class="section-header">Pizza Selection</div>
-            <div id="list-pizzas"></div>
-        </section>
-
-        <section id="burgers"><img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500" class="section-img"><div class="section-header">Burger Varieties</div><div id="list-burgers"></div></section>
-        <section id="sandwiches"><img src="https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=500" class="section-img"><div class="section-header">Sandwiches</div><div id="list-sandwiches"></div></section>
-        <section id="fries"><img src="https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?w=500" class="section-img"><div class="section-header">French Fries</div><div id="list-fries"></div></section>
+        <section id="pizzas"><div class="section-header">Pizza Selection</div><div id="list-pizzas"></div></section>
+        <section id="burgers"><div class="section-header">Burger Varieties</div><div id="list-burgers"></div></section>
+        <section id="sandwiches"><div class="section-header">Grill Sandwiches</div><div id="list-sandwiches"></div></section>
+        <section id="fries"><div class="section-header">French Fries</div><div id="list-fries"></div></section>
         <section id="momos"><div class="section-header">Momos</div><div id="list-momos"></div></section>
         <section id="pasta"><div class="section-header">Pasta</div><div id="list-pasta"></div></section>
         <section id="maggie"><div class="section-header">Maggie</div><div id="list-maggie"></div></section>
         <section id="nuggets"><div class="section-header">Nuggets</div><div id="list-nuggets"></div></section>
         <section id="frankie"><div class="section-header">Frankie</div><div id="list-frankie"></div></section>
-        <section id="coffee"><img src="https://images.unsplash.com/photo-1578314675249-a6910f80cc4e?w=500" class="section-img"><div class="section-header">Cold Coffee</div><div id="list-coffee"></div></section>
-        <section id="milkshakes"><div class="section-header">Milkshakes</div><div id="list-milkshakes"></div></section>
-        <section id="mastani"><div class="section-header">Mastani</div><div id="list-mastani"></div></section>
-        <section id="hotcoffee"><div class="section-header">Hot Coffee</div><div id="list-hotcoffee"></div></section>
-        <section id="cadb"><div class="section-header">Cad-B</div><div id="list-cadb"></div></section>
-        <section id="mocktails"><div class="section-header">Mocktails & Coke</div><div id="list-mocktails"></div></section>
-        <section id="combos"><div class="section-header">All Special Combos</div><div id="list-combos"></div></section>
+        <section id="beverages"><div class="section-header">Beverages</div><div id="list-beverages"></div></section>
+        <section id="combos"><div class="section-header">Value Combos</div><div id="list-combos"></div></section>
 
-        <footer>
+        <footer style="padding: 40px 20px; text-align: center; color: #888; font-size: 0.8rem;">
             <p><strong>Raghuveer Cafe</strong></p>
-            <p>Packing: Pizza ₹10 | Other ₹5<br>Delivery: ₹10 | Convenience: ₹5</p>
+            <p>Packing: ₹10 per item<br>Delivery: ≤₹100 (₹15) | >₹100 (15%)</p>
         </footer>
     </div>
 
     <div id="cart-box">
-        <div style="font-weight: 800; margin-bottom: 8px; color: var(--primary);">Checkout Details</div>
-        
-        <input type="text" id="cust-name" class="details-input" placeholder="Your Name" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
-        <input type="tel" id="cust-phone" class="details-input" placeholder="10-Digit Mobile" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-        
-        <button id="loc-btn" class="loc-btn" onclick="getLocation()">📍 Share Delivery Location</button>
-        
+        <div style="font-weight: 800; margin-bottom: 8px; color: var(--primary);">Delivery Information</div>
+        <input type="text" id="cust-name" class="details-input" placeholder="Enter Full Name">
+        <input type="tel" id="cust-phone" class="details-input" placeholder="10-Digit Mobile" maxlength="10">
+        <button id="loc-btn" class="loc-btn" onclick="getLocation()">📍 Share Live Location</button>
         <div id="cart-items-list"></div>
-        
         <div id="fees-container" style="border-top: 1px dashed #ccc; padding-top: 5px; margin-bottom: 10px;">
-            <div class="fee-row"><span>Packing Charges</span><span id="pack-total">₹0</span></div>
-            <div class="fee-row"><span>Delivery Fee</span><span>₹10</span></div>
-            <div class="fee-row"><span>Convenience Fee</span><span>₹5</span></div>
+            <div class="fee-row"><span>Packing Charge (₹10/item)</span><span id="pack-total">₹0</span></div>
+            <div class="fee-row"><span id="delivery-label">Delivery Fee</span><span id="delivery-total">₹0</span></div>
         </div>
-
-        <div class="cart-footer">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
                 <span id="cart-total-qty" style="font-size: 0.8rem; color: #666;">0 Items</span><br>
                 <span style="font-size: 1.2rem; font-weight: 800;">Total: ₹<span id="cart-total-price">0</span></span>
             </div>
-            <button id="main-order-btn" class="order-btn" onclick="checkoutOrder()">Confirm Order</button>
+            <button id="main-order-btn" class="order-btn" onclick="placeOrder()">Confirm & Pay</button>
         </div>
     </div>
 
     <script>
-        // --- NEW GLOBALS FOR APPS SCRIPT ---
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2CcnPwPfW3lFfxQKf7x0-oarxx28K4K2INt8yFAl1d5hwdCwJpITJdFYJxrOuDwDm/exec";
+        const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfYGXB2Lim7wtiFCYy8U7MtV9DN9X2Tm7zSkx-qYxPLSLRcUg/formResponse";
+        const ENTRY_DETAILS = "entry.1304197339";
+        const ENTRY_TOTAL = "entry.248975380";
+        const ENTRY_HOTEL = "entry.164020655";
+
         let userLocation = "";
         let cart = {};
-        
-        // Load settings from local storage
         let unavailableItems = JSON.parse(localStorage.getItem('raghuveer_unavailable')) || {};
 
         const finalMenu = {
             pizzas: [
                 { id: "pz1", name: "Veg Cheese Pizza", p: {S:120, M:140, B:240} },
-                { id: "pz2", name: "Sweet Corn Veg Cheese Pizza", p: {S:140, M:160, B:260} },
-                { id: "pz3", name: "Baby Corn Veg Cheese Pizza", p: {S:140, M:160, B:260} },
-                { id: "pz4", name: "Mushroom Veg Corn Pizza", p: {S:150, M:170, B:270} },
+                { id: "pz2", name: "Sweet Corn Veg Cheese", p: {S:140, M:160, B:260} },
+                { id: "pz3", name: "Baby Corn Veg Cheese", p: {S:140, M:160, B:260} },
+                { id: "pz4", name: "Mushroom Veg Corn", p: {S:150, M:170, B:270} },
                 { id: "pz5", name: "Paneer Yummy Pizza", p: {S:160, M:180, B:280} },
                 { id: "pz6", name: "Chocolate Cheese Pizza", p: {S:140, M:160, B:260} },
                 { id: "pz7", name: "Mix Loaded Cheese Pizza", p: {S:160, M:190, B:290} },
                 { id: "pz8", name: "Jain Veg Cheese Pizza", p: {S:130, M:160, B:260} },
                 { id: "pz9", name: "Jain Cheese Burst Pizza", p: {S:180, M:210, B:310} },
                 { id: "pz10", name: "Yummy Cheese Burst Pizza", p: {S:180, M:210, B:310} },
-                { id: "pz11", name: "Italian Yummy Burst Pizza", p: {S:200, M:230, B:330} },
-                { id: "pz12", name: "Raghuveer Spl Tandoor Burst Pizza", p: {S:210, M:240, B:340} },
-                { id: "pz13", name: "Cheese Burst Punjabi Tadka Pizza", p: {S:230, M:260, B:360} },
+                { id: "pz11", name: "Italian Yummy Burst", p: {S:200, M:230, B:330} },
+                { id: "pz12", name: "Raghuveer Spl Tandoor Burst", p: {S:210, M:240, B:340} },
+                { id: "pz13", name: "Cheese Burst Punjabi Tadka", p: {S:230, M:260, B:360} },
                 { id: "pz14", name: "Raghuveer Spl Cheese Pizza", p: {S:200, M:230, B:330} },
                 { id: "pz15", name: "Dryfruit Raghuveer Spl Pizza", p: {S:220, M:250, B:350} }
             ],
@@ -516,110 +474,60 @@
                 { id: "co10", name: "Special Combo B (Spl Pizza M+Fries+Coffee)", p: 450 }
             ]
         };
-
-        // --- ADMIN DASHBOARD FUNCTIONS ---
         function checkAdmin() {
-            const pass = prompt("Enter Secret Access Code:");
-            if (pass === "20106669") {
-                openAdmin();
-            } else {
-                alert("Incorrect Code.");
-            }
+            const pass = prompt("Enter Access Code:");
+            if (pass === "20106669") openAdmin();
         }
 
         function openAdmin() {
-            const panel = document.getElementById('admin-panel');
-            const listContainer = document.getElementById('admin-controls-list');
-            listContainer.innerHTML = "";
-            panel.style.display = 'block';
-
+            const list = document.getElementById('admin-controls-list');
+            list.innerHTML = "";
+            document.getElementById('admin-panel').style.display = 'block';
             for(let cat in finalMenu) {
-                listContainer.innerHTML += `<h3 style="background:#eee; padding:5px; margin-top:20px;">${cat.toUpperCase()}</h3>`;
+                list.innerHTML += `<h3 style="background:#eee; padding:5px;">${cat.toUpperCase()}</h3>`;
                 finalMenu[cat].forEach(item => {
-                    const isOff = unavailableItems[item.id] === true;
-                    listContainer.innerHTML += `
-                        <div class="admin-item-row">
-                            <span style="font-size:14px">${item.name}</span>
-                            <button class="status-btn ${isOff ? 'btn-off' : 'btn-on'}" 
-                                onclick="toggleVisibility('${item.id}', this)">
-                                ${isOff ? 'OFF' : 'ON'}
-                            </button>
-                        </div>
-                    `;
+                    const isOff = unavailableItems[item.id];
+                    list.innerHTML += `<div class="admin-item-row"><span>${item.name}</span><button class="status-btn ${isOff ? 'btn-off' : 'btn-on'}" onclick="toggleVisibility('${item.id}', this)">${isOff ? 'OFF' : 'ON'}</button></div>`;
                 });
             }
         }
 
         function toggleVisibility(id, btn) {
-            if (unavailableItems[id]) {
-                delete unavailableItems[id];
-                btn.innerText = "ON";
-                btn.className = "status-btn btn-on";
-            } else {
-                unavailableItems[id] = true;
-                btn.innerText = "OFF";
-                btn.className = "status-btn btn-off";
-            }
+            if (unavailableItems[id]) delete unavailableItems[id];
+            else unavailableItems[id] = true;
             localStorage.setItem('raghuveer_unavailable', JSON.stringify(unavailableItems));
-            renderAll(); // Refresh the menu screen instantly
-        }
-
-        function closeAdmin() {
-            document.getElementById('admin-panel').style.display = 'none';
-        }
-        // ---------------------------------
-
-        function openMenu() {
-            document.getElementById('landing-page').style.display = 'none';
-            document.getElementById('menu-container').style.display = 'block';
+            btn.innerText = unavailableItems[id] ? "OFF" : "ON";
+            btn.className = `status-btn ${unavailableItems[id] ? 'btn-off' : 'btn-on'}`;
             renderAll();
         }
 
+        function closeAdmin() { document.getElementById('admin-panel').style.display = 'none'; }
+        function openMenu() { document.getElementById('landing-page').style.display = 'none'; document.getElementById('menu-container').style.display = 'block'; renderAll(); }
+
         function renderAll() {
-            renderList('list-pizzas', finalMenu.pizzas, 'pizza');
-            renderList('list-burgers', finalMenu.burgers, 'burger');
-            renderList('list-sandwiches', finalMenu.sandwiches, 'sandwich');
-            renderList('list-fries', finalMenu.fries, 'fries');
-            renderList('list-momos', finalMenu.momos, 'momos');
-            renderList('list-pasta', finalMenu.pasta, 'single');
-            renderList('list-maggie', finalMenu.maggie, 'single');
-            renderList('list-nuggets', finalMenu.nuggets, 'single');
-            renderList('list-frankie', finalMenu.frankie, 'single');
-            renderList('list-coffee', finalMenu.coffee, 'coffee');
-            renderList('list-milkshakes', finalMenu.milkshakes, 'single');
-            renderList('list-mastani', finalMenu.mastani, 'single');
-            renderList('list-hotcoffee', finalMenu.hotcoffee, 'single');
-            renderList('list-cadb', finalMenu.cadb, 'single');
-            renderList('list-mocktails', finalMenu.mocktails, 'single');
-            renderList('list-combos', finalMenu.combos, 'single');
+            for (let cat in finalMenu) {
+                const type = (cat === 'pizzas') ? 'pizza' : 
+                             (['burgers','sandwiches','fries','momos','beverages'].includes(cat) ? 'multi' : 'single');
+                renderList('list-' + cat, finalMenu[cat], type);
+            }
         }
 
         function renderList(id, list, type) {
             const container = document.getElementById(id);
+            if(!container) return;
             container.innerHTML = '';
             list.forEach(item => {
-                
-                // --- HIDE IF TOGGLED OFF ---
                 if (unavailableItems[item.id]) return;
-
                 let controls = ''; let price = item.p; let activeSize = '';
                 if (type === 'pizza') {
                     price = item.p.S; activeSize = 'S';
                     controls = `<div class="size-group"><button class="size-pill active" onclick="upd(this, ${item.p.S}, 'S')">S</button><button class="size-pill" onclick="upd(this, ${item.p.M}, 'M')">M</button><button class="size-pill" onclick="upd(this, ${item.p.B}, 'B')">B</button></div>`;
-                } else if (type === 'burger' || type === 'sandwich' || type === 'fries' || type === 'momos' || type === 'coffee') {
-                    const k1 = Object.keys(item.p)[0]; const k2 = Object.keys(item.p)[1];
-                    price = item.p[k1]; activeSize = k1;
-                    controls = `<div class="size-group"><button class="size-pill active" onclick="upd(this, ${item.p[k1]}, '${k1}')">${k1}</button><button class="size-pill" onclick="upd(this, ${item.p[k2]}, '${k2}')">${k2}</button></div>`;
+                } else if (type === 'multi') {
+                    const keys = Object.keys(item.p);
+                    price = item.p[keys[0]]; activeSize = keys[0];
+                    controls = `<div class="size-group">` + keys.map((k,i) => `<button class="size-pill ${i===0?'active':''}" onclick="upd(this, ${item.p[k]}, '${k}')">${k}</button>`).join('') + `</div>`;
                 }
-                
-                container.innerHTML += `
-                    <div class="menu-card" data-name="${item.name}" data-size="${activeSize}" data-price="${price}">
-                        <div><span class="item-name">${item.name}</span>${controls}</div>
-                        <div style="text-align:right">
-                            <span class="price-text">₹${price}</span>
-                            <div class="qty-box"><button class="btn-circle" onclick="q(this,-1)">-</button><span class="qty-val">0</span><button class="btn-circle" onclick="q(this,1)">+</button></div>
-                        </div>
-                    </div>`;
+                container.innerHTML += `<div class="menu-card" data-name="${item.name}" data-size="${activeSize}" data-price="${price}"><div><span class="item-name">${item.name}</span>${controls}</div><div style="text-align:right"><span class="price-text">₹${price}</span><div class="qty-box"><button class="btn-circle" onclick="q(this,-1)">-</button><span class="qty-val">0</span><button class="btn-circle" onclick="q(this,1)">+</button></div></div></div>`;
             });
         }
 
@@ -645,100 +553,75 @@
 
         function updateCartData(name, size, price, qty) {
             const key = name + (size ? ` (${size})` : "");
-            if (qty > 0) cart[key] = { qty, price, total: qty * price, isPizza: key.toLowerCase().includes('pizza') };
+            if (qty > 0) cart[key] = { qty, price, total: qty * price };
             else delete cart[key];
             renderCart();
         }
 
         function renderCart() {
-            const box = document.getElementById('cart-box');
             const list = document.getElementById('cart-items-list');
-            let html = ''; let subTotal = 0; let totalItems = 0; let packTotal = 0;
-            
+            let html = ''; let subTotal = 0; let totalItems = 0;
             for (let k in cart) {
                 html += `<div class="cart-row"><span>${k} x ${cart[k].qty}</span><span>₹${cart[k].total}</span></div>`;
-                subTotal += cart[k].total; 
-                totalItems += cart[k].qty;
-                packTotal += cart[k].isPizza ? (cart[k].qty * 10) : (cart[k].qty * 10);
+                subTotal += cart[k].total; totalItems += cart[k].qty;
             }
-            
-            const grandTotal = totalItems > 0 ? (subTotal + packTotal + 10 + 5) : 0;
-            list.innerHTML = html;
-            document.getElementById('pack-total').innerText = "₹" + packTotal;
-            document.getElementById('cart-total-price').innerText = grandTotal;
-            document.getElementById('cart-total-qty').innerText = totalItems + " Items";
-            box.style.display = totalItems > 0 ? 'flex' : 'none';
-        }
 
-        function getLocation() {
-            const name = document.getElementById('cust-name').value.trim();
-            const phone = document.getElementById('cust-phone').value;
-            
-            if (name.length < 2) return alert("Please enter your name.");
-            if (phone.length !== 10) return alert("Please enter a valid 10-digit mobile number.");
+            // Packing: ₹10 per item
+            let packTotal = totalItems * 10;
 
-            const btn = document.getElementById('loc-btn');
-            btn.innerText = "🛰️ Locating...";
-
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition((pos) => {
-                    // Fix: Added a missing $ before pos.coords.latitude so the link properly generates
-                    userLocation = `https://www.google.com/maps?q=$${pos.coords.latitude},${pos.coords.longitude}`;
-                    btn.style.display = 'none';
-                    document.getElementById('main-order-btn').style.display = 'block';
-                }, () => {
-                    alert("Location access is required for delivery.");
-                    btn.innerText = "📍 Share Delivery Location";
-                }, {enableHighAccuracy: true});
-            } else {
-                alert("Geolocation not supported.");
-            }
-        }
-
-        // --- NEW CHECKOUT FUNCTION INTEGRATED HERE ---
-        async function checkoutOrder() {
-            const name = document.getElementById('cust-name').value.trim();
-            const phone = document.getElementById('cust-phone').value.trim();
-
-            if(!name || phone.length < 10) return alert("Fill Name & Mobile.");
-
-            // Matched to existing HTML id
-            const grandTotal = document.getElementById('cart-total-price').innerText;
-
-            let orderSummary = "";
-            for (let k in cart) {
-                if(cart[k].qty > 0) {
-                    orderSummary += `${k}(x${cart[k].qty}), `;
+            // Delivery Logic: <=100 -> ₹15, >100 -> 15%
+            let deliveryFee = 0;
+            if(totalItems > 0) {
+                if(subTotal <= 100) {
+                    deliveryFee = 15;
+                    document.getElementById('delivery-label').innerText = "Delivery (Flat Fee)";
+                } else {
+                    deliveryFee = Math.round(subTotal * 0.15);
+                    document.getElementById('delivery-label').innerText = "Delivery (15% Charge)";
                 }
             }
 
-            const payload = {
-                hotel: "Raghuveer Cafe", 
-                name: name,
-                phone: phone,
-                items: orderSummary.slice(0, -2),
-                total: "₹" + grandTotal,
-                location: userLocation // Matched to existing global variable
-            };
+            const grandTotal = totalItems > 0 ? (subTotal + packTotal + deliveryFee) : 0;
+            
+            list.innerHTML = html;
+            document.getElementById('pack-total').innerText = "₹" + packTotal;
+            document.getElementById('delivery-total').innerText = "₹" + deliveryFee;
+            document.getElementById('cart-total-price').innerText = grandTotal;
+            document.getElementById('cart-total-qty').innerText = totalItems + " Items";
+            document.getElementById('cart-box').style.display = totalItems > 0 ? 'flex' : 'none';
+        }
 
-            const btn = document.getElementById('main-order-btn');
-            btn.innerText = "Processing...";
-            btn.disabled = true;
+        function getLocation() {
+            const btn = document.getElementById('loc-btn');
+            btn.innerText = "🔍 Accessing Location...";
+            navigator.geolocation.getCurrentPosition((pos) => {
+                userLocation = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+                btn.style.background = "#27ae60";
+                btn.innerText = "✅ Location Locked";
+                document.getElementById('main-order-btn').style.display = 'block';
+            }, () => alert("Location is required for delivery. Please enable GPS."));
+        }
 
-            try {
-                await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify(payload)
-                });
+        function placeOrder() {
+            const name = document.getElementById('cust-name').value;
+            const phone = document.getElementById('cust-phone').value;
+            if(!name || phone.length < 10) return alert("Please enter Name and 10-digit Phone.");
 
-                // Matched to existing HTML id
+            let details = `NEW ORDER\n----------\nCustomer: ${name}\nPhone: ${phone}\nLocation: ${userLocation}\n\nItems:\n`;
+            for(let k in cart) details += `- ${k} x ${cart[k].qty} (₹${cart[k].total})\n`;
+            details += `\nPacking: ${document.getElementById('pack-total').innerText}`;
+            details += `\nDelivery: ${document.getElementById('delivery-total').innerText}`;
+
+            const body = new FormData();
+            body.append(ENTRY_DETAILS, details);
+            body.append(ENTRY_TOTAL, "₹" + document.getElementById('cart-total-price').innerText);
+            body.append(ENTRY_HOTEL, "Raghuveer Café");
+
+            fetch(FORM_URL, { method: 'POST', mode: 'no-cors', body })
+            .then(() => {
                 document.getElementById('success-overlay').style.display = 'flex';
-
-            } catch (e) {
-                alert("Error. Try again.");
-                btn.disabled = false;
-                btn.innerText = "Confirm Order";
-            }
+                window.scrollTo(0,0);
+            });
         }
     </script>
 </body>
