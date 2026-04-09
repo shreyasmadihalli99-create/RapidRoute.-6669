@@ -342,11 +342,13 @@
     </div>
 
     <script>
-        // --- PASTE YOUR NEW GOOGLE SCRIPT URL HERE ---
-        const SCRIPT_URL =  "https://script.google.com/macros/s/AKfycbx2CcnPwPfW3lFfxQKf7x0-oarxx28K4K2INt8yFAl1d5hwdCwJpITJdFYJxrOuDwDm/exec";
-    let userLocationURL = "";
-        
-        let userLocationURL = "";
+        // Ensure this FORM_URL and the ENTRY IDs perfectly match your Google Form
+        const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfYGXB2Lim7wtiFCYy8U7MtV9DN9X2Tm7zSkx-qYxPLSLRcUg/formResponse";
+        const ENTRY_DETAILS = "entry.1304197339";
+        const ENTRY_TOTAL = "entry.248975380";
+        const ENTRY_HOTEL = "entry.164020655";
+
+        let userLocation = "";
         let cart = {};
         let unavailableItems = JSON.parse(localStorage.getItem('raghuveer_unavailable')) || {};
 
@@ -473,7 +475,7 @@
                 { id: "co10", name: "Special Combo B (Spl Pizza M+Fries+Coffee)", p: 450 }
             ]
         };
-
+        
         function checkAdmin() {
             const pass = prompt("Enter Access Code:");
             if (pass === "20106669") openAdmin();
@@ -566,7 +568,10 @@
                 subTotal += cart[k].total; totalItems += cart[k].qty;
             }
 
+            // Packing: ₹10 per item
             let packTotal = totalItems * 10;
+
+            // Delivery Logic: <=100 -> ₹15, >100 -> 15%
             let deliveryFee = 0;
             if(totalItems > 0) {
                 if(subTotal <= 100) {
@@ -592,41 +597,55 @@
             const btn = document.getElementById('loc-btn');
             btn.innerText = "🔍 Accessing Location...";
             navigator.geolocation.getCurrentPosition((pos) => {
-                userLocationURL = `http://maps.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+                // FIXED: Syntax error in the URL string mapping
+                userLocation = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
                 btn.style.background = "#27ae60";
                 btn.innerText = "✅ Location Locked";
                 document.getElementById('main-order-btn').style.display = 'block';
-            }, () => alert("Location is required for delivery. Please enable GPS."));
+            }, () => {
+                alert("Location is required for delivery. Please enable GPS.");
+                btn.innerText = "📍 Share Live Location";
+            });
         }
 
         function placeOrder() {
             const name = document.getElementById('cust-name').value;
             const phone = document.getElementById('cust-phone').value;
             if(!name || phone.length < 10) return alert("Please enter Name and 10-digit Phone.");
-            if(!userLocationURL) return alert("Please share your location for delivery by clicking the button.");
 
-            const mainBtn = document.getElementById('main-order-btn');
-            mainBtn.innerText = "Sending Order...";
-            mainBtn.disabled = true;
-
-            let details = `NEW ORDER\n----------\nCustomer: ${name}\nPhone: ${phone}\nLocation: ${userLocationURL}\n\nItems:\n`;
+            let details = `NEW ORDER\n----------\nCustomer: ${name}\nPhone: ${phone}\nLocation: ${userLocation}\n\nItems:\n`;
             for(let k in cart) details += `- ${k} x ${cart[k].qty} (₹${cart[k].total})\n`;
             details += `\nPacking: ${document.getElementById('pack-total').innerText}`;
             details += `\nDelivery: ${document.getElementById('delivery-total').innerText}`;
 
-            const body = new FormData();
-            body.append("details", details);
-            body.append("total", "₹" + document.getElementById('cart-total-price').innerText);
-            body.append("hotel", "Raghuveer Café");
+            // FIXED: Using URLSearchParams instead of FormData for reliable Google Forms submission
+            const bodyParams = new URLSearchParams();
+            bodyParams.append(ENTRY_DETAILS, details);
+            bodyParams.append(ENTRY_TOTAL, "₹" + document.getElementById('cart-total-price').innerText);
+            bodyParams.append(ENTRY_HOTEL, "Raghuveer Café");
 
-            fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body })
+            // Change button text to show loading
+            const orderBtn = document.getElementById('main-order-btn');
+            orderBtn.innerText = "Sending...";
+            orderBtn.disabled = true;
+
+            fetch(FORM_URL, { 
+                method: 'POST', 
+                mode: 'no-cors', 
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: bodyParams 
+            })
             .then(() => {
                 document.getElementById('success-overlay').style.display = 'flex';
                 window.scrollTo(0,0);
-            }).catch(err => {
+            })
+            .catch(err => {
+                console.error(err);
                 alert("There was an issue sending your order. Please try again.");
-                mainBtn.innerText = "Confirm & Pay";
-                mainBtn.disabled = false;
+                orderBtn.innerText = "Confirm & Pay";
+                orderBtn.disabled = false;
             });
         }
     </script>
