@@ -244,7 +244,7 @@
             
             <div style="border-top: 1px dashed #ccc; padding-top: 15px; margin-bottom: 10px;">
                 <div class="fee-row"><span>Items Total</span><span id="display-subtotal">₹0</span></div>
-                <div class="fee-row"><span>Delivery Charge</span><span id="display-delivery">₹0</span></div>
+                <div class="fee-row"><span id="delivery-label">Delivery Charge</span><span id="display-delivery">₹0</span></div>
             </div>
 
             <div style="display:flex; justify-content:space-between; font-weight:900; font-size:1.5rem; margin: 15px 0;">
@@ -422,11 +422,15 @@
         }
         
         let deliveryCharge = 0;
+        const deliveryLabel = document.getElementById('delivery-label');
+        
         if(subtotal > 0) {
             if(subtotal <= 100) {
                 deliveryCharge = 15;
+                deliveryLabel.innerText = "Delivery Charge (Flat Fee)";
             } else {
                 deliveryCharge = Math.round(subtotal * 0.15); 
+                deliveryLabel.innerText = "Delivery Charge (15%)";
             }
         }
 
