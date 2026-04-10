@@ -261,7 +261,7 @@
     let userLocationURL = ""; 
     let disabledItems = JSON.parse(localStorage.getItem('hukkeri_stock')) || {};
     
-    // --- CONFIGURATION ---
+    // --- INTEGRATED SCRIPT URL ---
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2CcnPwPfW3lFfxQKf7x0-oarxx28K4K2INt8yFAl1d5hwdCwJpITJdFYJxrOuDwDm/exec";
 
     const fullMenuData = {
@@ -427,15 +427,22 @@
         const name = document.getElementById('c-name').value;
         const phone = document.getElementById('c-phone').value;
         if(!name || phone.length < 10) return alert("Please enter name and mobile number first!");
+        
         const locBtn = document.getElementById('loc-btn');
         locBtn.innerText = "Accessing GPS...";
+        
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition((position) => {
-                // Fixed the coordinate string syntax
+                // Corrected coordinate mapping
                 userLocationURL = `https://www.google.com/maps?q=${position.coords.latitude},${position.coords.longitude}`;
                 locBtn.style.display = "none";
                 document.getElementById('confirm-btn').style.display = "block";
-            }, (error) => { alert("Location access needed!"); locBtn.innerText = "📍 Share Location to Order"; });
+            }, (error) => { 
+                alert("Location access needed to deliver your order!"); 
+                locBtn.innerText = "📍 Share Location to Order"; 
+            });
+        } else {
+            alert("Geolocation is not supported by this browser.");
         }
     }
 
@@ -448,7 +455,7 @@
         for(let k in cart) { itemSummary += `${k} (x${cart[k].q}), `; }
 
         const btn = document.getElementById('confirm-btn');
-        btn.innerText = "Confirming...";
+        btn.innerText = "Sending Order...";
         btn.disabled = true;
 
         const params = new URLSearchParams();
@@ -459,7 +466,6 @@
         params.append('location', userLocationURL);
 
         try {
-            // Using SCRIPT_URL constant
             await fetch(SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
@@ -468,10 +474,10 @@
                 body: params
             });
             
-            alert("Order Success! We will contact you shortly.");
+            alert("Order Success! Hukkeri Dhaba will contact you shortly.");
             location.reload(); 
         } catch (error) {
-            alert("Error sending to Sheet. Check your script deployment.");
+            alert("Connection error. Please try again.");
             btn.disabled = false;
             btn.innerText = "Confirm Order";
         }
