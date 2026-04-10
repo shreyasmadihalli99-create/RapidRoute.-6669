@@ -261,6 +261,9 @@
     let userLocationURL = ""; 
     let disabledItems = JSON.parse(localStorage.getItem('hukkeri_stock')) || {};
     
+    // YOUR SCRIPT URL
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2CcnPwPfW3lFfxQKf7x0-oarxx28K4K2INt8yFAl1d5hwdCwJpITJdFYJxrOuDwDm/exec";
+
     const fullMenuData = {
          "Chicken Starters": {
             img: "https://images.unsplash.com/photo-1562967914-608f82629710?w=800&q=80",
@@ -425,6 +428,7 @@
         const deliveryLabel = document.getElementById('delivery-label');
         
         if(subtotal > 0) {
+            // DELIVERY LOGIC: Rs 15 if <= 100, else 15%
             if(subtotal <= 100) {
                 deliveryCharge = 15;
                 deliveryLabel.innerText = "Delivery Charge (Flat Fee)";
@@ -470,35 +474,49 @@
         const deliveryCharge = document.getElementById('display-delivery').innerText;
         
         let subtotal = 0;
+        let itemSummary = "";
         let orderDetails = `Name: ${name} | Phone: ${phone}\nLocation: ${userLocationURL}\n\nOrder:\n`;
+        
         for(let k in cart) { 
             orderDetails += `- ${k} (x${cart[k].q})\n`; 
+            itemSummary += `${k} (x${cart[k].q}), `;
             subtotal += (cart[k].q * cart[k].p);
         }
         
         orderDetails += `\nSubtotal: ₹${subtotal}`;
         orderDetails += `\nDelivery Charge: ${deliveryCharge}`;
 
-        const formID = "1FAIpQLSfYGXB2Lim7wtiFCYy8U7MtV9DN9X2Tm7zSkx-qYxPLSLRcUg";
-        const baseURL = `https://docs.google.com/forms/d/e/${formID}/formResponse`;
-        
-        const formData = new URLSearchParams();
-        formData.append('entry.1304197339', orderDetails);   
-        formData.append('entry.248975380', total);          
-        formData.append('entry.164020655', "Hukkeri Dhaba"); 
-
         const btn = document.getElementById('confirm-btn');
         btn.innerText = "Processing...";
         btn.disabled = true;
 
+        // 1. SEND TO GOOGLE FORM (Legacy)
+        const formID = "1FAIpQLSfYGXB2Lim7wtiFCYy8U7MtV9DN9X2Tm7zSkx-qYxPLSLRcUg";
+        const formURL = `https://docs.google.com/forms/d/e/${formID}/formResponse`;
+        const fData = new URLSearchParams();
+        fData.append('entry.1304197339', orderDetails);   
+        fData.append('entry.248975380', total);          
+        fData.append('entry.164020655', "Hukkeri Dhaba"); 
+
+        // 2. SEND TO GOOGLE SHEET (Via Script URL)
+        const sheetData = new URLSearchParams();
+        sheetData.append('name', name);
+        sheetData.append('phone', phone);
+        sheetData.append('items', itemSummary);
+        sheetData.append('total', total);
+        sheetData.append('location', userLocationURL);
+
         try {
-            await fetch(baseURL, { method: 'POST', mode: 'no-cors', body: formData });
-            alert("Order Confirmed!");
+            // Post to Form
+            await fetch(formURL, { method: 'POST', mode: 'no-cors', body: fData });
+            // Post to Script URL (Google Sheets)
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: sheetData });
+            
+            alert("Order Confirmed Successfully!");
             location.reload(); 
         } catch (error) {
-            alert("Error. Try again.");
-            btn.innerText = "Confirm Order";
-            btn.disabled = false;
+            alert("Order sent, but verification failed. We will contact you.");
+            location.reload();
         }
     }
 </script>
