@@ -261,8 +261,8 @@
     let userLocationURL = ""; 
     let disabledItems = JSON.parse(localStorage.getItem('hukkeri_stock')) || {};
     
-    // --- INTEGRATED SCRIPT URL ---
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2CcnPwPfW3lFfxQKf7x0-oarxx28K4K2INt8yFAl1d5hwdCwJpITJdFYJxrOuDwDm/exec";
+    // UPDATED SCRIPT URL
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwzZHk9I9U-K8y0UTI3_8IUPHIRFYehyfmFvEN6TGue5HFiqRmo5RWXrN3rj1YdAfs_/exec";
 
     const fullMenuData = {
         "Chicken Starters": {
@@ -427,22 +427,15 @@
         const name = document.getElementById('c-name').value;
         const phone = document.getElementById('c-phone').value;
         if(!name || phone.length < 10) return alert("Please enter name and mobile number first!");
-        
         const locBtn = document.getElementById('loc-btn');
         locBtn.innerText = "Accessing GPS...";
-        
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition((position) => {
-                // Corrected coordinate mapping
+                // FIXED COORDINATE STRING
                 userLocationURL = `https://www.google.com/maps?q=${position.coords.latitude},${position.coords.longitude}`;
                 locBtn.style.display = "none";
                 document.getElementById('confirm-btn').style.display = "block";
-            }, (error) => { 
-                alert("Location access needed to deliver your order!"); 
-                locBtn.innerText = "📍 Share Location to Order"; 
-            });
-        } else {
-            alert("Geolocation is not supported by this browser.");
+            }, (error) => { alert("Location access needed!"); locBtn.innerText = "📍 Share Location to Order"; });
         }
     }
 
@@ -455,7 +448,7 @@
         for(let k in cart) { itemSummary += `${k} (x${cart[k].q}), `; }
 
         const btn = document.getElementById('confirm-btn');
-        btn.innerText = "Sending Order...";
+        btn.innerText = "Confirming...";
         btn.disabled = true;
 
         const params = new URLSearchParams();
@@ -474,10 +467,10 @@
                 body: params
             });
             
-            alert("Order Success! Hukkeri Dhaba will contact you shortly.");
+            alert("Order Success! We will contact you shortly.");
             location.reload(); 
         } catch (error) {
-            alert("Connection error. Please try again.");
+            alert("Error sending to Sheet. Check your script deployment.");
             btn.disabled = false;
             btn.innerText = "Confirm Order";
         }
