@@ -261,9 +261,11 @@
     let userLocationURL = ""; 
     let disabledItems = JSON.parse(localStorage.getItem('hukkeri_stock')) || {};
     
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx2CcnPwPfW3lFfxQKf7x0-oarxx28K4K2INt8yFAl1d5hwdCwJpITJdFYJxrOuDwDm/exec";
+    // --- CONFIGURATION ---
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2CcnPwPfW3lFfxQKf7x0-oarxx28K4K2INt8yFAl1d5hwdCwJpITJdFYJxrOuDwDm/exec";
+
     const fullMenuData = {
-          "Chicken Starters": {
+        "Chicken Starters": {
             img: "https://images.unsplash.com/photo-1562967914-608f82629710?w=800&q=80",
             items: [
                 {n: "Chicken 65", p: 100}, {n: "Chicken Dry", p: 170}, 
@@ -429,6 +431,7 @@
         locBtn.innerText = "Accessing GPS...";
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition((position) => {
+                // Fixed the coordinate string syntax
                 userLocationURL = `https://www.google.com/maps?q=${position.coords.latitude},${position.coords.longitude}`;
                 locBtn.style.display = "none";
                 document.getElementById('confirm-btn').style.display = "block";
@@ -456,7 +459,8 @@
         params.append('location', userLocationURL);
 
         try {
-            await fetch(GOOGLE_SCRIPT_URL, {
+            // Using SCRIPT_URL constant
+            await fetch(SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
                 cache: 'no-cache',
@@ -464,7 +468,7 @@
                 body: params
             });
             
-            alert("Order Success! Check your sheet.");
+            alert("Order Success! We will contact you shortly.");
             location.reload(); 
         } catch (error) {
             alert("Error sending to Sheet. Check your script deployment.");
