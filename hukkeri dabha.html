@@ -239,8 +239,8 @@
         <div id="items-list"></div>
 
         <div class="cart-panel" id="cart-footer">
-            <input type="text" id="c-name" class="form-input" placeholder="Your Full Name" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
-            <input type="tel" id="c-phone" class="form-input" placeholder="Mobile Number" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+            <input type="text" id="c-name" class="form-input" placeholder="Your Full Name">
+            <input type="tel" id="c-phone" class="form-input" placeholder="Mobile Number" maxlength="10">
             
             <div style="border-top: 1px dashed #ccc; padding-top: 15px; margin-bottom: 10px;">
                 <div class="fee-row"><span>Items Total</span><span id="display-subtotal">₹0</span></div>
@@ -261,11 +261,10 @@
     let userLocationURL = ""; 
     let disabledItems = JSON.parse(localStorage.getItem('hukkeri_stock')) || {};
     
-    // YOUR SCRIPT URL
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2CcnPwPfW3lFfxQKf7x0-oarxx28K4K2INt8yFAl1d5hwdCwJpITJdFYJxrOuDwDm/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2CcnPwPfW3lFfxQKf7x0-oarxx28K4K2INt8yFAl1d5hwdCwJpITJdFYJxrOuDwDm/exec";
 
     const fullMenuData = {
-         "Chicken Starters": {
+          "Chicken Starters": {
             img: "https://images.unsplash.com/photo-1562967914-608f82629710?w=800&q=80",
             items: [
                 {n: "Chicken 65", p: 100}, {n: "Chicken Dry", p: 170}, 
@@ -347,11 +346,7 @@
                 list.innerHTML += `<h3 style="background:#f2f2f2; padding:10px; margin: 10px 0;">${cat}</h3>`;
                 fullMenuData[cat].items.forEach(item => {
                     const isOff = disabledItems[item.n];
-                    list.innerHTML += `
-                        <div class="admin-row">
-                            <span>${item.n}</span>
-                            <button class="status-btn ${isOff?'btn-off':'btn-on'}" onclick="toggleItem('${item.n}', this)">${isOff?'OFF':'ON'}</button>
-                        </div>`;
+                    list.innerHTML += `<div class="admin-row"><span>${item.n}</span><button class="status-btn ${isOff?'btn-off':'btn-on'}" onclick="toggleItem('${item.n}', this)">${isOff?'OFF':'ON'}</button></div>`;
                 });
             }
         }
@@ -399,13 +394,7 @@
             const qty = cart[item.n] ? cart[item.n].q : 0;
             const row = document.createElement('div');
             row.className = 'menu-row';
-            row.innerHTML = `
-                <div class="item-text"><b>${item.n}</b><span>₹${item.p}</span></div>
-                <div class="qty-box">
-                    <button class="qty-btn" onclick="update(this, '${item.n}',${item.p},-1)">−</button>
-                    <span class="qty-count" style="font-weight:900;">${qty}</span>
-                    <button class="qty-btn" onclick="update(this, '${item.n}',${item.p},1)">+</button>
-                </div>`;
+            row.innerHTML = `<div class="item-text"><b>${item.n}</b><span>₹${item.p}</span></div><div class="qty-box"><button class="qty-btn" onclick="update(this, '${item.n}',${item.p},-1)">−</button><span class="qty-count" style="font-weight:900;">${qty}</span><button class="qty-btn" onclick="update(this, '${item.n}',${item.p},1)">+</button></div>`;
             list.appendChild(row);
         });
     }
@@ -419,30 +408,17 @@
         
         let subtotal = 0; 
         let active = 0;
-        for(let key in cart) { 
-            active++; 
-            subtotal += (cart[key].q * cart[key].p); 
-        }
+        for(let key in cart) { if(cart[key].q > 0) { active++; subtotal += (cart[key].q * cart[key].p); } }
         
         let deliveryCharge = 0;
         const deliveryLabel = document.getElementById('delivery-label');
-        
         if(subtotal > 0) {
-            // DELIVERY LOGIC: Rs 15 if <= 100, else 15%
-            if(subtotal <= 100) {
-                deliveryCharge = 15;
-                deliveryLabel.innerText = "Delivery Charge (Flat Fee)";
-            } else {
-                deliveryCharge = Math.round(subtotal * 0.15); 
-                deliveryLabel.innerText = "Delivery Charge (15%)";
-            }
+            if(subtotal <= 100) { deliveryCharge = 15; deliveryLabel.innerText = "Delivery Charge (Flat Fee)"; } 
+            else { deliveryCharge = Math.round(subtotal * 0.15); deliveryLabel.innerText = "Delivery Charge (15%)"; }
         }
-
-        let finalGrandTotal = subtotal + deliveryCharge;
-        
         document.getElementById('display-subtotal').innerText = "₹" + subtotal;
         document.getElementById('display-delivery').innerText = "₹" + deliveryCharge;
-        document.getElementById('final-total').innerText = finalGrandTotal;
+        document.getElementById('final-total').innerText = subtotal + deliveryCharge;
         document.getElementById('cart-footer').classList.toggle('active', active > 0);
     }
 
@@ -453,17 +429,11 @@
         const locBtn = document.getElementById('loc-btn');
         locBtn.innerText = "Accessing GPS...";
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const lat = position.coords.latitude;
-                    const lon = position.coords.longitude;
-                    userLocationURL = `https://www.google.com/maps?q=${lat},${lon}`;
-                    locBtn.style.display = "none";
-                    document.getElementById('confirm-btn').style.display = "block";
-                },
-                (error) => { alert("Location access needed!"); locBtn.innerText = "📍 Share Location to Order"; },
-                { enableHighAccuracy: true }
-            );
+            navigator.geolocation.getCurrentPosition((position) => {
+                userLocationURL = `https://www.google.com/maps?q=${position.coords.latitude},${position.coords.longitude}`;
+                locBtn.style.display = "none";
+                document.getElementById('confirm-btn').style.display = "block";
+            }, (error) => { alert("Location access needed!"); locBtn.innerText = "📍 Share Location to Order"; });
         }
     }
 
@@ -471,52 +441,36 @@
         const name = document.getElementById('c-name').value;
         const phone = document.getElementById('c-phone').value;
         const total = document.getElementById('final-total').innerText;
-        const deliveryCharge = document.getElementById('display-delivery').innerText;
         
-        let subtotal = 0;
         let itemSummary = "";
-        let orderDetails = `Name: ${name} | Phone: ${phone}\nLocation: ${userLocationURL}\n\nOrder:\n`;
-        
-        for(let k in cart) { 
-            orderDetails += `- ${k} (x${cart[k].q})\n`; 
-            itemSummary += `${k} (x${cart[k].q}), `;
-            subtotal += (cart[k].q * cart[k].p);
-        }
-        
-        orderDetails += `\nSubtotal: ₹${subtotal}`;
-        orderDetails += `\nDelivery Charge: ${deliveryCharge}`;
+        for(let k in cart) { itemSummary += `${k} (x${cart[k].q}), `; }
 
         const btn = document.getElementById('confirm-btn');
-        btn.innerText = "Processing...";
+        btn.innerText = "Confirming...";
         btn.disabled = true;
 
-        // 1. SEND TO GOOGLE FORM (Legacy)
-        const formID = "1FAIpQLSfYGXB2Lim7wtiFCYy8U7MtV9DN9X2Tm7zSkx-qYxPLSLRcUg";
-        const formURL = `https://docs.google.com/forms/d/e/${formID}/formResponse`;
-        const fData = new URLSearchParams();
-        fData.append('entry.1304197339', orderDetails);   
-        fData.append('entry.248975380', total);          
-        fData.append('entry.164020655', "Hukkeri Dhaba"); 
-
-        // 2. SEND TO GOOGLE SHEET (Via Script URL)
-        const sheetData = new URLSearchParams();
-        sheetData.append('name', name);
-        sheetData.append('phone', phone);
-        sheetData.append('items', itemSummary);
-        sheetData.append('total', total);
-        sheetData.append('location', userLocationURL);
+        const params = new URLSearchParams();
+        params.append('name', name);
+        params.append('phone', phone);
+        params.append('items', itemSummary);
+        params.append('total', total);
+        params.append('location', userLocationURL);
 
         try {
-            // Post to Form
-            await fetch(formURL, { method: 'POST', mode: 'no-cors', body: fData });
-            // Post to Script URL (Google Sheets)
-            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: sheetData });
+            await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                cache: 'no-cache',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: params
+            });
             
-            alert("Order Confirmed Successfully!");
+            alert("Order Success! Check your sheet.");
             location.reload(); 
         } catch (error) {
-            alert("Order sent, but verification failed. We will contact you.");
-            location.reload();
+            alert("Error sending to Sheet. Check your script deployment.");
+            btn.disabled = false;
+            btn.innerText = "Confirm Order";
         }
     }
 </script>
