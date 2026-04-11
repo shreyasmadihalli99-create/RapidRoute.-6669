@@ -261,40 +261,71 @@
     let userLocationURL = ""; 
     let disabledItems = JSON.parse(localStorage.getItem('hukkeri_stock')) || {};
     
-    // UPDATED SCRIPT URL
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwzZHk9I9U-K8y0UTI3_8IUPHIRFYehyfmFvEN6TGue5HFiqRmo5RWXrN3rj1YdAfs_/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyej0SiPSwZyouZ23p_CkJpi7myoN9LUsEbIpmm2OhPetl-2jQS05hbfCQgwER5xoB5/exec";
 
     const fullMenuData = {
-        "Chicken Starters": {
-            img: "https://images.unsplash.com/photo-1562967914-608f82629710?w=800&q=80",
+        "Non-Veg Handi": {
+            img: "https://img.freepik.com/premium-photo/dum-handi-chicken-biryani-is-prepared-earthen-clay-pot-called-haandi-popular-indian-non-vegetarian-food_466689-52225.jpg?w=1380",
             items: [
-                {n: "Chicken 65", p: 100}, {n: "Chicken Dry", p: 170}, 
-                {n: "Chicken Kabab", p: 170}, {n: "Chicken Sukka", p: 140},
-                {n: "Chicken Lollipop", p: 120}, {n: "Chicken Tangadi", p: 110}
+                {n: "Chicken Masala- Half", p: 350}, {n: "Chicken Masala- Full", p: 550},
+                {n: "Chicken Kolhapuri-Half", p: 370}, {n: "Chicken Kolhapuri-Full", p: 580},
+                {n: "Chicken Makhanwala-Half", p: 370}, {n: "Chicken Makhanwala-Full", p: 580},
+                {n: "Chicken Hyderabadi - Half", p: 380}, {n: "Chicken Hyderabadi - Full", p: 580},
+                {n: "Chicken Malwani- Half", p: 380}, {n: "Chicken Malwani- Full", p: 580},
+                {n: "Chicken Koriyan - Half", p: 390}, {n: "Chicken Koriyan - Full", p: 600},
+                {n: "Chicken Mughlai - Half", p: 390}, {n: "Chicken Mughlai - Full", p: 600}
             ]
         },
         "Dum Biryani": {
             img: "https://tse3.mm.bing.net/th/id/OIP.ZqOM4pyTyudhToF13jO9QQHaE7?pid=Api&P=0&h=180",
             items: [
-                {n: "Chicken Biryani Half", p: 130}, {n: "Chicken Biryani Full", p: 180},
-                {n: "Egg Biryani Full", p: 160}, {n: "Veg Biryani Special", p: 170}
+                {n: "Chicken Biryani- Pav", p: 100}, {n: "Chicken Biryani- Half", p: 130},
+                {n: "Chicken Biryani- Full", p: 180}, {n: "Egg Biryani- Half", p: 120},
+                {n: "Egg Biryani- Full", p: 170}, {n: "Spesial Veg Biryani-Full", p: 180},
+                {n: "Paneer Biryani- Full", p: 180}
             ]
         },
-        "Non-Veg Handi": {
-            img: "https://img.freepik.com/premium-photo/dum-handi-chicken-biryani-is-prepared-earthen-clay-pot-called-haandi-popular-indian-non-vegetarian-food_466689-52225.jpg?w=1380",
+        "Non-Veg Starters": {
+            img: "https://images.unsplash.com/photo-1562967914-608f82629710?w=800&q=80",
             items: [
-                {n: "Chicken Masala Full", p: 550}, {n: "Chicken Kolhapuri", p: 580},
-                {n: "Chicken Mughlai", p: 600}, {n: "Chicken Handi Half", p: 350}
+                {n: "Boiled Egg", p: 30}, {n: "Egg Bhurji", p: 60},
+                {n: "Egg Sukka Fry", p: 100}, {n: "Egg Pakoda", p: 100},
+                {n: "Egg 1/2 Fry", p: 40}, {n: "Amlet", p: 40},
+                {n: "Chicken 65", p: 120}, {n: "Chicken Dry", p: 170},
+                {n: "Chicken Kabab (Bonless 6-pis)", p: 180},
+                {n: "Chicken Sukka", p: 140}, {n: "Chicken Lolipop Dry (3-pis)", p: 120},
+                {n: "Chicken Lolipop Masala (3-pis)", p: 130}
+            ]
+        },
+        "Egg & Chicken Dish": {
+            img: "https://tse3.mm.bing.net/th/id/OIP.Ycqsj6DUHBjV4hTDmZPpfgHaE7?pid=Api&P=0&h=180",
+            items: [
+                {n: "Egg Curry", p: 80}, {n: "Egg Masala", p: 95},
+                {n: "Egg Kolhapuri", p: 95}, {n: "Egg Makhanwala", p: 95},
+                {n: "Egg Hyderabadi", p: 100}, {n: "Egg Sukka", p: 95},
+                {n: "Egg D.K (Mugalai)", p: 100}, {n: "Chicken Masala", p: 140},
+                {n: "Chicken Kolhapuri", p: 140}, {n: "Chicken Makhanwala", p: 140},
+                {n: "Chicken Hyderabadi", p: 150}, {n: "Chicken Sukka", p: 140}
+            ]
+        },
+        "Thali Specials": {
+            img: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=800&q=80",
+            items: [
+                {n: "Egg Thali (Reguler)", p: 120}, {n: "Egg Masala Thali", p: 140},
+                {n: "Egg Kolhapuri Thali", p: 140}, {n: "Egg Makhanwala Thali", p: 140},
+                {n: "Egg Sukka Thali", p: 140}, {n: "Chicken Thali (Reguler)", p: 170},
+                {n: "Chicken Masala Thali", p: 170}, {n: "Chicken Kolhapuri Thali", p: 170},
+                {n: "Chicken Makhanwala Thali", p: 170}, {n: "Chicken Sukka Thali", p: 170}
             ]
         },
         "Veg Starters": {
             img: "https://www.indianveggiedelight.com/wp-content/uploads/2017/06/gobi-manchurian-featured.jpg",
             items: [
-                {n: "Masala Senga", p: 10}, {n: "Maharaja Senga", p: 30}, 
-                {n: "Rosted Papad", p: 20}, {n: "Oil Papad", p: 25},
-                {n: "Masala Papad", p: 35}, {n: "Finger Chipes", p: 90},
-                {n: "Onion Pakada", p: 90}, {n: "Gobi Manchuri", p: 90},
-                {n: "Kaju Fry", p: 90}
+                {n: "Masala Senga", p: 15}, {n: "Maharaja Senga", p: 35},
+                {n: "Rosted Papad", p: 20}, {n: "Oil Papad", p: 30},
+                {n: "Masala Papad", p: 40}, {n: "Finger Chipes", p: 100},
+                {n: "Onion Pakada", p: 100}, {n: "Gobi Manchuri", p: 100},
+                {n: "Kaju Fry", p: 100}
             ]
         },
         "Veg Dish": {
@@ -304,19 +335,19 @@
                 {n: "Dal Tabaka", p: 120}, {n: "Akka Masur", p: 90},
                 {n: "Akka Masur Kolhapuri", p: 100}, {n: "Mix Veg", p: 120},
                 {n: "Mix Veg Kolhapuri", p: 130}, {n: "Mix Veg Makhanwala", p: 130},
-                {n: "Mix Veg Hyderabadi", p: 130}, {n: "Kaju Curry", p: 160},
-                {n: "Kaju Kolhapuri", p: 170}, {n: "Kaju Makhanwala", p: 170},
-                {n: "Paneer Masala", p: 160}, {n: "Paneer Kolhapuri", p: 170},
-                {n: "Paneer Makhanwala", p: 170}, {n: "Paneer Tikka Masala", p: 180},
-                {n: "Kaju Paneer Masala", p: 180}, {n: "Palak Paneer", p: 170},
-                {n: "Matter Paneer", p: 160}, {n: "Matter Masala", p: 110},
-                {n: "Green Pis Masala", p: 110}, {n: "Baigen Masala", p: 100},
-                {n: "Shimla Masala", p: 100}, {n: "Capsicum Masala", p: 100},
-                {n: "Channa Masala", p: 100}
+                {n: "Mix Veg Hyderabadi", p: 130}, {n: "Kaju Curry", p: 170},
+                {n: "Kaju Kolhapuri", p: 170}, {n: "Kaju Makhanwala", p: 170}, 
+                {n: "Paneer Masala", p: 170}, {n: "Paneer Kolhapuri", p: 170},
+                {n: "Paneer Makhanwala", p: 170}, {n: "Paneer Tikka", p: 170},
+                {n: "Paneer Tikka Masala", p: 180}, {n: "Kaju Paneer Masala", p: 180},
+                {n: "Palak Paneer", p: 170}, {n: "Matter Paneer", p: 160},
+                {n: "Matter Masala", p: 110}, {n: "Kaju Panner Kolhapuri", p: 190},
+                {n: "Baigen Masala", p: 110}, {n: "Shimla Masala", p: 110},
+                
             ]
         },
         "Roti Items": {
-            img: "https://images.unsplash.com/photo-1593504049359-ef163f0356b8?w=800&q=80",
+            img: "https://sultancottage.uk/wp-content/uploads/2020/11/Roti-1-1842x1212-1.jpg",
             items: [
                 {n: "Tanduri Roti", p: 15}, {n: "Pepar Roti", p: 25},
                 {n: "Butter Roti", p: 25}, {n: "Butter Kulach", p: 35},
@@ -325,15 +356,16 @@
                 {n: "Gonjal Rotti", p: 10}
             ]
         },
-        "Rice": {
-            img: "https://images.unsplash.com/photo-1512058560366-cd2427ff06b3?w=800&q=80",
+        "Rice Items": {
+            img: "https://tse3.mm.bing.net/th/id/OIP.ug7mcOMWDCGNYWMVONgcgwHaE8?pid=Api&P=0&h=180",
             items: [
-                {n: "Plane Rice-Half", p: 30}, {n: "Plane Rice-Full", p: 60},
+                {n: "Plane Rice-Half", p: 40}, {n: "Plane Rice-Full", p: 70},
                 {n: "Jeera Rice-Half", p: 50}, {n: "Jeera Rice-Full", p: 100},
-                {n: "Masala Rice-Half", p: 60}, {n: "Masala Rice-Full", p: 120},
-                {n: "Ghee Rice-Half", p: 60}, {n: "Ghee Rice-Full", p: 120},
-                {n: "Kushka Rice-Half", p: 60}, {n: "Kushka Rice-Full", p: 120},
-                {n: "Curd Rice Full Only", p: 120}
+                {n: "Masala Rice-Half", p: 70}, {n: "Masala Rice-Full", p: 130},
+                {n: "Ghee Rice-Half", p: 70}, {n: "Ghee Rice-Full", p: 130},
+                {n: "Kushka Rice-Half", p: 70}, {n: "Kushka Rice-Full", p: 130},
+                {n: "Curd Rice Full Only", p: 120}, {n: "Egg Rice Full Only", p: 120},
+                {n: "Veg Fried Rice", p: 120}
             ]
         }
     };
@@ -365,7 +397,11 @@
             document.getElementById('hero-section').style.display = 'none';
             document.getElementById('menu-wrapper').style.display = 'block';
             renderTabs();
-            setCategory("Chicken Starters");
+            // Automatically opens the first category in the data list
+            const categories = Object.keys(fullMenuData);
+            if (categories.length > 0) {
+                setCategory(categories[0]);
+            }
         }, 700);
     }
 
@@ -431,7 +467,6 @@
         locBtn.innerText = "Accessing GPS...";
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition((position) => {
-                // FIXED COORDINATE STRING
                 userLocationURL = `https://www.google.com/maps?q=${position.coords.latitude},${position.coords.longitude}`;
                 locBtn.style.display = "none";
                 document.getElementById('confirm-btn').style.display = "block";
@@ -443,15 +478,17 @@
         const name = document.getElementById('c-name').value;
         const phone = document.getElementById('c-phone').value;
         const total = document.getElementById('final-total').innerText;
+        const hotelName = document.querySelector('.hero-title').innerText;
         
         let itemSummary = "";
-        for(let k in cart) { itemSummary += `${k} (x${cart[k].q}), `; }
+        for(let k in cart) { if(cart[k].q > 0) { itemSummary += `${k} (x${cart[k].q}), `; } }
 
         const btn = document.getElementById('confirm-btn');
         btn.innerText = "Confirming...";
         btn.disabled = true;
 
         const params = new URLSearchParams();
+        params.append('hotel', hotelName);
         params.append('name', name);
         params.append('phone', phone);
         params.append('items', itemSummary);
@@ -463,14 +500,13 @@
                 method: 'POST',
                 mode: 'no-cors',
                 cache: 'no-cache',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: params
             });
             
             alert("Order Success! We will contact you shortly.");
             location.reload(); 
         } catch (error) {
-            alert("Error sending to Sheet. Check your script deployment.");
+            alert("Error sending order. Check connection.");
             btn.disabled = false;
             btn.innerText = "Confirm Order";
         }
