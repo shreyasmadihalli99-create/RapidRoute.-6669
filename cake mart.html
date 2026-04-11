@@ -3,97 +3,256 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cake Mart | Coming Soon</title>
+    <title>Cake Mart | Village Fresh</title>
     <style>
-        :root {
-            --gold: #e5990d;
-            --white: #ffffff;
-            --dark: #121212;
+        :root { --primary: #d81b60; --light: #fff5f8; --success: #27ae60; --white: #ffffff; --info: #2196F3; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: var(--light); color: #333; }
+
+        #hero-page {
+            height: 100vh; display: flex; flex-direction: column; justify-content: center;
+            align-items: center; text-align: center;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=1000');
+            background-size: cover; color: white;
+        }
+        .start-btn { margin-top: 25px; background: var(--primary); color: white; padding: 18px 60px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; font-size: 1.2rem; }
+
+        #main-app { display: none; }
+        
+        /* Search Bar Styling */
+        .search-container { background: var(--white); padding: 10px; position: sticky; top: 0; z-index: 1001; }
+        #menu-search { width: 100%; padding: 12px 20px; border-radius: 25px; border: 1.5px solid #eee; font-size: 1rem; outline: none; background: #f9f9f9; }
+        #menu-search:focus { border-color: var(--primary); background: #fff; }
+
+        .nav-container { position: sticky; top: 64px; z-index: 1000; background: var(--white); display: flex; overflow-x: auto; padding: 12px 10px; gap: 8px; border-bottom: 2px solid #eee; }
+        .nav-btn { padding: 10px 22px; background: var(--white); border: 2px solid var(--primary); border-radius: 25px; white-space: nowrap; color: var(--primary); font-weight: 800; cursor: pointer; }
+        .nav-btn.active { background: var(--primary); color: var(--white); }
+
+        .tab-section { display: none; padding-bottom: 400px; }
+        .tab-section.active { display: block; animation: fadeIn 0.4s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .cat-banner { width: 100%; height: 160px; object-fit: cover; border-bottom: 4px solid var(--primary); }
+
+        .menu-item { background: var(--white); margin: 0 10px 2px; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f0f0f0; }
+        .qty-wrap { display: flex; align-items: center; gap: 12px; }
+        .qty-btn { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--primary); background: var(--white); color: var(--primary); font-weight: 900; cursor: pointer; }
+
+        #order-panel {
+            position: fixed; bottom: 0; width: 100%; background: var(--white);
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.2); display: none;
+            padding: 20px; border-radius: 30px 30px 0 0; z-index: 2000;
+        }
+        .input-field { width: 100%; padding: 14px; margin-bottom: 10px; border: 1.5px solid #ddd; border-radius: 12px; font-size: 1rem; outline: none; }
+        
+        .loc-btn { background: var(--info); color: white; border: none; padding: 16px; border-radius: 12px; font-weight: 800; width: 100%; cursor: pointer; }
+        .confirm-btn { background: var(--success); color: white; border: none; padding: 20px; border-radius: 12px; font-weight: 800; width: 100%; font-size: 1.3rem; cursor: pointer; display: none; }
+        
+        #loc-status { 
+            display: none; background: #e3f2fd; color: #1565c0; padding: 12px; 
+            border-radius: 10px; text-align: center; font-weight: bold; margin-bottom: 10px; 
+            border: 1px solid #bbdefb; font-size: 0.9rem;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body, html {
-            height: 100%;
-            width: 100%;
-            font-family: 'Optima', 'Didot', 'Playfair Display', serif;
-            background-color: var(--dark);
-            overflow: hidden; /* Keeps the page still and aesthetic */
-        }
-
-        /* --- THE BACKGROUND --- */
-        .main-container {
-            height: 100%;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
-                        url('https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=2000');
-            background-size: cover;
-            background-position: center;
-            color: var(--white);
-        }
-
-        /* --- TYPOGRAPHY --- */
-        .brand-name {
-            font-size: 4rem;
-            font-weight: 300;
-            letter-spacing: 8px;
-            text-transform: uppercase;
-            margin-bottom: 5px;
-        }
-
-        .status-text {
-            font-size: 1.2rem;
-            letter-spacing: 4px;
-            color: var(--gold);
-            text-transform: uppercase;
-            margin-bottom: 50px;
-            font-style: italic;
-        }
-
-        /* --- THE BUTTON --- */
-        .back-btn {
-            background: transparent;
-            color: var(--white);
-            border: 1px solid var(--white);
-            padding: 15px 40px;
-            font-size: 0.85rem;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            text-decoration: none; /* Removes underline from link */
-            transition: all 0.4s ease;
-            cursor: pointer;
-        }
-
-        .back-btn:hover {
-            background: var(--white);
-            color: var(--dark);
-        }
-
-        /* Responsive scaling for mobile */
-        @media (max-width: 600px) {
-            .brand-name { font-size: 2.5rem; letter-spacing: 5px; }
-            .status-text { font-size: 1rem; letter-spacing: 2px; }
-        }
+        .bill-details { background: #f9f9f9; padding: 12px; border-radius: 12px; margin-top: 10px; font-size: 0.95rem; }
+        .bill-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+        .grand-total { border-top: 1px solid #ddd; padding-top: 8px; margin-top: 8px; font-weight: 900; color: var(--primary); font-size: 1.2rem; }
     </style>
 </head>
 <body>
 
-    <div class="main-container">
-        <h1 class="brand-name">Cake Mart</h1>
-        
-        <p class="status-text">Coming Soon</p>
-        
-        <a href="newhome (1).html" class="back-btn">Back to Homepage</a>
+    <div id="hero-page">
+        <h1 style="font-size: 3.5rem; margin: 0;">CAKE MART</h1>
+        <p>VILLAGE FRESH & SWEETS</p>
+        <button class="start-btn" onclick="openApp()">START ORDERING</button>
     </div>
 
+    <div id="main-app">
+        <div class="search-container">
+            <input type="text" id="menu-search" placeholder="Search for cakes, snacks, drinks..." onkeyup="filterMenu()">
+        </div>
+
+        <div class="nav-container">
+            <div class="nav-btn active" onclick="switchTab('cakes', this)">Cakes</div>
+            <div class="nav-btn" onclick="switchTab('pastries', this)">Pastries</div>
+            <div class="nav-btn" onclick="switchTab('sweets', this)">Sweets</div>
+            <div class="nav-btn" onclick="switchTab('snacks', this)">Snacks</div>
+            <div class="nav-btn" onclick="switchTab('drinks', this)">Beverages</div>
+        </div>
+
+        <div id="cakes" class="tab-section active">
+            <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800" class="cat-banner">
+            <div id="list-cakes"></div>
+        </div>
+        <div id="pastries" class="tab-section"><div id="list-pastries"></div></div>
+        <div id="sweets" class="tab-section"><div id="list-sweets"></div></div>
+        <div id="snacks" class="tab-section"><div id="list-snacks"></div></div>
+        <div id="drinks" class="tab-section"><div id="list-drinks"></div></div>
+    </div>
+
+    <div id="order-panel">
+        <input type="text" id="cust-name" class="input-field" placeholder="Full Name (Letters Only)" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
+        <input type="text" id="cust-phone" class="input-field" placeholder="Phone Number (10 Digits)" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="10">
+        
+        <div id="loc-status">Accessing your GPS...</div>
+        
+        <button class="loc-btn" id="loc-btn" onclick="askLocation()">📍 SHARE LIVE LOCATION</button>
+        <button class="confirm-btn" id="confirm-btn" onclick="sendOrder()">CONFIRM & SEND ORDER</button>
+
+        <div class="bill-details">
+            <div class="bill-row"><span>Items Total:</span> <span>₹<span id="items-price">0</span></span></div>
+            <div class="bill-row"><span>Delivery Fee:</span> <span>₹<span id="del-fee">0</span></span></div>
+            <div class="bill-row grand-total"><span>Grand Total:</span> <span>₹<span id="bill-total">0</span></span></div>
+        </div>
+    </div>
+
+<script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwwI6y9ildHddAjkKAfKhqIDk5qUXl8Vsjo6SsAKv3xj_J60QMp_r5ar0ZKlESaCAWf/exec"; 
+
+    let userLoc = "Not Provided";
+    let cart = {};
+
+    const database = {
+        cakes: [
+            { name: "Black Forest (0.5kg)", p: 350 }, { name: "Chocolate Truffle (0.5kg)", p: 450 },
+            { name: "Pineapple Cake (0.5kg)", p: 300 }, { name: "Butterscotch (0.5kg)", p: 350 },
+            { name: "Red Velvet (0.5kg)", p: 400 }, { name: "White Forest (0.5kg)", p: 350 },
+            { name: "Strawberry Cake (0.5kg)", p: 300 }, { name: "Mango Cake (0.5kg)", p: 320 }
+        ],
+        pastries: [
+            { name: "Choco Lava Cup", p: 60 }, { name: "Donut (Chocolate)", p: 55 },
+            { name: "Honey Pastry", p: 45 }, { name: "Black Forest Slice", p: 50 },
+            { name: "Pineapple Slice", p: 40 }, { name: "Red Velvet Slice", p: 60 }
+        ],
+        sweets: [
+            { name: "Gulab Jamun (2pc)", p: 30 }, { name: "Kaju Katli (250g)", p: 250 },
+            { name: "Milk Cake (250g)", p: 180 }, { name: "Motichoor Laddu (250g)", p: 140 },
+            { name: "Rasgulla (2pc)", p: 30 }, { name: "Soan Papdi (250g)", p: 120 }
+        ],
+        snacks: [
+            { name: "Veg Puff", p: 20 }, { name: "Paneer Puff", p: 30 },
+            { name: "Samosa (1pc)", p: 15 }, { name: "Bread Pakoda", p: 25 },
+            { name: "Veg Roll", p: 40 }, { name: "Paneer Roll", p: 50 },
+            { name: "Aloo Tikki Burger", p: 60 }
+        ],
+        drinks: [
+            { name: "Cold Coffee", p: 60 }, { name: "Chocolate Shake", p: 80 },
+            { name: "Mango Shake", p: 70 }, { name: "Badam Milk", p: 45 },
+            { name: "Sweet Lassi", p: 40 }, { name: "Fresh Lime Soda", p: 30 }
+        ]
+    };
+
+    function openApp() {
+        document.getElementById('hero-page').style.display = 'none';
+        document.getElementById('main-app').style.display = 'block';
+        loadMenu();
+    }
+
+    function switchTab(id, btn) {
+        document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        btn.classList.add('active');
+        document.getElementById('menu-search').value = "";
+        filterMenu();
+    }
+
+    function loadMenu() {
+        for (let cat in database) {
+            const div = document.getElementById('list-' + cat);
+            database[cat].forEach(item => {
+                div.innerHTML += `<div class="menu-item" data-name="${item.name}" data-price="${item.p}">
+                    <span style="font-weight:700">${item.name} <br><small>₹${item.p}</small></span>
+                    <div class="qty-wrap">
+                        <button class="qty-btn" onclick="updateQty('${item.name}', -1, this)">-</button>
+                        <span class="val" style="font-weight:900">0</span>
+                        <button class="qty-btn" onclick="updateQty('${item.name}', 1, this)">+</button>
+                    </div>
+                </div>`;
+            });
+        }
+    }
+
+    function filterMenu() {
+        let input = document.getElementById('menu-search').value.toLowerCase();
+        let items = document.querySelectorAll('.menu-item');
+        items.forEach(item => {
+            let name = item.getAttribute('data-name').toLowerCase();
+            item.style.display = name.includes(input) ? "flex" : "none";
+        });
+    }
+
+    function updateQty(name, val, btn) {
+        const card = btn.closest('.menu-item');
+        const display = card.querySelector('.val');
+        const price = parseInt(card.getAttribute('data-price'));
+        let q = parseInt(display.innerText) + val;
+        if(q < 0) q = 0;
+        display.innerText = q;
+        if(q > 0) cart[name] = { q, total: q * price }; else delete cart[name];
+        recalc();
+    }
+
+    function recalc() {
+        let itemsTotal = 0;
+        for(let x in cart) itemsTotal += cart[x].total;
+        let deliveryFee = itemsTotal > 0 ? (itemsTotal < 100 ? 15 : Math.round(itemsTotal * 0.15)) : 0;
+        document.getElementById('items-price').innerText = itemsTotal;
+        document.getElementById('del-fee').innerText = deliveryFee;
+        document.getElementById('bill-total').innerText = itemsTotal + deliveryFee;
+        document.getElementById('order-panel').style.display = itemsTotal > 0 ? 'block' : 'none';
+    }
+
+    function askLocation() {
+        const statusBox = document.getElementById('loc-status');
+        statusBox.style.display = "block";
+        statusBox.innerText = "⏳ Accessing your GPS...";
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((pos) => {
+                userLoc = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+                statusBox.innerText = "✅ GPS Access Secured!";
+                statusBox.style.background = "#e8f5e9";
+                statusBox.style.color = "#2e7d32";
+                document.getElementById('loc-btn').style.display = "none";
+                document.getElementById('confirm-btn').style.display = "block";
+            }, () => { alert("Location is required for delivery."); });
+        }
+    }
+
+    function sendOrder() {
+        const name = document.getElementById('cust-name').value;
+        const phone = document.getElementById('cust-phone').value;
+        const btn = document.getElementById('confirm-btn');
+
+        if(!name || phone.length < 10) return alert("Enter valid Name and Phone!");
+
+        btn.innerText = "Processing...";
+        btn.disabled = true;
+
+        let itemsStr = "";
+        for(let key in cart) itemsStr += `${key} (x${cart[key].q}), `;
+
+        const data = new URLSearchParams();
+        data.append('hotel', "Cake Mart"); 
+        data.append('name', name);
+        data.append('phone', phone);
+        data.append('items', itemsStr);
+        data.append('delivery', "₹" + document.getElementById('del-fee').innerText);
+        data.append('total', "₹" + document.getElementById('bill-total').innerText);
+        data.append('location', userLoc);
+
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: data
+        }).then(() => {
+            alert("ORDER PLACED SUCCESSFULLY!");
+            location.reload();
+        }).catch(() => {
+            alert("Error sending order.");
+            btn.disabled = false;
+        });
+    }
+</script>
 </body>
 </html>
