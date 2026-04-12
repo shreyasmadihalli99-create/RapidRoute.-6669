@@ -186,23 +186,20 @@
     <main class="main" id="hotel-grid"></main>
 
     <script>
-        // TOGGLE FUNCTION FOR HELPLINE
         function toggleHelpline() {
             const dropdown = document.getElementById('numbers-dropdown');
-            if (dropdown.style.display === 'block') {
-                dropdown.style.display = 'none';
-            } else {
-                dropdown.style.display = 'block';
-            }
+            dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
         }
 
+        // ADDED HOTEL ARABI TO THIS LIST
         const hotels = [
             { name: "Raghuveer Café", img: "raghuveer.png", link: "Raghuveer.html" },
             { name: "Raghavendra Vaibhav", img: "ragu.png", link: "Raghavendra.html" },
             { name: "Hotel Pushkar", img: "push.png", link: "Pushkar.html" },
             { name: "Hukkeri Dhaba", img: "hukkeri.png", link: "hukkeri dabha.html" },
             { name: "Hotel Daneshwari", img: "DANESH.PNG", link: "Daneshwari.html" },
-            { name: "Cake Mart", img: "cake.png", link: "cake mart.html" }
+            { name: "Cake Mart", img: "cake.png", link: "cake mart.html" },
+            { name: "Hotel Arabi", img: "arabi.png", link: "Arabi.html" }
         ];
 
         const grid = document.getElementById('hotel-grid');
