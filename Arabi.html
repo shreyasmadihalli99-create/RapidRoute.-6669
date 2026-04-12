@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Arabi | Official</title>
+    <style>
+        :root { --red: #e63946; --orange: #ff7003; --blue: #007bff; --dark: #1a1a1a; --light-bg: #f9f9f9; }
+        body, html { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: var(--light-bg); color: var(--dark); overflow-x: hidden; }
+
+        /* HERO SECTION */
+        #hero-section { height: 100vh; width: 100%; background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://getwallpapers.com/wallpaper/full/9/8/7/902541-chicken-wallpapers-3840x2160-ios.jpg'); background-size: cover; background-position: center; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; position: fixed; top: 0; left: 0; z-index: 5000; transition: transform 0.7s; }
+        #hero-section.hide { transform: translateY(-100%); }
+        .hero-title { font-size: 3.5rem; font-weight: 900; text-transform: uppercase; margin:0; }
+        .start-btn { margin-top: 40px; background: var(--orange); color: white; padding: 18px 50px; font-size: 1.1rem; font-weight: 800; border: none; border-radius: 50px; cursor: pointer; }
+
+        /* MENU LAYOUT */
+        #menu-wrapper { display: none; max-width: 600px; margin: 0 auto; background: white; min-height: 100vh; padding-bottom: 300px; }
+        .tab-bar { position: sticky; top: 0; background: white; display: flex; overflow-x: auto; padding: 12px; gap: 8px; z-index: 1000; border-bottom: 1px solid #eee; scrollbar-width: none; }
+        .tab-bar::-webkit-scrollbar { display: none; }
+        .tab { padding: 8px 16px; background: #eee; border-radius: 50px; font-weight: 700; border: none; white-space: nowrap; cursor: pointer; font-size: 13px; }
+        .tab.active { background: var(--red); color: white; }
+        
+        .search-container { padding: 10px 15px; background: #fff; position: sticky; top: 55px; z-index: 999; }
+        #menu-search { width: 100%; padding: 10px 15px; border: 2px solid #eee; border-radius: 10px; font-size: 14px; box-sizing: border-box; outline: none; }
+
+        .category-image-header { width: 100%; height: 180px; object-fit: cover; }
+        .cat-name { padding: 12px; font-size: 1.2rem; text-align: center; color: var(--red); font-weight: 900; margin: 0; text-transform: uppercase; }
+        
+        .menu-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; border-bottom: 1px solid #f2f2f2; }
+        .item-text b { display: block; font-size: 0.95rem; }
+        .item-text span { color: #666; font-size: 0.9rem; font-weight: 700; }
+
+        .qty-box { display: flex; align-items: center; gap: 12px; background: #fdf2f2; padding: 4px 10px; border-radius: 50px; border: 1px solid #fedcdc; }
+        .qty-btn { width: 28px; height: 28px; border: none; background: var(--red); color: white; border-radius: 50%; font-weight: bold; cursor: pointer; font-size: 18px; line-height: 1; }
+        .qty-num { font-weight: 900; color: var(--dark); min-width: 15px; text-align: center; font-size: 15px; }
+
+        /* COMPACT CHECKOUT PANEL */
+        .cart-panel { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%) translateY(100%); width: 100%; max-width: 600px; background: white; padding: 15px; border-radius: 20px 20px 0 0; box-shadow: 0 -5px 25px rgba(0,0,0,0.15); transition: 0.4s ease; z-index: 4000; box-sizing: border-box; }
+        .cart-panel.active { transform: translateX(-50%) translateY(0); }
+        
+        .form-input { width: 100%; padding: 10px; margin-bottom: 8px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
+        
+        .cart-list-area { max-height: 80px; overflow-y: auto; margin: 10px 0; border-top: 1px dashed #ccc; padding-top: 8px; }
+        .cart-item-row { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; margin-bottom: 4px; }
+        
+        .fee-row { display: flex; justify-content: space-between; font-size: 0.85rem; color: #666; font-weight: 600; margin-bottom: 2px; }
+        .total-row { display:flex; justify-content:space-between; font-weight:900; font-size:1.2rem; margin: 8px 0; border-top: 1px solid #eee; padding-top: 8px; }
+        
+        .wp-btn { background: var(--red); color: white; width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <section id="hero-section">
+        <h1 class="hero-title">Hotel Arabi</h1>
+        <p style="letter-spacing: 2px; font-weight: 600;">PREMIUM DESI DINING</p>
+        <button class="start-btn" onclick="openMenu()">EXPLORE MENU</button>
+    </section>
+
+    <main id="menu-wrapper">
+        <div class="tab-bar" id="category-nav"></div>
+        <div class="search-container">
+            <input type="text" id="menu-search" placeholder="Search (e.g. Egg, Beef, Rice...)" oninput="filterSearch()">
+        </div>
+        <img id="dynamic-cat-img" class="category-image-header" src="" alt="Category">
+        <h2 id="dynamic-title" class="cat-name"></h2>
+        <div id="items-list"></div>
+
+        <div class="cart-panel" id="cart-footer">
+            <input type="text" id="c-name" class="form-input" placeholder="Name (Letters only)" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
+            <input type="tel" id="c-phone" class="form-input" placeholder="Mobile (Numbers only)" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+            
+            <div id="selected-items-list" class="cart-list-area"></div>
+
+            <div class="fee-row"><span>Items</span><span id="display-subtotal">₹0</span></div>
+            <div class="fee-row"><span>Delivery</span><span id="display-delivery">₹0</span></div>
+            
+            <div class="total-row">
+                <span>Total:</span><span style="color:var(--red);">₹<span id="final-total">0</span></span>
+            </div>
+            
+            <button id="loc-btn" class="wp-btn" style="background: var(--blue);" onclick="getLocation()">📍 Share Location to Order</button>
+            <button id="confirm-btn" class="wp-btn" onclick="sendToGoogleForm()" style="display: none;">Confirm Order</button>
+        </div>
+    </main>
+
+<script>
+    let cart = {};
+    let userLocationURL = "";
+    let currentCategory = "Chicken Special";
+    // UPDATED WEB APP URL
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw4gmkE47tfIqld_lfnDuO-ynNRufWYrIBMpPHRf97kM-APk6AubmsoH5fu6nFa-xPT/exec";
+
+    const fullMenuData = {
+        "Chicken Special": {
+            img: "https://images.unsplash.com/photo-1631515243349-e0cb75fb8d3a?w=800",
+            items: [
+                {n: "Chicken Biryani (Half)", p: 110}, {n: "Chicken Biryani (Full)", p: 150},
+                {n: "Chicken Masala (Full)", p: 100}, {n: "Chicken Sukka (Full)", p: 100},
+                {n: "Chicken Kolhapuri (Full)", p: 100}, {n: "Chicken Thali - Parotta", p: 150},
+                {n: "Chicken Thali - Chapati", p: 140}
+            ]
+        },
+        "Beef Special": {
+            img: "https://tasteasianfood.com/wp-content/uploads/2023/06/beef-masala-5-featured-image.jpeg",
+            items: [
+                {n: "Beef Biryani (Half)", p: 110}, {n: "Beef Biryani (Full)", p: 150},
+                {n: "Beef Masala (Full)", p: 100}, {n: "Beef Sukka (Full)", p: 100},
+                {n: "Beef Chaap (Full)", p: 80}, {n: "Beef Kheema (Half)", p: 60},
+                {n: "Beef Kheema (Full)", p: 100}, {n: "Beef Thali - Parotta", p: 150},
+                {n: "Beef Thali - Chapati", p: 140}
+            ]
+        },
+        "Egg Special": {
+            img: "https://www.spicebangla.com/wp-content/uploads/2024/08/Egg-Masala-Curry.webp",
+            items: [
+                {n: "Egg Biryani (Half)", p: 70}, {n: "Egg Biryani (Full)", p: 110},
+                {n: "Egg Masala (Half)", p: 60}, {n: "Egg Masala (Full)", p: 80},
+                {n: "Egg Thali - Parotta", p: 120}, {n: "Egg Thali - Chapati", p: 100}
+            ]
+        },
+        "Sides & Rice": {
+            img: "https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=800",
+            items: [
+                {n: "Parotta", p: 20}, {n: "Chapati", p: 10},
+                {n: "Boiled Egg", p: 10}, {n: "Kuska Rice (Half)", p: 60},
+                {n: "Kuska Rice (Full)", p: 80}
+            ]
+        }
+    };
+
+    function openMenu() {
+        document.getElementById('hero-section').classList.add('hide');
+        setTimeout(() => {
+            document.getElementById('menu-wrapper').style.display = 'block';
+            renderTabs();
+            setCategory("Chicken Special");
+        }, 600);
+    }
+
+    function renderTabs() {
+        const nav = document.getElementById('category-nav');
+        nav.innerHTML = Object.keys(fullMenuData).map(cat => `<button class="tab" onclick="setCategory('${cat}')">${cat}</button>`).join('');
+    }
+
+    function setCategory(cat) {
+        currentCategory = cat;
+        document.getElementById('menu-search').value = "";
+        document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.innerText === cat));
+        document.getElementById('dynamic-title').innerText = cat;
+        document.getElementById('dynamic-cat-img').src = fullMenuData[cat].img;
+        renderItems(fullMenuData[cat].items);
+    }
+
+    function renderItems(itemsArray) {
+        const list = document.getElementById('items-list');
+        list.innerHTML = itemsArray.map((item, idx) => {
+            const qty = cart[item.n] ? cart[item.n].q : 0;
+            const safeId = item.n.replace(/[^a-zA-Z0-9]/g, '');
+            return `<div class="menu-row">
+                <div class="item-text"><b>${item.n}</b><span>₹${item.p}</span></div>
+                <div class="qty-box">
+                    <button class="qty-btn" onclick="updateItem('${item.n}',${item.p},-1, 'qty-${safeId}')">−</button>
+                    <span class="qty-num" id="qty-${safeId}">${qty}</span>
+                    <button class="qty-btn" onclick="updateItem('${item.n}',${item.p},1, 'qty-${safeId}')">+</button>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    function filterSearch() {
+        const q = document.getElementById('menu-search').value.toLowerCase();
+        if (q === "") { setCategory(currentCategory); return; }
+        let filtered = [];
+        Object.values(fullMenuData).forEach(cat => {
+            cat.items.forEach(item => { if (item.n.toLowerCase().includes(q)) filtered.push(item); });
+        });
+        document.getElementById('dynamic-title').innerText = "Search Results";
+        renderItems(filtered);
+    }
+
+    function updateItem(name, price, delta, elId) {
+        if(!cart[name]) cart[name] = {q: 0, p: price};
+        cart[name].q += delta;
+        if(cart[name].q <= 0) { cart[name].q = 0; delete cart[name]; }
+        const el = document.getElementById(elId);
+        if(el) el.innerText = cart[name] ? cart[name].q : 0;
+        refreshCart();
+    }
+
+    function refreshCart() {
+        let subtotal = 0, itemsHTML = "", count = 0;
+        for(let key in cart) { 
+            let itemTotal = cart[key].q * cart[key].p;
+            subtotal += itemTotal; count += cart[key].q;
+            itemsHTML += `<div class="cart-item-row"><span>${key} x ${cart[key].q}</span><span>₹${itemTotal}</span></div>`;
+        }
+        let delivery = subtotal > 0 ? (subtotal <= 100 ? 15 : Math.round(subtotal * 0.15)) : 0;
+        document.getElementById('selected-items-list').innerHTML = itemsHTML;
+        document.getElementById('display-subtotal').innerText = "₹" + subtotal;
+        document.getElementById('display-delivery').innerText = "₹" + delivery;
+        document.getElementById('final-total').innerText = subtotal + delivery;
+        document.getElementById('cart-footer').classList.toggle('active', count > 0);
+    }
+
+    function getLocation() {
+        const name = document.getElementById('c-name').value;
+        const phone = document.getElementById('c-phone').value;
+        if(!name || phone.length < 10) return alert("Please enter Name and 10-digit Mobile!");
+        const btn = document.getElementById('loc-btn');
+        btn.innerText = "Accessing GPS...";
+        navigator.geolocation.getCurrentPosition((pos) => {
+            userLocationURL = `http://google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+            btn.style.display = "none";
+            document.getElementById('confirm-btn').style.display = "block";
+        }, () => {
+            alert("Location error. Turn on GPS.");
+            btn.innerText = "📍 Share Location to Order";
+        });
+    }
+
+    async function sendToGoogleForm() {
+        const btn = document.getElementById('confirm-btn');
+        btn.innerText = "Sending Order..."; btn.disabled = true;
+        let summary = "";
+        for(let k in cart) { summary += `${k} (x${cart[k].q}), `; }
+        const params = new URLSearchParams({ 
+            hotel: 'Hotel Arabi', 
+            name: document.getElementById('c-name').value, 
+            phone: document.getElementById('c-phone').value, 
+            items: summary, 
+            total: document.getElementById('final-total').innerText, 
+            location: userLocationURL 
+        });
+        try {
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: params });
+            alert("Order Placed Successfully at Hotel Arabi!");
+            location.reload();
+        } catch (e) { 
+            alert("Error sending order. Please check your internet."); 
+            btn.disabled = false; 
+            btn.innerText = "Confirm Order"; 
+        }
+    }
+</script>
+</body>
+</html>
