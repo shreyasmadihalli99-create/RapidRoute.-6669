@@ -12,7 +12,6 @@
         }
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
         
-        /* --- SECRET ADMIN STAR --- */
         #admin-star {
             position: fixed; bottom: 20px; right: 20px; z-index: 9999;
             font-size: 20px; opacity: 0.05; background: white;
@@ -25,7 +24,6 @@
             background: white; z-index: 10000; padding: 20px; overflow-y: auto; box-sizing: border-box;
         }
 
-        /* --- HERO SECTION --- */
         #hero-page {
             height: 100vh; width: 100%;
             background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=1500&q=80');
@@ -42,9 +40,29 @@
             border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
-        /* --- MENU SECTION --- */
         #menu-page { display: none; max-width: 900px; margin: 0 auto; padding-bottom: 450px; }
         
+        /* SEARCH BAR STYLING */
+        .search-container {
+            padding: 15px;
+            background: white;
+            position: sticky;
+            top: 65px; /* Sits below tabs */
+            z-index: 999;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        #menu-search {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid var(--gray);
+            border-radius: 25px;
+            font-size: 1rem;
+            outline: none;
+            box-sizing: border-box;
+            transition: 0.3s;
+        }
+        #menu-search:focus { border-color: var(--primary); }
+
         .tabs-container { 
             position: sticky; top: 0; background: white; display: flex; 
             overflow-x: auto; padding: 15px; gap: 12px; z-index: 1000; 
@@ -70,7 +88,6 @@
         .item-name { font-weight: 700; font-size: 1.05rem; }
         .item-price { color: var(--primary); font-weight: 800; }
 
-        /* --- SIZE SELECTOR (HALF/FULL) --- */
         .size-selector { display: flex; gap: 8px; margin-top: 12px; }
         .size-btn { 
             flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 8px; 
@@ -81,7 +98,6 @@
         .qty-controls { display: flex; align-items: center; gap: 12px; margin-top: 10px; justify-content: flex-end; }
         .qty-btn { background: var(--primary); color: white; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-weight: bold; font-size: 1.2rem; }
 
-        /* --- FOOTER POPUP --- */
         .cart-popup {
             position: fixed; bottom: 0; left: 50%; transform: translateX(-50%) translateY(100%);
             width: 100%; max-width: 550px; background: white; border-top-left-radius: 30px; border-top-right-radius: 30px;
@@ -139,6 +155,11 @@
 
     <main id="menu-page">
         <div class="tabs-container" id="tabs"></div>
+        
+        <div class="search-container">
+            <input type="text" id="menu-search" placeholder="Search dish name..." onkeyup="filterMenu()">
+        </div>
+
         <div style="padding:15px;"><img id="cat-banner" style="width:100%; height:220px; object-fit:cover; border-radius:20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);" src=""></div>
         
         <h2 id="cat-title" class="category-header"></h2>
@@ -154,10 +175,9 @@
             
             <div id="cart-summary" style="max-height: 120px; overflow-y: auto; font-size: 0.95rem; margin-bottom: 15px; padding: 10px; background: #fafafa; border-radius: 10px;"></div>
             
-            <div style="border-top: 1px dashed #ccc; padding: 10px 0; font-size: 0.9rem; color: #777;">
-                <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>Convenience Fee</span><span>₹5</span></div>
-                <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>Delivery Service</span><span>₹10</span></div>
-                <div style="display:flex; justify-content:space-between;"><span>GST (5%)</span><span>₹<span id="gst-amount">0</span></span></div>
+            <div style="border-top: 1px dashed #ccc; padding: 10px 0; font-size: 0.9rem; color: #444; font-weight: 600;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>Items Total</span><span id="subtotal-val">₹0</span></div>
+                <div style="display:flex; justify-content:space-between;"><span>Delivery Charge</span><span id="delivery-val">₹0</span></div>
             </div>
 
             <div style="display:flex; justify-content:space-between; font-weight:900; color:var(--primary); font-size:1.5rem; margin-bottom: 15px;">
@@ -174,7 +194,7 @@
     let disabledItems = JSON.parse(localStorage.getItem('pushkar_status')) || {};
 
     const menuData = {
-        "STARTERS": [
+       "STARTERS": [
             { id: "s1", name: "ROASTED PAPAD", price: 30 },
             { id: "s2", name: "FRY PAPAD", price: 40 },
             { id: "s3", name: "MASALA PAPAD", price: 50 },
@@ -397,17 +417,17 @@
         "SOUPS": "https://tse2.mm.bing.net/th/id/OIP.oRISYhUxwpTtPbD-ka6C2gHaEJ?pid=Api&P=0&h=180",
         "SALADS": "https://images.unsplash.com/photo-1540420773420-3366772f4999?q=80&w=800&auto=format&fit=crop",
         "NOODLES": "https://images.unsplash.com/photo-1585032226651-759b368d7246?q=80&w=800&auto=format&fit=crop",
-        "CURD": "https://tse3.mm.bing.net/th/id/OIP.eGtBAVpv3WdQsCv6t6LUOwHaLJ?pid=Api&P=0&h=180",
+        "CURD": "https://www.indianhealthyrecipes.com/wp-content/uploads/2022/02/sweet-lassi-recipe.jpg",
         "KEBABS": "https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?q=80&w=800&auto=format&fit=crop",
-        "KAJU": "https://i.pinimg.com/originals/c8/0f/15/c80f15e27763822c6057ccb15668acff.webp",
+        "KAJU": "https://tse1.mm.bing.net/th/id/OIP.kI9U49XWpC6i3GZ8l_MshwHaEK?rs=1&pid=ImgDetMain",
         "SPECIAL DISHES": "https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=800&q=80",
-        "VEG-DISHES": "https://shwetainthekitchen.com/wp-content/uploads/2023/03/mixed-vegetable-curry.jpg",
+        "VEG-DISHES": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=800&auto=format&fit=crop",
         "PANEER": "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?q=80&w=800&auto=format&fit=crop",
-        "SWEET DISHES": "https://i.ytimg.com/vi/6PEbjuDGWS0/maxresdefault.jpg",
-        "DAAL": "https://www.indianveggiedelight.com/wp-content/uploads/2022/12/dal-fry-stovetop-featured.jpg",
-        "MUSHROOM": "https://insanelygoodrecipes.com/wp-content/uploads/2020/11/Fried-Mushrooms-with-Herbs.png",
-        "PALAK": "https://img.freepik.com/premium-photo/lasooni-palak-recipe-dhaba-style-garlic-spinach-curry-indian-main-course-served-with-naan_466689-85138.jpg",
-        "INDIAN RICE": "https://tse1.mm.bing.net/th/id/OIP.ELTYHuwJWM3L7_7x1Wc8cwHaEO?pid=Api&P=0&h=180",
+        "SWEET DISHES": "https://images.unsplash.com/photo-1601050690597-df056fb47091?q=80&w=800&auto=format&fit=crop",
+        "DAAL": "https://images.unsplash.com/photo-1546833999-b9f581a1996d?q=80&w=800&auto=format&fit=crop",
+        "MUSHROOM": "https://images.unsplash.com/photo-1512058560366-cd24270083cd?q=80&w=800&auto=format&fit=crop",
+        "PALAK": "https://www.archanaskitchen.com/images/archanaskitchen/1-Author/Jyothi_Rajesh/Lehsuni_Palak.jpg",
+        "INDIAN RICE": "https://skydecklounge.in/wp-content/uploads/2022/01/Tandoori-Roti-Butter.jpg",
         "CHINESE RICE": "https://images.unsplash.com/photo-1603133872878-684f208fb84b?q=80&w=800&auto=format&fit=crop",
         "ROTI": "https://skydecklounge.in/wp-content/uploads/2022/01/Tandoori-Roti-Butter.jpg",
         "HOT BEVERAGES": "https://www.indianhealthyrecipes.com/wp-content/uploads/2023/05/indian-masala-chai-tea.jpg",
@@ -454,11 +474,23 @@
             btn.className = "tab-btn" + (i===0?" active":""); btn.innerText = cat;
             btn.onclick = (e) => {
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                e.target.classList.add('active'); renderItems(cat);
+                e.target.classList.add('active'); 
+                document.getElementById('menu-search').value = ""; // Clear search on tab switch
+                renderItems(cat);
             };
             tabs.appendChild(btn);
         });
         renderItems(Object.keys(menuData)[0]);
+    }
+
+    /* SEARCH FILTER LOGIC */
+    function filterMenu() {
+        let input = document.getElementById('menu-search').value.toLowerCase();
+        let items = document.querySelectorAll('.menu-item');
+        items.forEach(item => {
+            let name = item.querySelector('.item-name').innerText.toLowerCase();
+            item.style.display = name.includes(input) ? "block" : "none";
+        });
     }
 
     function renderItems(cat) {
@@ -537,15 +569,19 @@
             listHtml += `<div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>${cart[key].name} x ${cart[key].qty}</span><span>₹${cost}</span></div>`; 
         }
 
-        // GST and Fees Logic
-        const gstAmount = Math.round(subtotal * 0.05); // 5% GST
-        const deliveryCharge = 10;
-        const convenienceFee = 5;
+        let deliveryCharge = 0;
+        if(subtotal > 0) {
+            if(subtotal <= 100) {
+                deliveryCharge = 15;
+            } else {
+                deliveryCharge = Math.round(subtotal * 0.15);
+            }
+        }
 
         document.getElementById('cart-summary').innerHTML = listHtml || "Your cart is empty";
-        document.getElementById('gst-amount').innerText = gstAmount;
-        document.getElementById('grand-total').innerText = itemCount > 0 ? (subtotal + gstAmount + deliveryCharge + convenienceFee) : 0;
-        
+        document.getElementById('subtotal-val').innerText = "₹" + subtotal;
+        document.getElementById('delivery-val').innerText = "₹" + deliveryCharge;
+        document.getElementById('grand-total').innerText = subtotal + deliveryCharge;
         document.getElementById('cart-popup').classList.toggle('active', itemCount > 0);
         if(itemCount === 0) resetGPSUI();
     }
@@ -577,8 +613,11 @@
 
         try {
             await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(data), mode: 'no-cors' });
-            document.getElementById('success-screen').style.display = "flex";
-        } catch(e) { alert("Network Error. Try again."); btn.disabled = false; btn.innerText = "Place Order Now"; }
+            document.getElementById('success-screen').style.display = 'flex';
+        } catch(e) { 
+            alert("Error sending order. Try again.");
+            btn.innerText = "Place Order Now"; btn.disabled = false;
+        }
     }
 </script>
 </body>
