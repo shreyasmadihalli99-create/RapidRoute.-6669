@@ -128,33 +128,183 @@
     let cart = {};
 
     const database = {
-        cakes: [
-            { name: "Black Forest (0.5kg)", p: 350 }, { name: "Chocolate Truffle (0.5kg)", p: 450 },
-            { name: "Pineapple Cake (0.5kg)", p: 300 }, { name: "Butterscotch (0.5kg)", p: 350 },
-            { name: "Red Velvet (0.5kg)", p: 400 }, { name: "White Forest (0.5kg)", p: 350 },
-            { name: "Strawberry Cake (0.5kg)", p: 300 }, { name: "Mango Cake (0.5kg)", p: 320 }
-        ],
-        pastries: [
-            { name: "Choco Lava Cup", p: 60 }, { name: "Donut (Chocolate)", p: 55 },
-            { name: "Honey Pastry", p: 45 }, { name: "Black Forest Slice", p: 50 },
-            { name: "Pineapple Slice", p: 40 }, { name: "Red Velvet Slice", p: 60 }
-        ],
-        sweets: [
-            { name: "Gulab Jamun (2pc)", p: 30 }, { name: "Kaju Katli (250g)", p: 250 },
-            { name: "Milk Cake (250g)", p: 180 }, { name: "Motichoor Laddu (250g)", p: 140 },
-            { name: "Rasgulla (2pc)", p: 30 }, { name: "Soan Papdi (250g)", p: 120 }
-        ],
-        snacks: [
-            { name: "Veg Puff", p: 20 }, { name: "Paneer Puff", p: 30 },
-            { name: "Samosa (1pc)", p: 15 }, { name: "Bread Pakoda", p: 25 },
-            { name: "Veg Roll", p: 40 }, { name: "Paneer Roll", p: 50 },
-            { name: "Aloo Tikki Burger", p: 60 }
-        ],
-        drinks: [
-            { name: "Cold Coffee", p: 60 }, { name: "Chocolate Shake", p: 80 },
-            { name: "Mango Shake", p: 70 }, { name: "Badam Milk", p: 45 },
-            { name: "Sweet Lassi", p: 40 }, { name: "Fresh Lime Soda", p: 30 }
-        ]
+     fried_chicken: [
+        { name: "Fried Chicken (2 PCS)", p: 110 },
+        { name: "Fried Chicken (4 PCS)", p: 200 },
+        { name: "Fried Chicken (8 PCS)", p: 380 }
+    ],
+       wrap_sandwich: [
+        { name: "Tortilla Wrap sandwich (Chicken/Veg)", p: 100 },
+        { name: "Paratta Wrap sandwich (Chicken/Veg)", p: 100 }
+    ],
+    chicken_pizza: [
+        { name: "Normal Chicken Pizza", p: 200 },
+        { name: "SP chicken pizza", p: 240 },
+        { name: "Butter Chicken Pizza", p: 240 },
+        { name: "BBQ Chicken Pizza", p: 230 },
+        { name: "Extra Cheese", p: 30 }
+    ],
+    veg_pizza: [
+        { name: "Normal Veg Pizza", p: 150 },
+        { name: "SP Pizza", p: 220 },
+        { name: "Tomato Pizza", p: 180 },
+        { name: "Sweet Corn Pizza", p: 180 },
+        { name: "Onion Pizza", p: 150 },
+        { name: "Onion Capsicum Pizza", p: 180 },
+        { name: "Plane Cheese Pizza", p: 180 },
+        { name: "Paneer Pizza", p: 180 },
+        { name: "Veg Overload Pizza", p: 220 },
+        { name: "Extra Cheese", p: 30 }
+    ],
+
+     burger: [
+        { name: "Veg Burger", p: 80 },
+        { name: "Veg cheese Burger", p: 100 },
+        { name: "Sweet Corn Burger", p: 90 },
+        { name: "Paneer Burger", p: 90 },
+        { name: "Chicken Burger", p: 110 },
+        { name: "Chicken cheese Burger", p: 120 },
+        { name: "Zingar chicken Burger", p: 160 },
+        { name: "Extra cheese", p: 30 }
+    ],
+    club_sandwich: [
+        { name: "Veg Sandwich", p: 100 },
+        { name: "Paneer Sandwich", p: 120 },
+        { name: "Chicken Sandwich", p: 140 }
+    ],
+    samoona_sandwich: [
+        { name: "Veg Sandwich", p: 70 },
+        { name: "Veg Cheese Sandwich", p: 90 },
+        { name: "Chicken Sandwich", p: 80 },
+        { name: "Chicken Cheese Sandwich", p: 100 }
+    ],
+    puffs: [
+        { name: "Egg Puff", p: 20 },
+        { name: "Paneer Puff", p: 25 },
+        { name: "Veg Puff", p: 20 }
+    ],
+    chats: [
+        { name: "French Fries", p: 80 },
+        { name: "Masala Fries", p: 90 },
+        { name: "Loaded Fries", p: 120 },
+        { name: "Chicken Nuggets 5Pcs", p: 100 },
+        { name: "Veg Nuggets 5Pcs", p: 90 },
+        { name: "Veg Finger 5Pcs", p: 90 },
+        { name: "Momos Veg 5Pcs", p: 90 },
+        { name: "Momos Chicken 5Pcs", p: 100 },
+        { name: "Shawarma", p: 120 }
+    ]
+       scoopso_icecream: [
+        { name: "Vanila", p: 50 },
+        { name: "Cocolate", p: 60 },
+        { name: "Strawberry", p: 50 },
+        { name: "Butterscotch", p: 60 }
+    ],
+    falooda: [
+        { name: "Normal Falooda", p: 90 },
+        { name: "SP Falooda", p: 130 },
+        { name: "Pista Falooda", p: 130 },
+        { name: "Royal Falooda", p: 140 },
+        { name: "Dry Fruits Falooda", p: 140 }
+    ],
+    cold: [
+        { name: "Boost Cold", p: 70 },
+        { name: "Coffee Cold", p: 70 },
+        { name: "Badam Cold", p: 70 },
+        { name: "Horlicks Cold", p: 70 }
+    ],
+    crush: [
+        { name: "Vanila Crush", p: 70 },
+        { name: "Pista", p: 80 },
+        { name: "Strawberry", p: 70 },
+        { name: "Mango", p: 70 },
+        { name: "Blue Berry", p: 70 },
+        { name: "Guava", p: 70 }
+    ],
+    fresh_fruit_juice: [
+        { name: "Watermelon", p: 60 },
+        { name: "Pineapple", p: 60 },
+        { name: "Orange", p: 60 },
+        { name: "Papaya", p: 60 },
+        { name: "Anar", p: 70 },
+        { name: "Apple", p: 80 },
+        { name: "Mango", p: 60 },
+        { name: "Guava", p: 60 },
+        { name: "Grape", p: 60 }
+    ],
+    fresh_fruit_milk_shake: [
+        { name: "Papaya Shake", p: 80 },
+        { name: "Mango Shake", p: 80 },
+        { name: "Anar Shake", p: 80 },
+        { name: "Chikku Shake", p: 80 },
+        { name: "Apple Shake", p: 80 },
+        { name: "Mixed Fruit Shake", p: 80 },
+        { name: "Kiwi Shake", p: 80 },
+        { name: "Tender Shake", p: 80 },
+        { name: "Passion Fruit Shake", p: 80 },
+        { name: "Blueberry", p: 80 },
+        { name: "Strawberry", p: 80 }
+    ],
+    biscuit_and_chocolate: [
+        { name: "Orio", p: 80 },
+        { name: "Dark Fantacy", p: 80 },
+        { name: "Dairy Milk", p: 80 },
+        { name: "Five Star", p: 80 },
+        { name: "Kitkat", p: 80 }
+    ],
+    fruits_salad: [
+        { name: "Fruits salad", p: 80 },
+        { name: "SP Fruits Salad", p: 100 },
+        { name: "Royal Fruit Salad", p: 130 }
+    ],
+    dry_fruits: [
+        { name: "Dry Fruits Shake", p: 120 },
+        { name: "Dates Shakes", p: 110 },
+        { name: "Badam Shake", p: 100 }
+    ],
+        lime: [
+        { name: "Fresh Lime", p: 25 },
+        { name: "SP Sarbath", p: 40 },
+        { name: "Mint Lime", p: 40 },
+        { name: "Chilli Lime", p: 30 },
+        { name: "Ginger Lime", p: 30 },
+        { name: "Pineapple Lime", p: 30 },
+        { name: "Blue Lime", p: 30 },
+        { name: "Strawberry Lime", p: 40 },
+        { name: "Orange Lime", p: 30 },
+        { name: "Milk Sarbath", p: 50 }
+    ],
+    soda: [
+        { name: "Soda Salt", p: 25 },
+        { name: "Soda Sweet", p: 30 },
+        { name: "Soda Sweet & Salt", p: 30 },
+        { name: "Chilli Soda", p: 30 },
+        { name: "Strawberry Soda", p: 30 },
+        { name: "Green Apple Soda", p: 30 },
+        { name: "Pineapple Soda", p: 30 },
+        { name: "Orange Soda", p: 30 },
+        { name: "Soda Sarbath", p: 40 }
+    ],
+    mojito: [
+        { name: "Blue Lagone Mojito", p: 70 },
+        { name: "Green Apple Mojito", p: 70 },
+        { name: "Kiwi Mojito", p: 70 },
+        { name: "Blue Berry Mojito", p: 70 },
+        { name: "Strawberry Mojito", p: 70 },
+        { name: "Watermelon Mojito", p: 70 },
+        { name: "Guva Mojito", p: 70 },
+        { name: "Pineapple Mojito", p: 70 },
+        { name: "Passion Fruit Mojito", p: 100 }
+    ],
+    lassi: [
+        { name: "Lassi Plain", p: 50 },
+        { name: "Mango Lassi", p: 50 },
+        { name: "Pista Lassi", p: 70 },
+        { name: "Strawberry Lassi", p: 50 },
+        { name: "Pineapple Lassi", p: 50 },
+        { name: "Banana Lassi", p: 50 },
+        { name: "Passion Fruit Lassi", p: 80 }
+    ],
     };
 
     function openApp() {
