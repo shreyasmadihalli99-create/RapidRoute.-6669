@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raghavendra Vaibhav| Closed</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            /* Rich, deep foodie gradient */
+            background: radial-gradient(circle at center, #3d120a 0%, #000000 100%);
+            color: #fff;
+            font-family: 'Playfair Display', serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 60px 40px;
+            border-radius: 50px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 107, 53, 0.2);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+            max-width: 420px;
+            width: 90%;
+            position: relative;
+        }
+
+        /* Floating Chef Emoji Logic */
+        .chef-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: inline-block;
+            filter: drop-shadow(0 0 15px rgba(255,255,255,0.3));
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(to bottom, #ffffff, #ff6b35);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+            letter-spacing: -1px;
+        }
+
+        p {
+            font-size: 1.1rem;
+            color: #bbb;
+            line-height: 1.6;
+            font-weight: 300;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Aesthetic Thermometer */
+        .therm-container {
+            margin: 35px auto;
+            width: 14px;
+            height: 100px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .mercury {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 55%; /* Visual progress */
+            background: linear-gradient(to top, #ff3d00, #ffb300);
+            border-radius: 20px;
+            box-shadow: 0 0 20px #ff3d00;
+            animation: simmer 2s infinite alternate;
+        }
+
+        .bulb {
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 28px;
+            height: 28px;
+            background: #ff3d00;
+            border-radius: 50%;
+            box-shadow: 0 0 20px #ff3d00;
+        }
+
+        @keyframes simmer {
+            from { opacity: 0.8; height: 55%; }
+            to { opacity: 1; height: 60%; }
+        }
+
+        .footer-text {
+            margin-top: 25px;
+            font-size: 0.9rem;
+            color: #888;
+            font-style: italic;
+        }
+
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=Inter:wght@300&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="card">
+        <div class="chef-icon">👨‍🍳</div>
+        
+        <h1>Raghavendra Vaibhav</h1>
+        <p>Raghavendra Vaibhavis currently closed.</p>
+        
+        <div class="therm-container">
+            <div class="mercury"></div>
+            <div class="bulb"></div>
+        </div>
+
+        <p>Sorry for the inconvenience,<br>please try again later.</p>
+        
+        <div class="footer-text">The kitchen is resting.</div>
+    </div>
+
+</body>
+</html>
