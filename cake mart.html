@@ -45,6 +45,7 @@
             position: fixed; bottom: 0; width: 100%; background: var(--white);
             box-shadow: 0 -10px 30px rgba(0,0,0,0.2); display: none;
             padding: 20px; border-radius: 30px 30px 0 0; z-index: 2000;
+            max-height: 85vh; overflow-y: auto;
         }
         .input-field { width: 100%; padding: 14px; margin-bottom: 10px; border: 1.5px solid #ddd; border-radius: 12px; font-size: 1rem; outline: none; }
         
@@ -60,6 +61,10 @@
         .bill-details { background: #f9f9f9; padding: 12px; border-radius: 12px; margin-top: 10px; font-size: 0.95rem; }
         .bill-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
         .grand-total { border-top: 1px solid #ddd; padding-top: 8px; margin-top: 8px; font-weight: 900; color: var(--primary); font-size: 1.2rem; }
+
+        /* Selection Display */
+        #selection-display { margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .sel-item { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 5px; color: #d81b60; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -125,7 +130,8 @@
     </div>
 
     <div id="order-panel">
-        <input type="text" id="cust-name" class="input-field" placeholder="Full Name (Letters Only)" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
+        <h3 style="margin:0 0 10px 0; color:var(--primary)">Confirm Your Items</h3>
+        <div id="selection-display"></div> <input type="text" id="cust-name" class="input-field" placeholder="Full Name (Letters Only)" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
         <input type="text" id="cust-phone" class="input-field" placeholder="Phone Number (10 Digits)" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="10">
         
         <div id="loc-status">Accessing your GPS...</div>
@@ -147,183 +153,182 @@
     let cart = {};
 
     const database = {
-      fried_chicken: [
-        { name: "Fried Chicken (2 PCS)", p: 110 },
-        { name: "Fried Chicken (4 PCS)", p: 200 },
-        { name: "Fried Chicken (8 PCS)", p: 380 }
-    ],
+        fried_chicken: [
+            { name: "Fried Chicken (2 PCS)", p: 110 },
+            { name: "Fried Chicken (4 PCS)", p: 200 },
+            { name: "Fried Chicken (8 PCS)", p: 380 }
+        ],
         wrap_sandwich: [
-        { name: "Tortilla Wrap sandwich (Chicken/Veg)", p: 100 },
-        { name: "Paratta Wrap sandwich (Chicken/Veg)", p: 100 }
-    ],
-    chicken_pizza: [
-        { name: "Normal Chicken Pizza", p: 200 },
-        { name: "SP chicken pizza", p: 240 },
-        { name: "Butter Chicken Pizza", p: 240 },
-        { name: "BBQ Chicken Pizza", p: 230 },
-        { name: "Extra Cheese", p: 30 }
-    ],
-    veg_pizza: [
-        { name: "Normal Veg Pizza", p: 150 },
-        { name: "SP Pizza", p: 220 },
-        { name: "Tomato Pizza", p: 180 },
-        { name: "Sweet Corn Pizza", p: 180 },
-        { name: "Onion Pizza", p: 150 },
-        { name: "Onion Capsicum Pizza", p: 180 },
-        { name: "Plane Cheese Pizza", p: 180 },
-        { name: "Paneer Pizza", p: 180 },
-        { name: "Veg Overload Pizza", p: 220 },
-        { name: "Extra Cheese", p: 30 }
-    ],
-
-     burger: [
-        { name: "Veg Burger", p: 80 },
-        { name: "Veg cheese Burger", p: 100 },
-        { name: "Sweet Corn Burger", p: 90 },
-        { name: "Paneer Burger", p: 90 },
-        { name: "Chicken Burger", p: 110 },
-        { name: "Chicken cheese Burger", p: 120 },
-        { name: "Zingar chicken Burger", p: 160 },
-        { name: "Extra cheese", p: 30 }
-    ],
-    club_sandwich: [
-        { name: "Veg Sandwich", p: 100 },
-        { name: "Paneer Sandwich", p: 120 },
-        { name: "Chicken Sandwich", p: 140 }
-    ],
-    samoona_sandwich: [
-        { name: "Veg Sandwich", p: 70 },
-        { name: "Veg Cheese Sandwich", p: 90 },
-        { name: "Chicken Sandwich", p: 80 },
-        { name: "Chicken Cheese Sandwich", p: 100 }
-    ],
-    puffs: [
-        { name: "Egg Puff", p: 20 },
-        { name: "Paneer Puff", p: 25 },
-        { name: "Veg Puff", p: 20 }
-    ],
-    chats: [
-        { name: "French Fries", p: 80 },
-        { name: "Masala Fries", p: 90 },
-        { name: "Loaded Fries", p: 120 },
-        { name: "Chicken Nuggets 5Pcs", p: 100 },
-        { name: "Veg Nuggets 5Pcs", p: 90 },
-        { name: "Veg Finger 5Pcs", p: 90 },
-        { name: "Momos Veg 5Pcs", p: 90 },
-        { name: "Momos Chicken 5Pcs", p: 100 },
-        { name: "Shawarma", p: 120 }
-    ],
+            { name: "Tortilla Wrap sandwich (Chicken/Veg)", p: 100 },
+            { name: "Paratta Wrap sandwich (Chicken/Veg)", p: 100 }
+        ],
+        chicken_pizza: [
+            { name: "Normal Chicken Pizza", p: 200 },
+            { name: "SP chicken pizza", p: 240 },
+            { name: "Butter Chicken Pizza", p: 240 },
+            { name: "BBQ Chicken Pizza", p: 230 },
+            { name: "Extra Cheese", p: 30 }
+        ],
+        veg_pizza: [
+            { name: "Normal Veg Pizza", p: 150 },
+            { name: "SP Pizza", p: 220 },
+            { name: "Tomato Pizza", p: 180 },
+            { name: "Sweet Corn Pizza", p: 180 },
+            { name: "Onion Pizza", p: 150 },
+            { name: "Onion Capsicum Pizza", p: 180 },
+            { name: "Plane Cheese Pizza", p: 180 },
+            { name: "Paneer Pizza", p: 180 },
+            { name: "Veg Overload Pizza", p: 220 },
+            { name: "Extra Cheese", p: 30 }
+        ],
+        burger: [
+            { name: "Veg Burger", p: 80 },
+            { name: "Veg cheese Burger", p: 100 },
+            { name: "Sweet Corn Burger", p: 90 },
+            { name: "Paneer Burger", p: 90 },
+            { name: "Chicken Burger", p: 110 },
+            { name: "Chicken cheese Burger", p: 120 },
+            { name: "Zingar chicken Burger", p: 160 },
+            { name: "Extra cheese", p: 30 }
+        ],
+        club_sandwich: [
+            { name: "Veg Sandwich", p: 100 },
+            { name: "Paneer Sandwich", p: 120 },
+            { name: "Chicken Sandwich", p: 140 }
+        ],
+        samoona_sandwich: [
+            { name: "Veg Sandwich", p: 70 },
+            { name: "Veg Cheese Sandwich", p: 90 },
+            { name: "Chicken Sandwich", p: 80 },
+            { name: "Chicken Cheese Sandwich", p: 100 }
+        ],
+        puffs: [
+            { name: "Egg Puff", p: 20 },
+            { name: "Paneer Puff", p: 25 },
+            { name: "Veg Puff", p: 20 }
+        ],
+        chats: [
+            { name: "French Fries", p: 80 },
+            { name: "Masala Fries", p: 90 },
+            { name: "Loaded Fries", p: 120 },
+            { name: "Chicken Nuggets 5Pcs", p: 100 },
+            { name: "Veg Nuggets 5Pcs", p: 90 },
+            { name: "Veg Finger 5Pcs", p: 90 },
+            { name: "Momos Veg 5Pcs", p: 90 },
+            { name: "Momos Chicken 5Pcs", p: 100 },
+            { name: "Shawarma", p: 120 }
+        ],
         scoopso_icecream: [
-        { name: "Vanila", p: 50 },
-        { name: "Cocolate", p: 60 },
-        { name: "Strawberry", p: 50 },
-        { name: "Butterscotch", p: 60 }
-    ],
-    falooda: [
-        { name: "Normal Falooda", p: 90 },
-        { name: "SP Falooda", p: 130 },
-        { name: "Pista Falooda", p: 130 },
-        { name: "Royal Falooda", p: 140 },
-        { name: "Dry Fruits Falooda", p: 140 }
-    ],
-    cold: [
-        { name: "Boost Cold", p: 70 },
-        { name: "Coffee Cold", p: 70 },
-        { name: "Badam Cold", p: 70 },
-        { name: "Horlicks Cold", p: 70 }
-    ],
-    crush: [
-        { name: "Vanila Crush", p: 70 },
-        { name: "Pista", p: 80 },
-        { name: "Strawberry", p: 70 },
-        { name: "Mango", p: 70 },
-        { name: "Blue Berry", p: 70 },
-        { name: "Guava", p: 70 }
-    ],
-    fresh_fruit_juice: [
-        { name: "Watermelon", p: 60 },
-        { name: "Pineapple", p: 60 },
-        { name: "Orange", p: 60 },
-        { name: "Papaya", p: 60 },
-        { name: "Anar", p: 70 },
-        { name: "Apple", p: 80 },
-        { name: "Mango", p: 60 },
-        { name: "Guava", p: 60 },
-        { name: "Grape", p: 60 }
-    ],
-    fresh_fruit_milk_shake: [
-        { name: "Papaya Shake", p: 80 },
-        { name: "Mango Shake", p: 80 },
-        { name: "Anar Shake", p: 80 },
-        { name: "Chikku Shake", p: 80 },
-        { name: "Apple Shake", p: 80 },
-        { name: "Mixed Fruit Shake", p: 80 },
-        { name: "Kiwi Shake", p: 80 },
-        { name: "Tender Shake", p: 80 },
-        { name: "Passion Fruit Shake", p: 80 },
-        { name: "Blueberry", p: 80 },
-        { name: "Strawberry", p: 80 }
-    ],
-    biscuit_and_chocolate: [
-        { name: "Orio", p: 80 },
-        { name: "Dark Fantacy", p: 80 },
-        { name: "Dairy Milk", p: 80 },
-        { name: "Five Star", p: 80 },
-        { name: "Kitkat", p: 80 }
-    ],
-    fruits_salad: [
-        { name: "Fruits salad", p: 80 },
-        { name: "SP Fruits Salad", p: 100 },
-        { name: "Royal Fruit Salad", p: 130 }
-    ],
-    dry_fruits: [
-        { name: "Dry Fruits Shake", p: 120 },
-        { name: "Dates Shakes", p: 110 },
-        { name: "Badam Shake", p: 100 }
-    ],
+            { name: "Vanila", p: 50 },
+            { name: "Cocolate", p: 60 },
+            { name: "Strawberry", p: 50 },
+            { name: "Butterscotch", p: 60 }
+        ],
+        falooda: [
+            { name: "Normal Falooda", p: 90 },
+            { name: "SP Falooda", p: 130 },
+            { name: "Pista Falooda", p: 130 },
+            { name: "Royal Falooda", p: 140 },
+            { name: "Dry Fruits Falooda", p: 140 }
+        ],
+        cold: [
+            { name: "Boost Cold", p: 70 },
+            { name: "Coffee Cold", p: 70 },
+            { name: "Badam Cold", p: 70 },
+            { name: "Horlicks Cold", p: 70 }
+        ],
+        crush: [
+            { name: "Vanila Crush", p: 70 },
+            { name: "Pista", p: 80 },
+            { name: "Strawberry", p: 70 },
+            { name: "Mango", p: 70 },
+            { name: "Blue Berry", p: 70 },
+            { name: "Guava", p: 70 }
+        ],
+        fresh_fruit_juice: [
+            { name: "Watermelon", p: 60 },
+            { name: "Pineapple", p: 60 },
+            { name: "Orange", p: 60 },
+            { name: "Papaya", p: 60 },
+            { name: "Anar", p: 70 },
+            { name: "Apple", p: 80 },
+            { name: "Mango", p: 60 },
+            { name: "Guava", p: 60 },
+            { name: "Grape", p: 60 }
+        ],
+        fresh_fruit_milk_shake: [
+            { name: "Papaya Shake", p: 80 },
+            { name: "Mango Shake", p: 80 },
+            { name: "Anar Shake", p: 80 },
+            { name: "Chikku Shake", p: 80 },
+            { name: "Apple Shake", p: 80 },
+            { name: "Mixed Fruit Shake", p: 80 },
+            { name: "Kiwi Shake", p: 80 },
+            { name: "Tender Shake", p: 80 },
+            { name: "Passion Fruit Shake", p: 80 },
+            { name: "Blueberry", p: 80 },
+            { name: "Strawberry", p: 80 }
+        ],
+        biscuit_and_chocolate: [
+            { name: "Orio", p: 80 },
+            { name: "Dark Fantacy", p: 80 },
+            { name: "Dairy Milk", p: 80 },
+            { name: "Five Star", p: 80 },
+            { name: "Kitkat", p: 80 }
+        ],
+        fruits_salad: [
+            { name: "Fruits salad", p: 80 },
+            { name: "SP Fruits Salad", p: 100 },
+            { name: "Royal Fruit Salad", p: 130 }
+        ],
+        dry_fruits: [
+            { name: "Dry Fruits Shake", p: 120 },
+            { name: "Dates Shakes", p: 110 },
+            { name: "Badam Shake", p: 100 }
+        ],
         lime: [
-        { name: "Fresh Lime", p: 25 },
-        { name: "SP Sarbath", p: 40 },
-        { name: "Mint Lime", p: 40 },
-        { name: "Chilli Lime", p: 30 },
-        { name: "Ginger Lime", p: 30 },
-        { name: "Pineapple Lime", p: 30 },
-        { name: "Blue Lime", p: 30 },
-        { name: "Strawberry Lime", p: 40 },
-        { name: "Orange Lime", p: 30 },
-        { name: "Milk Sarbath", p: 50 }
-    ],
-    soda: [
-        { name: "Soda Salt", p: 25 },
-        { name: "Soda Sweet", p: 30 },
-        { name: "Soda Sweet & Salt", p: 30 },
-        { name: "Chilli Soda", p: 30 },
-        { name: "Strawberry Soda", p: 30 },
-        { name: "Green Apple Soda", p: 30 },
-        { name: "Pineapple Soda", p: 30 },
-        { name: "Orange Soda", p: 30 },
-        { name: "Soda Sarbath", p: 40 }
-    ],
-    mojito: [
-        { name: "Blue Lagone Mojito", p: 70 },
-        { name: "Green Apple Mojito", p: 70 },
-        { name: "Kiwi Mojito", p: 70 },
-        { name: "Blue Berry Mojito", p: 70 },
-        { name: "Strawberry Mojito", p: 70 },
-        { name: "Watermelon Mojito", p: 70 },
-        { name: "Guva Mojito", p: 70 },
-        { name: "Pineapple Mojito", p: 70 },
-        { name: "Passion Fruit Mojito", p: 100 }
-    ],
-    lassi: [
-        { name: "Lassi Plain", p: 50 },
-        { name: "Mango Lassi", p: 50 },
-        { name: "Pista Lassi", p: 70 },
-        { name: "Strawberry Lassi", p: 50 },
-        { name: "Pineapple Lassi", p: 50 },
-        { name: "Banana Lassi", p: 50 },
-        { name: "Passion Fruit Lassi", p: 80 }
-    ],
+            { name: "Fresh Lime", p: 25 },
+            { name: "SP Sarbath", p: 40 },
+            { name: "Mint Lime", p: 40 },
+            { name: "Chilli Lime", p: 30 },
+            { name: "Ginger Lime", p: 30 },
+            { name: "Pineapple Lime", p: 30 },
+            { name: "Blue Lime", p: 30 },
+            { name: "Strawberry Lime", p: 40 },
+            { name: "Orange Lime", p: 30 },
+            { name: "Milk Sarbath", p: 50 }
+        ],
+        soda: [
+            { name: "Soda Salt", p: 25 },
+            { name: "Soda Sweet", p: 30 },
+            { name: "Soda Sweet & Salt", p: 30 },
+            { name: "Chilli Soda", p: 30 },
+            { name: "Strawberry Soda", p: 30 },
+            { name: "Green Apple Soda", p: 30 },
+            { name: "Pineapple Soda", p: 30 },
+            { name: "Orange Soda", p: 30 },
+            { name: "Soda Sarbath", p: 40 }
+        ],
+        mojito: [
+            { name: "Blue Lagone Mojito", p: 70 },
+            { name: "Green Apple Mojito", p: 70 },
+            { name: "Kiwi Mojito", p: 70 },
+            { name: "Blue Berry Mojito", p: 70 },
+            { name: "Strawberry Mojito", p: 70 },
+            { name: "Watermelon Mojito", p: 70 },
+            { name: "Guva Mojito", p: 70 },
+            { name: "Pineapple Mojito", p: 70 },
+            { name: "Passion Fruit Mojito", p: 100 }
+        ],
+        lassi: [
+            { name: "Lassi Plain", p: 50 },
+            { name: "Mango Lassi", p: 50 },
+            { name: "Pista Lassi", p: 70 },
+            { name: "Strawberry Lassi", p: 50 },
+            { name: "Pineapple Lassi", p: 50 },
+            { name: "Banana Lassi", p: 50 },
+            { name: "Passion Fruit Lassi", p: 80 }
+        ],
     };
 
     function openApp() {
@@ -345,8 +350,8 @@
     function loadMenu() {
         for (let cat in database) {
             const div = document.getElementById('list-' + cat);
-            if(!div) continue; 
-            div.innerHTML = ""; // Clear to prevent duplicates
+            if(!div) continue;
+            div.innerHTML = "";
             database[cat].forEach(item => {
                 div.innerHTML += `<div class="menu-item" data-name="${item.name}" data-price="${item.p}">
                     <span style="font-weight:700">${item.name} <br><small>₹${item.p}</small></span>
@@ -382,7 +387,13 @@
 
     function recalc() {
         let itemsTotal = 0;
-        for(let x in cart) itemsTotal += cart[x].total;
+        let summaryText = "";
+        for(let x in cart) {
+            itemsTotal += cart[x].total;
+            summaryText += `<div class="sel-item"><span>${x} (x${cart[x].q})</span><span>₹${cart[x].total}</span></div>`;
+        }
+        
+        document.getElementById('selection-display').innerHTML = summaryText;
         let deliveryFee = itemsTotal > 0 ? (itemsTotal < 100 ? 15 : Math.round(itemsTotal * 0.15)) : 0;
         document.getElementById('items-price').innerText = itemsTotal;
         document.getElementById('del-fee').innerText = deliveryFee;
@@ -396,17 +407,13 @@
         statusBox.innerText = "⏳ Accessing your GPS...";
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition((pos) => {
-                // FIXED TYPO AND ADDED PROPER GOOGLE MAPS LINK
                 userLoc = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
                 statusBox.innerText = "✅ GPS Access Secured!";
                 statusBox.style.background = "#e8f5e9";
                 statusBox.style.color = "#2e7d32";
                 document.getElementById('loc-btn').style.display = "none";
                 document.getElementById('confirm-btn').style.display = "block";
-            }, () => { 
-                alert("Location is required for delivery."); 
-                statusBox.innerText = "❌ GPS Denied";
-            });
+            }, () => { alert("Location is required for delivery."); });
         }
     }
 
