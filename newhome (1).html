@@ -1,159 +1,267 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Time Restricted</title>
-    <style>
-        :root {
-            --navy-deep: #020617;
-            --glass-bg: rgba(15, 23, 42, 0.7);
-            --shiny-blue: #38bdf8;
-            --text-bright: #f1f5f9;<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Time Restricted</title>
-    <style>
-        :root {
-            --navy-deep: #020617;
-            --glass-bg: rgba(15, 23, 42, 0.7);
-            --shiny-blue: #38bdf8;
-            --text-bright: #f1f5f9;
-            --warning-yellow: #ffcc00; 
-        }
+<meta charset="UTF-8">
+<title>RapidRoute Home</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600&display=swap" rel="stylesheet">
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<style>
+    body {
+        margin:0;
+        font-family:'Montserrat', sans-serif;
+        background: linear-gradient(135deg, #FFE4C4, #FFC38C);
+        color:#6B4226;
+        min-height:100vh;
+        display:flex;
+        flex-direction:column;
+        overflow-x: hidden; 
+    }
 
-        body {
-            background-color: var(--navy-deep);
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(56, 189, 248, 0.1) 0px, transparent 50%);
-            color: var(--text-bright);
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-        }
+    /* Helpline Section Container */
+    .helpline-wrapper {
+        position: absolute;
+        top: 15px;
+        right: 50px;
+        z-index: 950;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    }
 
-        .aesthetic-container {
-            position: relative;
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            padding: 50px 30px; /* Adjusted padding */
-            border-radius: 30px;
-            text-align: center;
-            width: 95%; /* Slightly wider for mobile */
-            max-width: 500px;
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            box-shadow: 0 0 30px rgba(56, 189, 248, 0.1), 
-                        0 20px 50px rgba(0, 0, 0, 0.5);
-            overflow: hidden;
-            z-index: 2;
-        }
+    /* The Main Blue Button */
+    .helpline-btn {
+        background-color: #007BFF;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        text-transform: uppercase;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: background 0.3s ease;
+    }
 
-        /* Fixed Time Text: No Wrapping */
-        .time-text {
-            /* Adjusted size to ensure it fits in one line */
-            font-size: clamp(1.5rem, 6vw, 2rem); 
-            font-weight: 800;
-            margin-bottom: 25px;
-            display: block;
-            white-space: nowrap; /* Prevents PM from dropping down */
-            background: linear-gradient(90deg, #ffffff, var(--shiny-blue), #ffffff);
-            background-size: 200% auto;
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: textFlow 3s linear infinite;
-        }
+    .helpline-btn:hover {
+        background-color: #0056b3;
+    }
 
-        @keyframes textFlow {
-            0% { background-position: 0% center; }
-            100% { background-position: 200% center; }
-        }
+    /* The Hidden Numbers Box */
+    #numbers-dropdown {
+        display: none; /* Hidden by default */
+        background: white;
+        margin-top: 8px;
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        border: 1px solid #ddd;
+        min-width: 140px;
+    }
 
-        .order-label {
-            font-size: 12px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 5px;
-            color: var(--shiny-blue);
-            margin-bottom: 15px;
-        }
+    .phone-link {
+        display: block;
+        padding: 8px;
+        font-size: 14px;
+        color: #007BFF;
+        text-decoration: none;
+        font-weight: 700;
+        text-align: center;
+        border-radius: 4px;
+    }
 
-        .main-msg {
-            font-size: 1rem;
-            color: #94a3b8;
-            line-height: 1.6;
-            margin-bottom: 30px;
-        }
+    .phone-link:hover {
+        background-color: #f0f7ff;
+    }
 
-        .note-container {
-            background: rgba(255, 204, 0, 0.1); 
-            border: 1px dashed var(--warning-yellow);
-            padding: 15px;
-            border-radius: 15px;
-        }
+    .phone-link:not(:last-child) {
+        border-bottom: 1px solid #eee;
+    }
 
-        .note-text {
-            color: var(--warning-yellow);
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
+    /* Secret Star */
+    .secret-star {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 18px;
+        color: rgba(107, 66, 38, 0.05);
+        cursor: pointer;
+        z-index: 1000;
+    }
 
-        .glow-dot {
-            width: 10px;
-            height: 10px;
-            background: var(--shiny-blue);
-            border-radius: 50%;
-            margin: 0 auto 15px;
-            box-shadow: 0 0 15px var(--shiny-blue);
-        }
+    /* Admin Panel */
+    #admin-panel {
+        display: none;
+        background: #6B4226;
+        color: white;
+        padding: 12px;
+        text-align: center;
+        position: sticky;
+        top: 0;
+        z-index: 999;
+    }
 
-        .late-popup {
-            margin-top: 25px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 8px 20px;
-            border-radius: 50px;
-            font-size: 0.85rem;
-            color: #94a3b8;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-    </style>
+    .exit-btn {
+        background: #FFC38C;
+        border: none;
+        padding: 6px 18px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    header { display:flex; align-items:center; padding: 20px; }
+    header img.logo { width:60px; height:60px; margin-right:15px; }
+    header h1 { margin: 0; font-size: 24px; }
+    header h2 { margin: 0; font-size: 16px; opacity: 0.8; }
+
+    .main {
+        display:grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        padding: 15px;
+    }
+
+    @media (max-width: 480px) {
+        .helpline-wrapper { right: 40px; top: 10px; }
+    }
+    @media (max-width: 380px) {
+        .main { grid-template-columns: 1fr; }
+    }
+
+    .hotel-card { background: rgba(255,255,255,0.4); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
+    .hotel-card img { width: 100%; height: 140px; object-fit: cover; }
+    .hotel-card h3 { margin: 15px; font-size: 15px; text-align: center; }
+
+    .customer-hide { display: none; }
+    .admin-mode .customer-hide { display: flex !important; opacity: 0.5; border: 2px dashed #6B4226; }
+
+    .admin-controls-box {
+        display: none; 
+        background: white;
+        padding: 12px;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .status-square { padding: 4px 8px; font-weight: bold; color: white; border-radius: 4px; font-size: 12px; }
+    .bg-green { background-color: #28a745; }
+    .bg-red { background-color: #dc3545; }
+
+    .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 20px; }
+    .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: #6B4226; }
+    input:checked + .slider:before { transform: translateX(18px); }
+</style>
 </head>
-<body>
+<body id="page-body">
 
-    <div class="aesthetic-container">
-        <div class="glow-dot"></div>
-        <div class="order-label">Order Time</div>
-        
-        <span class="time-text">8:00 AM — 10:00 PM</span>
-        
-        <p class="main-msg">
-            Our store is currently resting.<br>
-            Orders cannot be placed right now.
-        </p>
-
-        <div class="note-container">
-            <p class="note-text">Note: We are unable to accept orders at this time.</p>
+    <div class="helpline-wrapper">
+        <button class="helpline-btn" onclick="toggleHelpline()">Helpline</button>
+        <div id="numbers-dropdown">
+            <a href="tel:7899196669" class="phone-link">7899196669</a>
+            <a href="tel:9187314267" class="phone-link">9187314267</a>
         </div>
     </div>
 
-    <div class="late-popup">
-        🌙 Business hours have ended, its to late.
+    <div class="secret-star" onclick="unlockAdmin()">★</div>
+
+    <div id="admin-panel">
+        EDIT MODE Active
+        <button class="exit-btn" onclick="lockAdmin()">Save & Exit</button>
     </div>
 
+    <header>
+        <img src="rapidroutelogo.png" class="logo" alt="Logo">
+        <div class="titles">
+            <h1>RapidRoute</h1>
+            <h2>Call on the helpline no. before choosing Your Hotel</h2>
+        </div>
+    </header>
+
+    <main class="main" id="hotel-grid"></main>
+
+    <script>
+        function toggleHelpline() {
+            const dropdown = document.getElementById('numbers-dropdown');
+            dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
+        }
+
+        // ADDED HOTEL ARABI TO THIS LIST
+        const hotels = [
+            { name: "Raghuveer Café", img: "raghuveer.png", link: "Raghuveer.html" },
+            { name: "Raghavendra Vaibhav", img: "ragu.png", link: "Raghavendra.html" },
+            { name: "Hotel Pushkar", img: "push.png", link: "Pushkar.html" },
+            { name: "Hukkeri Dhaba", img: "hukkeri.png", link: "hukkeri dabha.html" },
+            { name: "Hotel Daneshwari", img: "DANESH.PNG", link: "Daneshwari.html" },
+            { name: "Cake Mart", img: "cake.png", link: "cake mart.html" },
+            { name: "Hotel Arabi", img: "arabi.png", link: "Arabi.html" }
+        ];
+
+        const grid = document.getElementById('hotel-grid');
+
+        hotels.forEach((hotel, index) => {
+            const id = index + 1;
+            const savedStatus = localStorage.getItem('h-visible-' + id);
+            const isOn = (savedStatus === null || savedStatus === 'on');
+
+            const card = document.createElement('div');
+            card.className = `hotel-card ${isOn ? '' : 'customer-hide'}`;
+            card.id = `card-${id}`;
+            card.innerHTML = `
+                <a href="${hotel.link}" style="text-decoration:none; color:inherit;">
+                    <img src="${hotel.img}" alt="${hotel.name}">
+                    <h3>${hotel.name}</h3>
+                </a>
+                <div class="admin-controls-box" id="admin-box-${id}">
+                    <div id="sq-${id}" class="status-square ${isOn ? 'bg-green' : 'bg-red'}">${isOn ? 'ON' : 'OFF'}</div>
+                    <label class="switch">
+                        <input type="checkbox" id="check-${id}" ${isOn ? 'checked' : ''} onchange="updateVisibility(${id})">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+
+        function unlockAdmin() {
+            let pass = prompt("Enter Secret Code:");
+            if (pass === "20106669") {
+                document.getElementById('admin-panel').style.display = 'block';
+                document.getElementById('page-body').classList.add('admin-mode');
+                let controls = document.getElementsByClassName('admin-controls-box');
+                for(let c of controls) { c.style.display = 'flex'; }
+            } else { alert("Access Denied"); }
+        }
+
+        function lockAdmin() {
+            document.getElementById('admin-panel').style.display = 'none';
+            document.getElementById('page-body').classList.remove('admin-mode');
+            let controls = document.getElementsByClassName('admin-controls-box');
+            for(let c of controls) { c.style.display = 'none'; }
+        }
+
+        function updateVisibility(id) {
+            let isChecked = document.getElementById('check-' + id).checked;
+            let card = document.getElementById('card-' + id);
+            let square = document.getElementById('sq-' + id);
+            
+            if (isChecked) {
+                card.classList.remove('customer-hide');
+                square.innerText = "ON";
+                square.className = "status-square bg-green";
+                localStorage.setItem('h-visible-' + id, 'on');
+            } else {
+                card.classList.add('customer-hide');
+                square.innerText = "OFF";
+                square.className = "status-square bg-red";
+                localStorage.setItem('h-visible-' + id, 'off');
+            }
+        }
+    </script>
 </body>
 </html>
-      
