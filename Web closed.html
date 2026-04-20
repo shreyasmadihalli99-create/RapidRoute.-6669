@@ -13,11 +13,7 @@
             --warning-yellow: #ffcc00; 
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             background-color: var(--navy-deep);
@@ -39,26 +35,22 @@
             background: var(--glass-bg);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            padding: 50px 30px; /* Adjusted padding */
+            padding: 50px 30px;
             border-radius: 30px;
             text-align: center;
-            width: 95%; /* Slightly wider for mobile */
+            width: 95%;
             max-width: 500px;
             border: 1px solid rgba(56, 189, 248, 0.3);
-            box-shadow: 0 0 30px rgba(56, 189, 248, 0.1), 
-                        0 20px 50px rgba(0, 0, 0, 0.5);
-            overflow: hidden;
+            box-shadow: 0 0 30px rgba(56, 189, 248, 0.1), 0 20px 50px rgba(0, 0, 0, 0.5);
             z-index: 2;
         }
 
-        /* Fixed Time Text: No Wrapping */
         .time-text {
-            /* Adjusted size to ensure it fits in one line */
             font-size: clamp(1.5rem, 6vw, 2rem); 
             font-weight: 800;
             margin-bottom: 25px;
             display: block;
-            white-space: nowrap; /* Prevents PM from dropping down */
+            white-space: nowrap;
             background: linear-gradient(90deg, #ffffff, var(--shiny-blue), #ffffff);
             background-size: 200% auto;
             background-clip: text;
@@ -72,53 +64,12 @@
             100% { background-position: 200% center; }
         }
 
-        .order-label {
-            font-size: 12px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 5px;
-            color: var(--shiny-blue);
-            margin-bottom: 15px;
-        }
-
-        .main-msg {
-            font-size: 1rem;
-            color: #94a3b8;
-            line-height: 1.6;
-            margin-bottom: 30px;
-        }
-
-        .note-container {
-            background: rgba(255, 204, 0, 0.1); 
-            border: 1px dashed var(--warning-yellow);
-            padding: 15px;
-            border-radius: 15px;
-        }
-
-        .note-text {
-            color: var(--warning-yellow);
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .glow-dot {
-            width: 10px;
-            height: 10px;
-            background: var(--shiny-blue);
-            border-radius: 50%;
-            margin: 0 auto 15px;
-            box-shadow: 0 0 15px var(--shiny-blue);
-        }
-
-        .late-popup {
-            margin-top: 25px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 8px 20px;
-            border-radius: 50px;
-            font-size: 0.85rem;
-            color: #94a3b8;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
+        .order-label { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 5px; color: var(--shiny-blue); margin-bottom: 15px; }
+        .main-msg { font-size: 1rem; color: #94a3b8; line-height: 1.6; margin-bottom: 30px; }
+        .note-container { background: rgba(255, 204, 0, 0.1); border: 1px dashed var(--warning-yellow); padding: 15px; border-radius: 15px; }
+        .note-text { color: var(--warning-yellow); font-weight: 600; font-size: 0.9rem; }
+        .glow-dot { width: 10px; height: 10px; background: var(--shiny-blue); border-radius: 50%; margin: 0 auto 15px; box-shadow: 0 0 15px var(--shiny-blue); }
+        .late-popup { margin-top: 25px; background: rgba(255, 255, 255, 0.05); padding: 8px 20px; border-radius: 50px; font-size: 0.85rem; color: #94a3b8; border: 1px solid rgba(255, 255, 255, 0.1); }
     </style>
 </head>
 <body>
@@ -126,22 +77,25 @@
     <div class="aesthetic-container">
         <div class="glow-dot"></div>
         <div class="order-label">Order Time</div>
-        
         <span class="time-text">8:00 AM — 10:00 PM</span>
-        
-        <p class="main-msg">
-            Our store is currently resting.<br>
-            Orders cannot be placed right now.
-        </p>
-
+        <p class="main-msg">Our store is currently resting.<br>Orders cannot be placed right now.</p>
         <div class="note-container">
             <p class="note-text">Note: We are unable to accept orders at this time.</p>
         </div>
     </div>
 
-    <div class="late-popup">
-        🌙 Business hours have ended, its to late.
-    </div>
+    <div class="late-popup">🌙 Business hours have ended, its to late.</div>
 
+    <script>
+        // Check local time to see if we should go back home
+        function checkToReturn() {
+            const hour = new Date().getHours();
+            if (hour >= 8 && hour < 22) {
+                window.location.href = "newhome (1).html";
+            }
+        }
+        // Check every 10 seconds so the customer doesn't have to refresh at 8:00 AM
+        setInterval(checkToReturn, 10000);
+    </script>
 </body>
 </html>
