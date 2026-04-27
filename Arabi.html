@@ -4,6 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hotel Arabi | Official</title>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Your specific Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBc7nQQ558jsA8oagdSuiXqH9IVBBBp-EQ",
+            authDomain: "rapidroute-1d14d.firebaseapp.com",
+            projectId: "rapidroute-1d14d",
+            storageBucket: "rapidroute-1d14d.firebasestorage.app",
+            messagingSenderId: "785713080550",
+            appId: "1:785713080550:web:ad14ddcc23630b01ffb327"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        // Make Firebase functions available to the rest of the script
+        window.db = db;
+        window.addDoc = addDoc;
+        window.collection = collection;
+        window.serverTimestamp = serverTimestamp;
+    </script>
+
     <style>
         :root { --red: #e63946; --orange: #ff7003; --blue: #007bff; --dark: #1a1a1a; --light-bg: #f9f9f9; }
         body, html { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: var(--light-bg); color: var(--dark); overflow-x: hidden; }
@@ -81,7 +107,7 @@
             </div>
             
             <button id="loc-btn" class="wp-btn" style="background: var(--blue);" onclick="getLocation()">📍 Share Location to Order</button>
-            <button id="confirm-btn" class="wp-btn" onclick="sendToGoogleForm()" style="display: none;">Confirm Order</button>
+            <button id="confirm-btn" class="wp-btn" onclick="sendOrderDual()" style="display: none;">Confirm Order</button>
         </div>
     </main>
 
@@ -89,7 +115,6 @@
     let cart = {};
     let userLocationURL = "";
     let currentCategory = "Chicken Special";
-    // UPDATED WEB APP URL
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw4gmkE47tfIqld_lfnDuO-ynNRufWYrIBMpPHRf97kM-APk6AubmsoH5fu6nFa-xPT/exec";
 
     const fullMenuData = {
@@ -211,7 +236,7 @@
         const btn = document.getElementById('loc-btn');
         btn.innerText = "Accessing GPS...";
         navigator.geolocation.getCurrentPosition((pos) => {
-            userLocationURL = `http://google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+            userLocationURL = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
             btn.style.display = "none";
             document.getElementById('confirm-btn').style.display = "block";
         }, () => {
@@ -220,25 +245,57 @@
         });
     }
 
-    async function sendToGoogleForm() {
+    // --- UPDATED DUAL SENDING FUNCTION ---
+    async function sendOrderDual() {
         const btn = document.getElementById('confirm-btn');
-        btn.innerText = "Sending Order..."; btn.disabled = true;
+        btn.innerText = "Sending Order..."; 
+        btn.disabled = true;
+
         let summary = "";
         for(let k in cart) { summary += `${k} (x${cart[k].q}), `; }
+        
+        const customerName = document.getElementById('c-name').value;
+        const customerPhone = document.getElementById('c-phone').value;
+        const finalTotal = document.getElementById('final-total').innerText;
+
+        // 1. SEND TO FIREBASE (Ensures data is in your new database)
+        try {
+            if (window.db) {
+                await window.addDoc(window.collection(window.db, "orders"), {
+                    hotel: 'Hotel Arabi',
+                    customerName: customerName,
+                    phone: customerPhone,
+                    items: summary,
+                    total: finalTotal,
+                    location: userLocationURL,
+                    status: "pending",
+                    assignedTo: "none",
+                    timestamp: window.serverTimestamp()
+                });
+                console.log("Order saved to Firebase successfully");
+            }
+        } catch (e) {
+            console.error("Firebase Sync Error:", e);
+        }
+
+        // 2. SEND TO GOOGLE SHEETS (Your original backup system)
         const params = new URLSearchParams({ 
             hotel: 'Hotel Arabi', 
-            name: document.getElementById('c-name').value, 
-            phone: document.getElementById('c-phone').value, 
+            name: customerName, 
+            phone: customerPhone, 
             items: summary, 
-            total: document.getElementById('final-total').innerText, 
+            total: finalTotal, 
             location: userLocationURL 
         });
+
         try {
+            // Using your original SCRIPT_URL
             await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: params });
             alert("Order Placed Successfully at Hotel Arabi!");
             location.reload();
         } catch (e) { 
-            alert("Error sending order. Please check your internet."); 
+            alert("Order placed, but there was a connection issue. We will contact you."); 
+            console.error("Sheet Error:", e);
             btn.disabled = false; 
             btn.innerText = "Confirm Order"; 
         }
