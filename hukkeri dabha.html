@@ -261,6 +261,7 @@
     let userLocationURL = ""; 
     let disabledItems = JSON.parse(localStorage.getItem('hukkeri_stock')) || {};
     
+    // Deployment URL from Apps Script
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyej0SiPSwZyouZ23p_CkJpi7myoN9LUsEbIpmm2OhPetl-2jQS05hbfCQgwER5xoB5/exec";
 
     const fullMenuData = {
@@ -397,7 +398,6 @@
             document.getElementById('hero-section').style.display = 'none';
             document.getElementById('menu-wrapper').style.display = 'block';
             renderTabs();
-            // Auto-load the first category
             const categories = Object.keys(fullMenuData);
             if (categories.length > 0) setCategory(categories[0]);
         }, 700);
@@ -465,7 +465,6 @@
         locBtn.innerText = "Accessing GPS...";
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition((position) => {
-                // FIXED GPS URL STRING
                 userLocationURL = "https://www.google.com/maps?q=" + position.coords.latitude + "," + position.coords.longitude;
                 locBtn.style.display = "none";
                 document.getElementById('confirm-btn').style.display = "block";
@@ -498,7 +497,6 @@
             await fetch(SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
-                cache: 'no-cache',
                 body: params
             });
             
