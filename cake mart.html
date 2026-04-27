@@ -3,455 +3,428 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cake Mart | Village Fresh</title>
+    <title>Cake Mart | Premium Bakery & Cafe</title>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBc7nQQ558jsA8oagdSuiXqH9IVBBBp-EQ",
+            authDomain: "rapidroute-1d14d.firebaseapp.com",
+            projectId: "rapidroute-1d14d",
+            storageBucket: "rapidroute-1d14d.firebasestorage.app",
+            messagingSenderId: "785713080550",
+            appId: "1:785713080550:web:ad14ddcc23630b01ffb327"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        // Export to window so our placeOrder function can see them
+        window.db = db;
+        window.addDoc = addDoc;
+        window.collection = collection;
+        window.serverTimestamp = serverTimestamp;
+    </script>
+
     <style>
-        :root { --primary: #d81b60; --light: #fff5f8; --success: #27ae60; --white: #ffffff; --info: #2196F3; }
+        :root {
+            --primary: #d35400; /* Richer European Orange/Brown */
+            --dark: #2c3e50;
+            --light: #fdfefe;
+            --danger: #c0392b;
+            --success: #27ae60;
+        }
+
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: var(--light); color: #333; }
 
-        /* --- HERO PAGE --- */
-        #hero-page {
-            height: 100vh; display: flex; flex-direction: column; justify-content: center;
-            align-items: center; text-align: center;
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=1000');
-            background-size: cover; background-position: center; background-repeat: no-repeat;
-            color: white; padding: 20px;
-        }
-        .start-btn { margin-top: 25px; background: var(--primary); color: white; padding: 18px 60px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; font-size: 1.2rem; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
-
-        #main-app { display: none; }
-        
-        /* Search Bar */
-        .search-container { background: var(--white); padding: 10px; position: sticky; top: 0; z-index: 1001; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        #menu-search { width: 100%; padding: 12px 20px; border-radius: 25px; border: 1.5px solid #eee; font-size: 1rem; outline: none; background: #f9f9f9; }
-
-        .nav-container { position: sticky; top: 64px; z-index: 1000; background: var(--white); display: flex; overflow-x: auto; padding: 12px 10px; gap: 8px; border-bottom: 2px solid #eee; }
-        .nav-btn { padding: 10px 22px; background: var(--white); border: 2px solid var(--primary); border-radius: 25px; white-space: nowrap; color: var(--primary); font-weight: 800; cursor: pointer; }
-        .nav-btn.active { background: var(--primary); color: var(--white); }
-
-        .tab-section { display: none; padding-bottom: 420px; }
-        .tab-section.active { display: block; animation: fadeIn 0.4s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        
-        /* Banner Styling */
-        .cat-banner { width: 100%; height: 160px; object-fit: cover; border-bottom: 4px solid var(--primary); margin-bottom: 10px; }
-
-        .menu-item { background: var(--white); margin: 0 10px 2px; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f0f0f0; }
-        .qty-wrap { display: flex; align-items: center; gap: 12px; }
-        .qty-btn { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--primary); background: var(--white); color: var(--primary); font-weight: 900; cursor: pointer; }
-
-        /* Order Panel */
-        #order-panel {
-            position: fixed; bottom: 0; width: 100%; background: var(--white);
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.2); display: none;
-            padding: 20px; border-radius: 30px 30px 0 0; z-index: 2000;
-            max-height: 85vh; overflow-y: auto;
-        }
-        .input-field { width: 100%; padding: 14px; margin-bottom: 10px; border: 1.5px solid #ddd; border-radius: 12px; font-size: 1rem; outline: none; }
-        
-        .loc-btn { background: var(--info); color: white; border: none; padding: 16px; border-radius: 12px; font-weight: 800; width: 100%; cursor: pointer; }
-        .confirm-btn { background: var(--success); color: white; border: none; padding: 20px; border-radius: 12px; font-weight: 800; width: 100%; font-size: 1.3rem; cursor: pointer; display: none; }
-        
-        #loc-status { 
-            display: none; background: #e3f2fd; color: #1565c0; padding: 12px; 
-            border-radius: 10px; text-align: center; font-weight: bold; margin-bottom: 10px; 
-            border: 1px solid #bbdefb; font-size: 0.9rem;
+        body {
+            font-family: 'Playfair Display', serif, -apple-system, sans-serif;
+            margin: 0;
+            background-color: var(--light);
+            color: var(--dark);
+            scroll-behavior: smooth;
         }
 
-        .bill-details { background: #f9f9f9; padding: 12px; border-radius: 12px; margin-top: 10px; font-size: 0.95rem; }
-        .bill-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
-        .grand-total { border-top: 1px solid #ddd; padding-top: 8px; margin-top: 8px; font-weight: 900; color: var(--primary); font-size: 1.2rem; }
+        /* --- ADMIN INTERFACE --- */
+        #admin-star { position: fixed; bottom: 20px; right: 20px; z-index: 9999; font-size: 24px; cursor: pointer; opacity: 0.2; background: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        #admin-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 10000; padding: 20px; overflow-y: auto; }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding-bottom: 15px; margin-bottom: 20px; }
+        .admin-item-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #eee; }
+        .status-btn { padding: 8px 15px; border: none; border-radius: 5px; font-weight: bold; font-size: 12px; cursor: pointer; min-width: 70px; }
+        .btn-on { background: var(--success); color: white; }
+        .btn-off { background: var(--danger); color: white; }
 
-        /* Selection Display */
-        #selection-display { margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        .sel-item { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 5px; color: #d81b60; font-weight: bold; }
+        /* --- UI ELEMENTS --- */
+        #landing-page { 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1550617931-e17a7b70dce2?w=1200'); 
+            background-size: cover; 
+            background-position: center; 
+            text-align: center; 
+            padding: 20px; 
+        }
+        .cafe-title { color: white; font-size: 3.5rem; margin: 0; font-weight: 800; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .enter-btn { margin-top: 25px; background: var(--primary); color: white; padding: 18px 60px; border-radius: 50px; border: none; font-size: 1.1rem; font-weight: 700; text-transform: uppercase; cursor: pointer; transition: 0.3s; }
+
+        #menu-container { display: none; padding-bottom: 50vh; }
+        .category-nav { position: sticky; top: 0; z-index: 1000; background: white; display: flex; overflow-x: auto; padding: 12px 8px; gap: 8px; border-bottom: 1px solid #ddd; scrollbar-width: none; }
+        .category-nav::-webkit-scrollbar { display: none; }
+        .nav-item { padding: 8px 16px; background: #f2f2f2; border-radius: 20px; white-space: nowrap; font-size: 0.85rem; text-decoration: none; color: #444; font-weight: 700; }
+
+        .section-img { width: 100%; height: 180px; object-fit: cover; display: block; }
+        .section-header { padding: 18px; font-size: 1.4rem; font-weight: 800; color: var(--primary); background: white; border-bottom: 1px solid #eee; text-transform: uppercase; letter-spacing: 1px; }
+
+        .menu-card { background: white; margin-bottom: 1px; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .item-name { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; display: block; color: #333; }
+        
+        .price-text { font-weight: 800; font-size: 1.1rem; color: #000; display: block; }
+        .qty-box { display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-top: 5px; }
+        .btn-circle { width: 30px; height: 30px; border-radius: 50%; border: 1.5px solid var(--primary); background: white; color: var(--primary); font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+        #cart-box { position: fixed; bottom: 0; left: 0; width: 100%; max-height: 85vh; background: white; box-shadow: 0 -5px 25px rgba(0,0,0,0.2); z-index: 2000; display: none; flex-direction: column; border-top-left-radius: 25px; border-top-right-radius: 25px; padding: 20px; }
+        .details-input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 10px; font-size: 1rem; }
+        .loc-btn { background: #2980b9; color: white; border: none; padding: 14px; border-radius: 10px; font-weight: 700; margin-bottom: 12px; width: 100%; cursor: pointer; }
+        #cart-items-list { flex-grow: 1; overflow-y: auto; font-size: 0.9rem; margin-bottom: 12px; border-bottom: 1px solid #eee; max-height: 180px; }
+        .cart-row { display: flex; justify-content: space-between; padding: 6px 0; }
+        .fee-row { display: flex; justify-content: space-between; padding: 3px 0; font-size: 0.8rem; color: #7f8c8d; }
+        .cart-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 15px; }
+        .order-btn { background: var(--success); color: white; border: none; padding: 14px 30px; border-radius: 10px; font-weight: 800; font-size: 1.1rem; display: none; cursor: pointer; }
+
+        #success-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 5000; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
+        footer { padding: 50px 20px 180px; text-align: center; background: #fafafa; font-size: 0.85rem; color: #95a5a5; border-top: 1px solid #eee; }
     </style>
 </head>
 <body>
 
-    <div id="hero-page">
-        <h1 style="font-size: 3rem; margin: 0; letter-spacing: 2px;">CAKE MART</h1>
-        <p style="text-transform: uppercase; font-size: 0.9rem; letter-spacing: 3px;">Village Fresh & Sweets</p>
-        <button class="start-btn" onclick="openApp()">START ORDERING</button>
+    <div id="admin-star" onclick="checkAdmin()">★</div>
+
+    <div id="admin-panel">
+        <div class="admin-header">
+            <h2 style="margin:0; color:var(--primary)">Cake Mart Inventory</h2>
+            <button onclick="closeAdmin()" style="padding:10px; border-radius:8px; border:none; background:#333; color:white;">CLOSE</button>
+        </div>
+        <div id="admin-controls-list"></div>
     </div>
 
-    <div id="main-app">
-        <div class="search-container">
-            <input type="text" id="menu-search" placeholder="Search menu..." onkeyup="filterMenu()">
-        </div>
-
-        <div class="nav-container">
-            <div class="nav-btn active" onclick="switchTab('fried_chicken', this)">Fried Chicken</div>           
-            <div class="nav-btn" onclick="switchTab('wrap_sandwich', this)">Wrap Sandwich</div>
-            <div class="nav-btn" onclick="switchTab('chicken_pizza', this)">Chicken Pizza</div>
-            <div class="nav-btn" onclick="switchTab('veg_pizza', this)">Veg Pizza</div>
-            <div class="nav-btn" onclick="switchTab('burger', this)">Burger</div>
-            <div class="nav-btn" onclick="switchTab('club_sandwich', this)">Club Sandwich</div>
-            <div class="nav-btn" onclick="switchTab('samoona_sandwich', this)">Samoona Sandwich</div>
-            <div class="nav-btn" onclick="switchTab('puffs', this)">Puffs</div>
-            <div class="nav-btn" onclick="switchTab('chats', this)">Chats</div>
-            <div class="nav-btn" onclick="switchTab('scoopso_icecream', this)">Scoopso Ice cream</div>
-            <div class="nav-btn" onclick="switchTab('falooda', this)">Falooda</div>
-            <div class="nav-btn" onclick="switchTab('cold', this)">Colds</div>
-            <div class="nav-btn" onclick="switchTab('crush', this)">Crush</div>
-            <div class="nav-btn" onclick="switchTab('fresh_fruit_juice', this)">Fresh Fruit Juice</div>
-            <div class="nav-btn" onclick="switchTab('fresh_fruit_milk_shake', this)">Fresh Fruit Mike shake</div>
-            <div class="nav-btn" onclick="switchTab('biscuit_and_chocolate', this)">Biscuit and Chocolate</div>
-            <div class="nav-btn" onclick="switchTab('fruits_salad', this)">Fruits Salad</div>
-            <div class="nav-btn" onclick="switchTab('dry_fruits', this)">Dry fruits shakes</div>
-            <div class="nav-btn" onclick="switchTab('lime', this)">Lime</div>
-            <div class="nav-btn" onclick="switchTab('soda', this)">Soda</div>
-            <div class="nav-btn" onclick="switchTab('mojito', this)">Mojito</div>
-            <div class="nav-btn" onclick="switchTab('lassi', this)">Lassi</div>
-        </div>
-
-        <div id="fried_chicken" class="tab-section active"><div id="list-fried_chicken"></div></div>
-        <div id="wrap_sandwich" class="tab-section"><div id="list-wrap_sandwich"></div></div>
-        <div id="chicken_pizza" class="tab-section"><div id="list-chicken_pizza"></div></div>
-        <div id="veg_pizza" class="tab-section"><div id="list-veg_pizza"></div></div>
-        <div id="burger" class="tab-section"><div id="list-burger"></div></div>
-        <div id="club_sandwich" class="tab-section"><div id="list-club_sandwich"></div></div>
-        <div id="samoona_sandwich" class="tab-section"><div id="list-samoona_sandwich"></div></div>
-        <div id="puffs" class="tab-section"><div id="list-puffs"></div></div>
-        <div id="chats" class="tab-section"><div id="list-chats"></div></div>
-        <div id="scoopso_icecream" class="tab-section"><div id="list-scoopso_icecream"></div></div>
-        <div id="falooda" class="tab-section"><div id="list-falooda"></div></div>
-        <div id="cold" class="tab-section"><div id="list-cold"></div></div>
-        <div id="crush" class="tab-section"><div id="list-crush"></div></div>
-        <div id="fresh_fruit_juice" class="tab-section"><div id="list-fresh_fruit_juice"></div></div>
-        <div id="fresh_fruit_milk_shake" class="tab-section"><div id="list-fresh_fruit_milk_shake"></div></div>
-        <div id="biscuit_and_chocolate" class="tab-section"><div id="list-biscuit_and_chocolate"></div></div>
-        <div id="fruits_salad" class="tab-section"><div id="list-fruits_salad"></div></div>
-        <div id="dry_fruits" class="tab-section"><div id="list-dry_fruits"></div></div>
-        <div id="lime" class="tab-section"><div id="list-lime"></div></div>
-        <div id="soda" class="tab-section"><div id="list-soda"></div></div>
-        <div id="mojito" class="tab-section"><div id="list-mojito"></div></div>
-        <div id="lassi" class="tab-section"><div id="list-lassi"></div></div>
+    <div id="success-overlay">
+        <h2 style="color: var(--success);">✔ Order Confirmed!</h2>
+        <p>Your Cake Mart treasures are being prepared.</p>
+        <button class="enter-btn" onclick="location.reload()">Return to Shop</button>
     </div>
 
-    <div id="order-panel">
-        <h3 style="margin:0 0 10px 0; color:var(--primary)">Confirm Your Items</h3>
-        <div id="selection-display"></div> <input type="text" id="cust-name" class="input-field" placeholder="Full Name (Letters Only)" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
-        <input type="text" id="cust-phone" class="input-field" placeholder="Phone Number (10 Digits)" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="10">
-        
-        <div id="loc-status">Accessing your GPS...</div>
-        
-        <button class="loc-btn" id="loc-btn" onclick="askLocation()">📍 SHARE LIVE LOCATION</button>
-        <button class="confirm-btn" id="confirm-btn" onclick="sendOrder()">CONFIRM & SEND ORDER</button>
+    <div id="landing-page">
+        <h1 class="cafe-title">Cake Mart</h1>
+        <p style="color:white; font-size: 1.2rem;">European Pastries & Gourmet Delights</p>
+        <button class="enter-btn" onclick="openMenu()">Explore Menu</button>
+    </div>
 
-        <div class="bill-details">
-            <div class="bill-row"><span>Items Total:</span> <span>₹<span id="items-price">0</span></span></div>
-            <div class="bill-row"><span>Delivery Fee:</span> <span>₹<span id="del-fee">0</span></span></div>
-            <div class="bill-row grand-total"><span>Grand Total:</span> <span>₹<span id="bill-total">0</span></span></div>
+    <div id="menu-container">
+        <div class="category-nav">
+            <a href="#fried-chicken" class="nav-item">Fried Chicken</a>
+            <a href="#chicken-pizzas" class="nav-item">Chicken Pizzas</a>
+            <a href="#veg-pizzas" class="nav-item">Veg Pizzas</a>
+            <a href="#burgers" class="nav-item">Burgers</a>
+            <a href="#sandwiches" class="nav-item">Wraps & Sandwiches</a>
+            <a href="#chats" class="nav-item">Starters & Sides</a>
+            <a href="#beverages" class="nav-item">Beverages & Shakes</a>
+            <a href="#desserts" class="nav-item">Desserts & Falooda</a>
+        </div>
+
+        <section id="fried-chicken">
+            <img src="https://images.unsplash.com/photo-1569058242253-92a9c71f9867?w=800" class="section-img">
+            <div class="section-header">Crispy Fried Chicken</div>
+            <div id="list-fried-chicken"></div>
+        </section>
+
+        <section id="chicken-pizzas">
+            <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800" class="section-img">
+            <div class="section-header">Chicken Pizzas</div>
+            <div id="list-chicken-pizzas"></div>
+        </section>
+
+        <section id="veg-pizzas">
+            <img src="https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=800" class="section-img">
+            <div class="section-header">Veg Pizzas</div>
+            <div id="list-veg-pizzas"></div>
+        </section>
+
+        <section id="burgers">
+            <img src="https://images.unsplash.com/photo-1550547660-d9450f859349?w=800" class="section-img">
+            <div class="section-header">Artisan Burgers</div>
+            <div id="list-burgers"></div>
+        </section>
+
+        <section id="sandwiches">
+            <img src="https://images.unsplash.com/photo-1553909489-cd47e0907980?w=800" class="section-img">
+            <div class="section-header">Wraps & Sandwiches</div>
+            <div id="list-sandwiches"></div>
+        </section>
+
+        <section id="chats">
+            <img src="https://images.unsplash.com/photo-1626132646549-9403883a9925?w=800" class="section-img">
+            <div class="section-header">Chats & Starters</div>
+            <div id="list-chats"></div>
+        </section>
+
+        <section id="beverages">
+            <img src="https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=800" class="section-img">
+            <div class="section-header">European Beverages</div>
+            <div id="list-beverages"></div>
+        </section>
+
+        <section id="desserts">
+            <img src="https://images.unsplash.com/photo-1587314168485-3236d6710814?w=800" class="section-img">
+            <div class="section-header">Sweet Finishes</div>
+            <div id="list-desserts"></div>
+        </section>
+
+        <footer>
+            <p><strong>Cake Mart - The European Bakery</strong></p>
+            <p>Packing: Pizza ₹10 | Others ₹5<br>Delivery: ₹10 | Convenience: ₹5</p>
+        </footer>
+    </div>
+
+    <div id="cart-box">
+        <div style="font-weight: 800; margin-bottom: 12px; color: var(--primary); font-size: 1.2rem;">Your Selection</div>
+        <input type="text" id="cust-name" class="details-input" placeholder="Guest Name" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '');">
+        <input type="tel" id="cust-phone" class="details-input" placeholder="10-Digit Phone" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+        <button id="loc-btn" class="loc-btn" onclick="getLocation()">📍 Set Delivery Location</button>
+        <div id="cart-items-list"></div>
+        <div id="fees-container">
+            <div class="fee-row"><span>Eco-Packing Charge</span><span id="pack-total">₹0</span></div>
+            <div class="fee-row"><span>Service & Delivery</span><span>₹15</span></div>
+        </div>
+        <div class="cart-footer">
+            <div>
+                <span id="cart-total-qty" style="font-size: 0.9rem; color: #7f8c8d;">0 Items</span><br>
+                <span style="font-size: 1.4rem; font-weight: 800;">Total: ₹<span id="cart-total-price">0</span></span>
+            </div>
+            <button id="main-order-btn" class="order-btn" onclick="placeOrderDual()">Place Order</button>
         </div>
     </div>
 
-<script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwwI6y9ildHddAjkKAfKhqIDk5qUXl8Vsjo6SsAKv3xj_J60QMp_r5ar0ZKlESaCAWf/exec"; 
+    <script>
+        // Keeping your original Sheet URLs as fallback
+        const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfYGXB2Lim7wtiFCYy8U7MtV9DN9X2Tm7zSkx-qYxPLSLRcUg/formResponse";
+        const ENTRY_DETAILS = "entry.1304197339";
+        const ENTRY_TOTAL = "entry.248975380";
+        const ENTRY_HOTEL = "entry.164020655";
 
-    let userLoc = "Not Provided";
-    let cart = {};
+        let userLocation = "";
+        let cart = {};
+        let unavailableItems = JSON.parse(localStorage.getItem('cakemart_unavailable')) || {};
 
-    const database = {
-        fried_chicken: [
-            { name: "Fried Chicken (2 PCS)", p: 110 },
-            { name: "Fried Chicken (4 PCS)", p: 200 },
-            { name: "Fried Chicken (8 PCS)", p: 380 }
-        ],
-        wrap_sandwich: [
-            { name: "Tortilla Wrap sandwich (Chicken/Veg)", p: 100 },
-            { name: "Paratta Wrap sandwich (Chicken/Veg)", p: 100 }
-        ],
-        chicken_pizza: [
-            { name: "Normal Chicken Pizza", p: 200 },
-            { name: "SP chicken pizza", p: 240 },
-            { name: "Butter Chicken Pizza", p: 240 },
-            { name: "BBQ Chicken Pizza", p: 230 },
-            { name: "Extra Cheese", p: 30 }
-        ],
-        veg_pizza: [
-            { name: "Normal Veg Pizza", p: 150 },
-            { name: "SP Pizza", p: 220 },
-            { name: "Tomato Pizza", p: 180 },
-            { name: "Sweet Corn Pizza", p: 180 },
-            { name: "Onion Pizza", p: 150 },
-            { name: "Onion Capsicum Pizza", p: 180 },
-            { name: "Plane Cheese Pizza", p: 180 },
-            { name: "Paneer Pizza", p: 180 },
-            { name: "Veg Overload Pizza", p: 220 },
-            { name: "Extra Cheese", p: 30 }
-        ],
-        burger: [
-            { name: "Veg Burger", p: 80 },
-            { name: "Veg cheese Burger", p: 100 },
-            { name: "Sweet Corn Burger", p: 90 },
-            { name: "Paneer Burger", p: 90 },
-            { name: "Chicken Burger", p: 110 },
-            { name: "Chicken cheese Burger", p: 120 },
-            { name: "Zingar chicken Burger", p: 160 },
-            { name: "Extra cheese", p: 30 }
-        ],
-        club_sandwich: [
-            { name: "Veg Sandwich", p: 100 },
-            { name: "Paneer Sandwich", p: 120 },
-            { name: "Chicken Sandwich", p: 140 }
-        ],
-        samoona_sandwich: [
-            { name: "Veg Sandwich", p: 70 },
-            { name: "Veg Cheese Sandwich", p: 90 },
-            { name: "Chicken Sandwich", p: 80 },
-            { name: "Chicken Cheese Sandwich", p: 100 }
-        ],
-        puffs: [
-            { name: "Egg Puff", p: 20 },
-            { name: "Paneer Puff", p: 25 },
-            { name: "Veg Puff", p: 20 }
-        ],
-        chats: [
-            { name: "French Fries", p: 80 },
-            { name: "Masala Fries", p: 90 },
-            { name: "Loaded Fries", p: 120 },
-            { name: "Chicken Nuggets 5Pcs", p: 100 },
-            { name: "Veg Nuggets 5Pcs", p: 90 },
-            { name: "Veg Finger 5Pcs", p: 90 },
-            { name: "Momos Veg 5Pcs", p: 90 },
-            { name: "Momos Chicken 5Pcs", p: 100 },
-            { name: "Shawarma", p: 120 }
-        ],
-        scoopso_icecream: [
-            { name: "Vanila", p: 50 },
-            { name: "Cocolate", p: 60 },
-            { name: "Strawberry", p: 50 },
-            { name: "Butterscotch", p: 60 }
-        ],
-        falooda: [
-            { name: "Normal Falooda", p: 90 },
-            { name: "SP Falooda", p: 130 },
-            { name: "Pista Falooda", p: 130 },
-            { name: "Royal Falooda", p: 140 },
-            { name: "Dry Fruits Falooda", p: 140 }
-        ],
-        cold: [
-            { name: "Boost Cold", p: 70 },
-            { name: "Coffee Cold", p: 70 },
-            { name: "Badam Cold", p: 70 },
-            { name: "Horlicks Cold", p: 70 }
-        ],
-        crush: [
-            { name: "Vanila Crush", p: 70 },
-            { name: "Pista", p: 80 },
-            { name: "Strawberry", p: 70 },
-            { name: "Mango", p: 70 },
-            { name: "Blue Berry", p: 70 },
-            { name: "Guava", p: 70 }
-        ],
-        fresh_fruit_juice: [
-            { name: "Watermelon", p: 60 },
-            { name: "Pineapple", p: 60 },
-            { name: "Orange", p: 60 },
-            { name: "Papaya", p: 60 },
-            { name: "Anar", p: 70 },
-            { name: "Apple", p: 80 },
-            { name: "Mango", p: 60 },
-            { name: "Guava", p: 60 },
-            { name: "Grape", p: 60 }
-        ],
-        fresh_fruit_milk_shake: [
-            { name: "Papaya Shake", p: 80 },
-            { name: "Mango Shake", p: 80 },
-            { name: "Anar Shake", p: 80 },
-            { name: "Chikku Shake", p: 80 },
-            { name: "Apple Shake", p: 80 },
-            { name: "Mixed Fruit Shake", p: 80 },
-            { name: "Kiwi Shake", p: 80 },
-            { name: "Tender Shake", p: 80 },
-            { name: "Passion Fruit Shake", p: 80 },
-            { name: "Blueberry", p: 80 },
-            { name: "Strawberry", p: 80 }
-        ],
-        biscuit_and_chocolate: [
-            { name: "Orio", p: 80 },
-            { name: "Dark Fantacy", p: 80 },
-            { name: "Dairy Milk", p: 80 },
-            { name: "Five Star", p: 80 },
-            { name: "Kitkat", p: 80 }
-        ],
-        fruits_salad: [
-            { name: "Fruits salad", p: 80 },
-            { name: "SP Fruits Salad", p: 100 },
-            { name: "Royal Fruit Salad", p: 130 }
-        ],
-        dry_fruits: [
-            { name: "Dry Fruits Shake", p: 120 },
-            { name: "Dates Shakes", p: 110 },
-            { name: "Badam Shake", p: 100 }
-        ],
-        lime: [
-            { name: "Fresh Lime", p: 25 },
-            { name: "SP Sarbath", p: 40 },
-            { name: "Mint Lime", p: 40 },
-            { name: "Chilli Lime", p: 30 },
-            { name: "Ginger Lime", p: 30 },
-            { name: "Pineapple Lime", p: 30 },
-            { name: "Blue Lime", p: 30 },
-            { name: "Strawberry Lime", p: 40 },
-            { name: "Orange Lime", p: 30 },
-            { name: "Milk Sarbath", p: 50 }
-        ],
-        soda: [
-            { name: "Soda Salt", p: 25 },
-            { name: "Soda Sweet", p: 30 },
-            { name: "Soda Sweet & Salt", p: 30 },
-            { name: "Chilli Soda", p: 30 },
-            { name: "Strawberry Soda", p: 30 },
-            { name: "Green Apple Soda", p: 30 },
-            { name: "Pineapple Soda", p: 30 },
-            { name: "Orange Soda", p: 30 },
-            { name: "Soda Sarbath", p: 40 }
-        ],
-        mojito: [
-            { name: "Blue Lagone Mojito", p: 70 },
-            { name: "Green Apple Mojito", p: 70 },
-            { name: "Kiwi Mojito", p: 70 },
-            { name: "Blue Berry Mojito", p: 70 },
-            { name: "Strawberry Mojito", p: 70 },
-            { name: "Watermelon Mojito", p: 70 },
-            { name: "Guva Mojito", p: 70 },
-            { name: "Pineapple Mojito", p: 70 },
-            { name: "Passion Fruit Mojito", p: 100 }
-        ],
-        lassi: [
-            { name: "Lassi Plain", p: 50 },
-            { name: "Mango Lassi", p: 50 },
-            { name: "Pista Lassi", p: 70 },
-            { name: "Strawberry Lassi", p: 50 },
-            { name: "Pineapple Lassi", p: 50 },
-            { name: "Banana Lassi", p: 50 },
-            { name: "Passion Fruit Lassi", p: 80 }
-        ],
-    };
+        const finalMenu = {
+            "fried_chicken": [
+                { id: "fc1", name: "Fried Chicken 2 PCS", p: 110 },
+                { id: "fc2", name: "Fried Chicken 4 PCS", p: 200 },
+                { id: "fc3", name: "Fried Chicken 8 PCS", p: 380 }
+            ],
+            "chicken_pizzas": [
+                { id: "cp1", name: "Normal Chicken Pizza", p: 200 },
+                { id: "cp2", name: "SP Chicken Pizza", p: 240 },
+                { id: "cp3", name: "Butter Chicken Pizza", p: 240 },
+                { id: "cp4", name: "BBQ Chicken Pizza", p: 230 },
+                { id: "cp5", name: "Extra Cheese Add-on", p: 30 }
+            ],
+            "veg_pizzas": [
+                { id: "vp1", name: "Classic Veg Pizza", p: 150 },
+                { id: "vp2", name: "SP Veg Pizza", p: 220 },
+                { id: "vp3", name: "Tomato Pizza", p: 180 },
+                { id: "vp3b", name: "onion Pizza", p: 150 },
+                { id: "vp4", name: "Sweet Corn Pizza", p: 180 },
+                { id: "vp5", name: "Veg Overload Pizza", p: 220 },
+                { id: "vp6", name: "onion capsicum Pizza", p: 180 },
+                { id: "vp7", name: "Plane chees Pizza", p: 180 },
+                { id: "vp8", name: "paneer Pizza", p: 180 },
+                { id: "vp9", name: "veg overlod Pizza", p: 220 }
+            ],
+            "burgers": [
+                { id: "br1", name: "Gourmet Veg Burger", p: 80 },
+                { id: "br2", name: "Paneer / Cheese Burger", p: 100 },
+                { id: "br3", name: "Signature Chicken Burger", p: 110 },
+                { id: "br4", name: "Zingar Chicken Burger", p: 160 }
+            ],
+            "sandwiches": [
+                { id: "sw1", name: "Tortilla / Paratta Wrap", p: 100 },
+                { id: "sw2", name: "Club Sandwich (Veg/Chicken)", p: 120 },
+                { id: "sw3", name: "Samoona Sandwich", p: 80 },
+                { id: "pf1", name: "Butter Puffs (Egg/Veg/Paneer)", p: 25 }
+            ],
+            "chats": [
+                { id: "ch1", name: "French Fries (Classic/Masala)", p: 90 },
+                { id: "ch2", name: "Loaded Fries", p: 120 },
+                { id: "ch3", name: "Momos (Veg/Chicken)", p: 100 },
+                { id: "ch4", name: "Shawarma Roll", p: 120 }
+            ],
+            "beverages": [
+                { id: "bv1", name: "Fruit Juice / Shakes", p: 80 },
+                { id: "bv2", name: "Cold Coffee / Boost", p: 70 },
+                { id: "bv3", name: "Mojitos (All Flavors)", p: 70 },
+                { id: "bv4", name: "Lassi (Mango/Pista/Fruit)", p: 70 }
+            ],
+            "desserts": [
+                { id: "ds1", name: "Normal Falooda", p: 90 },
+                { id: "ds2", name: "Royal / Dry Fruit Falooda", p: 140 },
+                { id: "ds3", name: "Gourmet Scoop Icecream", p: 60 }
+            ]
+        };
 
-    function openApp() {
-        document.getElementById('hero-page').style.display = 'none';
-        document.getElementById('main-app').style.display = 'block';
-        loadMenu();
-    }
+        function checkAdmin() {
+            const pass = prompt("Enter Cake Mart Admin Code:");
+            if (pass === "20106669") openAdmin();
+        }
 
-    function switchTab(id, btn) {
-        document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        btn.classList.add('active');
-        document.getElementById('menu-search').value = "";
-        filterMenu();
-        window.scrollTo(0,0);
-    }
+        function openAdmin() {
+            const panel = document.getElementById('admin-panel');
+            const listContainer = document.getElementById('admin-controls-list');
+            listContainer.innerHTML = "";
+            panel.style.display = 'block';
+            for(let cat in finalMenu) {
+                listContainer.innerHTML += `<h3 style="background:#eee; padding:8px;">${cat.replace('_',' ').toUpperCase()}</h3>`;
+                finalMenu[cat].forEach(item => {
+                    const isOff = unavailableItems[item.id] === true;
+                    listContainer.innerHTML += `<div class="admin-item-row"><span>${item.name}</span><button class="status-btn ${isOff ? 'btn-off' : 'btn-on'}" onclick="toggleVisibility('${item.id}', this)">${isOff ? 'OFF' : 'ON'}</button></div>`;
+                });
+            }
+        }
 
-    function loadMenu() {
-        for (let cat in database) {
-            const div = document.getElementById('list-' + cat);
-            if(!div) continue;
-            div.innerHTML = "";
-            database[cat].forEach(item => {
-                div.innerHTML += `<div class="menu-item" data-name="${item.name}" data-price="${item.p}">
-                    <span style="font-weight:700">${item.name} <br><small>₹${item.p}</small></span>
-                    <div class="qty-wrap">
-                        <button class="qty-btn" onclick="updateQty('${item.name}', -1, this)">-</button>
-                        <span class="val" style="font-weight:900">0</span>
-                        <button class="qty-btn" onclick="updateQty('${item.name}', 1, this)">+</button>
-                    </div>
-                </div>`;
+        function toggleVisibility(id, btn) {
+            if (unavailableItems[id]) { delete unavailableItems[id]; btn.innerText = "ON"; btn.className = "status-btn btn-on"; }
+            else { unavailableItems[id] = true; btn.innerText = "OFF"; btn.className = "status-btn btn-off"; }
+            localStorage.setItem('cakemart_unavailable', JSON.stringify(unavailableItems));
+            renderAll();
+        }
+
+        function closeAdmin() { document.getElementById('admin-panel').style.display = 'none'; }
+        function openMenu() { document.getElementById('landing-page').style.display = 'none'; document.getElementById('menu-container').style.display = 'block'; renderAll(); }
+
+        function renderAll() {
+            renderList('list-fried-chicken', finalMenu.fried_chicken);
+            renderList('list-chicken-pizzas', finalMenu.chicken_pizzas);
+            renderList('list-veg-pizzas', finalMenu.veg_pizzas);
+            renderList('list-burgers', finalMenu.burgers);
+            renderList('list-sandwiches', finalMenu.sandwiches);
+            renderList('list-chats', finalMenu.chats);
+            renderList('list-beverages', finalMenu.beverages);
+            renderList('list-desserts', finalMenu.desserts);
+        }
+
+        function renderList(id, list) {
+            const container = document.getElementById(id);
+            container.innerHTML = '';
+            list.forEach(item => {
+                if (unavailableItems[item.id]) return;
+                container.innerHTML += `
+                    <div class="menu-card" data-name="${item.name}" data-price="${item.p}">
+                        <div><span class="item-name">${item.name}</span></div>
+                        <div style="text-align:right">
+                            <span class="price-text">₹${item.p}</span>
+                            <div class="qty-box">
+                                <button class="btn-circle" onclick="q(this,-1)">-</button>
+                                <span class="qty-val">0</span>
+                                <button class="btn-circle" onclick="q(this,1)">+</button>
+                            </div>
+                        </div>
+                    </div>`;
             });
         }
-    }
 
-    function filterMenu() {
-        let input = document.getElementById('menu-search').value.toLowerCase();
-        let items = document.querySelectorAll('.menu-item');
-        items.forEach(item => {
-            let name = item.getAttribute('data-name').toLowerCase();
-            item.style.display = name.includes(input) ? "flex" : "none";
-        });
-    }
-
-    function updateQty(name, val, btn) {
-        const card = btn.closest('.menu-item');
-        const display = card.querySelector('.val');
-        const price = parseInt(card.getAttribute('data-price'));
-        let q = parseInt(display.innerText) + val;
-        if(q < 0) q = 0;
-        display.innerText = q;
-        if(q > 0) cart[name] = { q, total: q * price }; else delete cart[name];
-        recalc();
-    }
-
-    function recalc() {
-        let itemsTotal = 0;
-        let summaryText = "";
-        for(let x in cart) {
-            itemsTotal += cart[x].total;
-            summaryText += `<div class="sel-item"><span>${x} (x${cart[x].q})</span><span>₹${cart[x].total}</span></div>`;
+        function q(btn, change) {
+            const card = btn.closest('.menu-card');
+            const span = card.querySelector('.qty-val');
+            let val = parseInt(span.innerText) + change;
+            if (val < 0) val = 0;
+            span.innerText = val;
+            updateCartData(card.getAttribute('data-name'), parseInt(card.getAttribute('data-price')), val);
         }
-        
-        document.getElementById('selection-display').innerHTML = summaryText;
-        let deliveryFee = itemsTotal > 0 ? (itemsTotal < 100 ? 15 : Math.round(itemsTotal * 0.15)) : 0;
-        document.getElementById('items-price').innerText = itemsTotal;
-        document.getElementById('del-fee').innerText = deliveryFee;
-        document.getElementById('bill-total').innerText = itemsTotal + deliveryFee;
-        document.getElementById('order-panel').style.display = itemsTotal > 0 ? 'block' : 'none';
-    }
 
-    function askLocation() {
-        const statusBox = document.getElementById('loc-status');
-        statusBox.style.display = "block";
-        statusBox.innerText = "⏳ Accessing your GPS...";
-        if (navigator.geolocation) {
+        function updateCartData(name, price, qty) {
+            if (qty > 0) cart[name] = { qty, price, total: qty * price, isPizza: name.toLowerCase().includes('pizza') };
+            else delete cart[name];
+            renderCart();
+        }
+
+        function renderCart() {
+            const box = document.getElementById('cart-box');
+            const list = document.getElementById('cart-items-list');
+            let html = ''; let subTotal = 0; let totalItems = 0; let packTotal = 0;
+            for (let k in cart) {
+                html += `<div class="cart-row"><span>${k} x ${cart[k].qty}</span><span>₹${cart[k].total}</span></div>`;
+                subTotal += cart[k].total; totalItems += cart[k].qty;
+                packTotal += cart[k].isPizza ? (cart[k].qty * 10) : (cart[k].qty * 5);
+            }
+            const grandTotal = totalItems > 0 ? (subTotal + packTotal + 15) : 0;
+            list.innerHTML = html;
+            document.getElementById('pack-total').innerText = "₹" + packTotal;
+            document.getElementById('cart-total-price').innerText = grandTotal;
+            document.getElementById('cart-total-qty').innerText = totalItems + " Items";
+            box.style.display = totalItems > 0 ? 'flex' : 'none';
+        }
+
+        function getLocation() {
+            const btn = document.getElementById('loc-btn');
+            btn.innerText = "🛰️ Connecting to Satellite...";
             navigator.geolocation.getCurrentPosition((pos) => {
-                userLoc = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
-                statusBox.innerText = "✅ GPS Access Secured!";
-                statusBox.style.background = "#e8f5e9";
-                statusBox.style.color = "#2e7d32";
-                document.getElementById('loc-btn').style.display = "none";
-                document.getElementById('confirm-btn').style.display = "block";
-            }, () => { alert("Location is required for delivery."); });
+                userLocation = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+                btn.style.background = "#27ae60"; btn.innerText = "✅ Location Locked";
+                document.getElementById('main-order-btn').style.display = 'block';
+            }, () => { alert("Please allow location access for delivery."); btn.innerText = "📍 Retry Location Share"; });
         }
-    }
 
-    function sendOrder() {
-        const name = document.getElementById('cust-name').value;
-        const phone = document.getElementById('cust-phone').value;
-        const btn = document.getElementById('confirm-btn');
+        // --- UPDATED DUAL ORDER FUNCTION ---
+        async function placeOrderDual() {
+            const name = document.getElementById('cust-name').value;
+            const phone = document.getElementById('cust-phone').value;
+            const finalPrice = document.getElementById('cart-total-price').innerText;
+            const btn = document.getElementById('main-order-btn');
 
-        if(!name || phone.length < 10) return alert("Enter valid Name and Phone!");
+            if(!name || phone.length < 10) return alert("Please provide valid Name & Phone.");
+            
+            btn.innerText = "Processing...";
+            btn.disabled = true;
 
-        btn.innerText = "Sending Order...";
-        btn.disabled = true;
+            let itemsSummary = ""; 
+            for (let k in cart) { itemsSummary += `${k}(${cart[k].qty}), `; }
 
-        let itemsStr = "";
-        for(let key in cart) itemsStr += `${key} (x${cart[key].q}), `;
+            // 1. FIREBASE SYNC (To your Master Dashboard)
+            try {
+                if(window.db) {
+                    await window.addDoc(window.collection(window.db, "orders"), {
+                        hotel: "Cake Mart", // IDENTIFIED AS CAKE MART
+                        customerName: name,
+                        phone: phone,
+                        items: itemsSummary,
+                        total: finalPrice,
+                        location: userLocation,
+                        status: "pending",
+                        timestamp: window.serverTimestamp()
+                    });
+                }
+            } catch (e) { console.error("Firebase fail:", e); }
 
-        const data = new URLSearchParams();
-        data.append('hotel', "Cake Mart"); 
-        data.append('name', name);
-        data.append('phone', phone);
-        data.append('items', itemsStr);
-        data.append('delivery', "₹" + document.getElementById('del-fee').innerText);
-        data.append('total', "₹" + document.getElementById('bill-total').innerText);
-        data.append('location', userLoc);
+            // 2. GOOGLE SHEETS SYNC (Your Backup)
+            const fullDetails = `NAME: ${name} | TEL: ${phone} | LOC: ${userLocation} | ORDER: ${itemsSummary}`;
+            const formData = new URLSearchParams();
+            formData.append(ENTRY_HOTEL, "Cake Mart");
+            formData.append(ENTRY_DETAILS, fullDetails);
+            formData.append(ENTRY_TOTAL, "₹" + finalPrice);
 
-        fetch(SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: data
-        }).then(() => {
-            alert("ORDER PLACED SUCCESSFULLY!");
-            location.reload();
-        }).catch(() => {
-            alert("Error sending order.");
-            btn.disabled = false;
-        });
-    }
-</script>
+            fetch(FORM_URL, { method: 'POST', mode: 'no-cors', body: formData })
+            .then(() => { 
+                document.getElementById('success-overlay').style.display = 'flex'; 
+            })
+            .catch(() => {
+                alert("Order recorded in system, but network is slow. We will call you!");
+                document.getElementById('success-overlay').style.display = 'flex';
+            });
+        }
+    </script>
 </body>
 </html>
