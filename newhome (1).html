@@ -1,87 +1,84 @@
 <div class="aesthetic-overlay">
     <div class="glass-card">
-        <div class="icon-header">🍽️</div>
-        <h1>Taking a Flavor Break</h1>
-        <p>We're out exploring new tastes today so we can serve you better tomorrow.</p>
+        <div class="icon-header">🍴</div>
+        <h1>Taking a Break</h1>
+        <p>We're out with friends today. We’ll be back to serve you fresh meals tomorrow!</p>
         
         <div class="status-badge">
-            <span class="dot"></span> Closed for today
+            <span class="dot"></span> Closed Today
         </div>
 
         <div class="info-footer">
-            <p>Back in the kitchen on <strong>April 30th</strong></p>
-            <p class="small">Follow us on Instagram for updates!</p>
+            <p>Back on <strong>April 30th</strong></p>
         </div>
     </div>
 </div>
 
 <style>
-    /* 1. The Full-Screen Background */
+    /* 1. The Full-Screen Background - Fixed Zoom Issue */
     .aesthetic-overlay {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
-        height: 100%;
+        height: 100vh; /* Use viewport height */
         z-index: 10000;
         display: flex;
         justify-content: center;
         align-items: center;
-        /* Using a high-quality food pattern or soft gradient */
-        background: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%);
-        background-image: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=2070&auto=format&fit=crop'); 
+        background: #1a1a1a; /* Fallback color */
+        background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
+                          url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1000&auto=format&fit=crop'); 
         background-size: cover;
-        background-position: center;
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        background-position: center center;
+        background-attachment: scroll; /* Prevents zoom issues on mobile browsers */
+        font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        padding: 20px; /* Prevents card from touching screen edges */
+        box-sizing: border-box;
     }
 
-    /* 2. The Glass-morphism Card */
+    /* 2. The Card - Fixed Width for Mobile */
     .glass-card {
-        background: rgba(255, 255, 255, 0.85);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        padding: 50px 40px;
-        border-radius: 30px;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        padding: 40px 30px;
+        border-radius: 24px;
         text-align: center;
-        max-width: 450px;
-        width: 90%;
+        max-width: 400px; /* Maximum width for desktop */
+        width: 100%;      /* Full width for mobile */
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
         animation: float 4s ease-in-out infinite;
     }
 
-    /* 3. Typography & Elements */
-    .icon-header {
-        font-size: 50px;
-        margin-bottom: 15px;
-    }
+    /* 3. Text Styling */
+    .icon-header { font-size: 45px; margin-bottom: 10px; }
 
     h1 {
         color: #2d3436;
-        font-weight: 800;
-        font-size: 2rem;
+        font-size: 1.75rem; /* Scaled down for mobile */
         margin-bottom: 15px;
-        letter-spacing: -0.5px;
+        font-weight: 800;
     }
 
     p {
         color: #636e72;
-        font-size: 1.1rem;
+        font-size: 1rem;
         line-height: 1.5;
-        margin-bottom: 25px;
+        margin-bottom: 20px;
     }
 
     /* 4. Status Badge */
     .status-badge {
         display: inline-flex;
         align-items: center;
-        background: #ffeaa7;
-        color: #d35400;
-        padding: 8px 20px;
+        background: #fff3e0;
+        color: #e67e22;
+        padding: 8px 16px;
         border-radius: 50px;
         font-weight: 600;
-        font-size: 0.9rem;
-        margin-bottom: 30px;
+        font-size: 0.85rem;
+        margin-bottom: 20px;
     }
 
     .dot {
@@ -89,32 +86,33 @@
         width: 8px;
         background-color: #e67e22;
         border-radius: 50%;
-        display: inline-block;
-        margin-right: 10px;
+        margin-right: 8px;
         animation: pulse 1.5s infinite;
     }
 
     .info-footer {
-        border-top: 1px solid rgba(0,0,0,0.05);
-        padding-top: 20px;
+        border-top: 1px solid #eee;
+        padding-top: 15px;
     }
 
-    .small {
-        font-size: 0.85rem;
-        color: #b2bec3;
-        margin-top: 10px;
+    /* 5. Mobile-Specific Adjustments */
+    @media (max-width: 480px) {
+        .glass-card {
+            padding: 30px 20px;
+        }
+        h1 {
+            font-size: 1.5rem;
+        }
     }
 
-    /* 5. Animations */
+    /* Animations */
     @keyframes float {
-        0% { transform: translateY(0px); }
-        50% { transform: translateY(-15px); }
-        100% { transform: translateY(0px); }
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
     }
-
     @keyframes pulse {
-        0% { transform: scale(0.95); opacity: 0.7; }
-        70% { transform: scale(1.2); opacity: 1; }
-        100% { transform: scale(0.95); opacity: 0.7; }
+        0% { opacity: 0.4; }
+        50% { opacity: 1; }
+        100% { opacity: 0.4; }
     }
 </style>
