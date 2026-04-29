@@ -1,0 +1,120 @@
+<div class="aesthetic-overlay">
+    <div class="glass-card">
+        <div class="icon-header">🍽️</div>
+        <h1>Taking a Flavor Break</h1>
+        <p>We're out exploring new tastes today so we can serve you better tomorrow.</p>
+        
+        <div class="status-badge">
+            <span class="dot"></span> Closed for today
+        </div>
+
+        <div class="info-footer">
+            <p>Back in the kitchen on <strong>April 30th</strong></p>
+            <p class="small">Follow us on Instagram for updates!</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* 1. The Full-Screen Background */
+    .aesthetic-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 10000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* Using a high-quality food pattern or soft gradient */
+        background: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%);
+        background-image: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=2070&auto=format&fit=crop'); 
+        background-size: cover;
+        background-position: center;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    /* 2. The Glass-morphism Card */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        padding: 50px 40px;
+        border-radius: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        text-align: center;
+        max-width: 450px;
+        width: 90%;
+        animation: float 4s ease-in-out infinite;
+    }
+
+    /* 3. Typography & Elements */
+    .icon-header {
+        font-size: 50px;
+        margin-bottom: 15px;
+    }
+
+    h1 {
+        color: #2d3436;
+        font-weight: 800;
+        font-size: 2rem;
+        margin-bottom: 15px;
+        letter-spacing: -0.5px;
+    }
+
+    p {
+        color: #636e72;
+        font-size: 1.1rem;
+        line-height: 1.5;
+        margin-bottom: 25px;
+    }
+
+    /* 4. Status Badge */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        background: #ffeaa7;
+        color: #d35400;
+        padding: 8px 20px;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 30px;
+    }
+
+    .dot {
+        height: 8px;
+        width: 8px;
+        background-color: #e67e22;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 10px;
+        animation: pulse 1.5s infinite;
+    }
+
+    .info-footer {
+        border-top: 1px solid rgba(0,0,0,0.05);
+        padding-top: 20px;
+    }
+
+    .small {
+        font-size: 0.85rem;
+        color: #b2bec3;
+        margin-top: 10px;
+    }
+
+    /* 5. Animations */
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-15px); }
+        100% { transform: translateY(0px); }
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(0.95); opacity: 0.7; }
+        70% { transform: scale(1.2); opacity: 1; }
+        100% { transform: scale(0.95); opacity: 0.7; }
+    }
+</style>
