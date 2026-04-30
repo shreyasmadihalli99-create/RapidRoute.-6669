@@ -186,19 +186,19 @@
 
         <footer>
             <p><strong>Cake Mart - The European Bakery</strong></p>
-            <p>Packing: Pizza ₹10 | Others ₹5<br>Delivery: ₹10 | Convenience: ₹5</p>
+            <p>Packing: Pizza ₹10 | Others ₹5</p>
         </footer>
     </div>
 
     <div id="cart-box">
         <div style="font-weight: 800; margin-bottom: 12px; color: var(--primary); font-size: 1.2rem;">Your Selection</div>
-        <input type="text" id="cust-name" class="details-input" placeholder="Guest Name" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '');">
+        <input type="text" id="cust-name" class="details-input" placeholder="Customer Name" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '');">
         <input type="tel" id="cust-phone" class="details-input" placeholder="10-Digit Phone" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
         <button id="loc-btn" class="loc-btn" onclick="getLocation()">📍 Set Delivery Location</button>
         <div id="cart-items-list"></div>
         <div id="fees-container">
             <div class="fee-row"><span>Eco-Packing Charge</span><span id="pack-total">₹0</span></div>
-            <div class="fee-row"><span>Service & Delivery</span><span>₹15</span></div>
+            <div class="fee-row"><span id="delivery-label">Service & Delivery</span><span id="delivery-charge-total">₹0</span></div>
         </div>
         <div class="cart-footer">
             <div>
@@ -210,7 +210,6 @@
     </div>
 
     <script>
-        // Keeping your original Sheet URLs as fallback
         const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfYGXB2Lim7wtiFCYy8U7MtV9DN9X2Tm7zSkx-qYxPLSLRcUg/formResponse";
         const ENTRY_DETAILS = "entry.1304197339";
         const ENTRY_TOTAL = "entry.248975380";
@@ -351,18 +350,38 @@
             renderCart();
         }
 
+        // --- UPDATED PRICING LOGIC ---
         function renderCart() {
             const box = document.getElementById('cart-box');
             const list = document.getElementById('cart-items-list');
+            const deliveryLabel = document.getElementById('delivery-label');
+            const deliveryValDisplay = document.getElementById('delivery-charge-total');
+            
             let html = ''; let subTotal = 0; let totalItems = 0; let packTotal = 0;
+            
             for (let k in cart) {
                 html += `<div class="cart-row"><span>${k} x ${cart[k].qty}</span><span>₹${cart[k].total}</span></div>`;
                 subTotal += cart[k].total; totalItems += cart[k].qty;
-                packTotal += cart[k].isPizza ? (cart[k].qty * 10) : (cart[k].qty * 5);
+                packTotal += cart[k].isPizza ? (cart[k].qty * 10) : (cart[k].qty * 10);
             }
-            const grandTotal = totalItems > 0 ? (subTotal + packTotal + 15) : 0;
+
+            // DELIVERY LOGIC: Below 100 is 15, Else 15%
+            let deliveryCharge = 0;
+            if(subTotal > 0) {
+                if(subTotal <= 100) {
+                    deliveryCharge = 15;
+                    deliveryLabel.innerText = "Service & Delivery (Flat)";
+                } else {
+                    deliveryCharge = Math.round(subTotal * 0.15);
+                    deliveryLabel.innerText = "Service & Delivery (15%)";
+                }
+            }
+
+            const grandTotal = totalItems > 0 ? (subTotal + packTotal + deliveryCharge) : 0;
+            
             list.innerHTML = html;
             document.getElementById('pack-total').innerText = "₹" + packTotal;
+            deliveryValDisplay.innerText = "₹" + deliveryCharge;
             document.getElementById('cart-total-price').innerText = grandTotal;
             document.getElementById('cart-total-qty').innerText = totalItems + " Items";
             box.style.display = totalItems > 0 ? 'flex' : 'none';
@@ -378,7 +397,6 @@
             }, () => { alert("Please allow location access for delivery."); btn.innerText = "📍 Retry Location Share"; });
         }
 
-        // --- UPDATED DUAL ORDER FUNCTION ---
         async function placeOrderDual() {
             const name = document.getElementById('cust-name').value;
             const phone = document.getElementById('cust-phone').value;
@@ -393,11 +411,10 @@
             let itemsSummary = ""; 
             for (let k in cart) { itemsSummary += `${k}(${cart[k].qty}), `; }
 
-            // 1. FIREBASE SYNC (To your Master Dashboard)
             try {
                 if(window.db) {
                     await window.addDoc(window.collection(window.db, "orders"), {
-                        hotel: "Cake Mart", // IDENTIFIED AS CAKE MART
+                        hotel: "Cake Mart",
                         customerName: name,
                         phone: phone,
                         items: itemsSummary,
@@ -409,7 +426,6 @@
                 }
             } catch (e) { console.error("Firebase fail:", e); }
 
-            // 2. GOOGLE SHEETS SYNC (Your Backup)
             const fullDetails = `NAME: ${name} | TEL: ${phone} | LOC: ${userLocation} | ORDER: ${itemsSummary}`;
             const formData = new URLSearchParams();
             formData.append(ENTRY_HOTEL, "Cake Mart");
