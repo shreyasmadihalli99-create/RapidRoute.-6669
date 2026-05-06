@@ -177,6 +177,7 @@
             
             <div style="border-top: 1px dashed #ccc; padding: 10px 0; font-size: 0.9rem; color: #444; font-weight: 600;">
                 <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>Items Total</span><span id="subtotal-val">₹0</span></div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>GST (5%)</span><span id="gst-val">₹0</span></div>
                 <div style="display:flex; justify-content:space-between;"><span>Delivery Charge</span><span id="delivery-val">₹0</span></div>
             </div>
 
@@ -483,7 +484,6 @@
         renderItems(Object.keys(menuData)[0]);
     }
 
-    /* SEARCH FILTER LOGIC */
     function filterMenu() {
         let input = document.getElementById('menu-search').value.toLowerCase();
         let items = document.querySelectorAll('.menu-item');
@@ -561,27 +561,36 @@
     }
 
     function updateGlobalCart() {
-        let subtotal = 0, itemCount = 0, listHtml = "";
+        let baseSubtotal = 0, itemCount = 0, listHtml = "";
         for(let key in cart) { 
             itemCount++; 
             const cost = cart[key].qty * cart[key].price;
-            subtotal += cost; 
+            baseSubtotal += cost; 
             listHtml += `<div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>${cart[key].name} x ${cart[key].qty}</span><span>₹${cost}</span></div>`; 
         }
 
+        let gstAmount = 0;
+        let subtotalWithGST = 0;
         let deliveryCharge = 0;
-        if(subtotal > 0) {
-            if(subtotal <= 100) {
-                deliveryCharge = 15;
+
+        if(baseSubtotal > 0) {
+            // Step 1: Add 5% GST
+            gstAmount = Math.round(baseSubtotal * 0.05);
+            subtotalWithGST = baseSubtotal + gstAmount;
+
+            // Step 2: Apply Delivery Logic on the Price with GST
+            if(subtotalWithGST > 100) {
+                deliveryCharge = Math.round(subtotalWithGST * 0.15); // 15% charge
             } else {
-                deliveryCharge = Math.round(subtotal * 0.15);
+                deliveryCharge = 15; // Flat 15 rupees
             }
         }
 
         document.getElementById('cart-summary').innerHTML = listHtml || "Your cart is empty";
-        document.getElementById('subtotal-val').innerText = "₹" + subtotal;
+        document.getElementById('subtotal-val').innerText = "₹" + baseSubtotal;
+        document.getElementById('gst-val').innerText = "₹" + gstAmount;
         document.getElementById('delivery-val').innerText = "₹" + deliveryCharge;
-        document.getElementById('grand-total').innerText = subtotal + deliveryCharge;
+        document.getElementById('grand-total').innerText = subtotalWithGST + deliveryCharge;
         document.getElementById('cart-popup').classList.toggle('active', itemCount > 0);
         if(itemCount === 0) resetGPSUI();
     }
@@ -590,34 +599,37 @@
         const btn = document.getElementById('loc-btn'); btn.innerText = "🛰️ ACCESSING GPS...";
         navigator.geolocation.getCurrentPosition((p) => {
             gpsLink = "https://www.google.com/maps?q=" + p.coords.latitude + "," + p.coords.longitude;
-            btn.style.display = "none"; document.getElementById('confirm-btn').style.display = "block";
-        }, () => { alert("Please enable GPS Location to proceed."); btn.innerText = "📍 Tap to Share Delivery Location"; }, {enableHighAccuracy: true});
+            btn.style.background = "#27ae60"; btn.innerText = "📍 LOCATION SECURED";
+            document.getElementById('confirm-btn').style.display = "block";
+        }, (err) => {
+            alert("Please allow GPS access to share delivery location.");
+            btn.innerText = "📍 Tap to Share Delivery Location";
+        });
     }
 
-    function resetGPSUI() { gpsLink = ""; document.getElementById('loc-btn').style.display = "block"; document.getElementById('confirm-btn').style.display = "none"; }
+    function resetGPSUI() {
+        gpsLink = "";
+        const btn = document.getElementById('loc-btn');
+        btn.style.background = "#2196F3";
+        btn.innerText = "📍 Tap to Share Delivery Location";
+        document.getElementById('confirm-btn').style.display = "none";
+    }
 
-    async function submitOrder() {
-        const n = document.getElementById('cust-name').value;
-        const p = document.getElementById('cust-phone').value;
-        if(!n || p.length < 10) return alert("Valid Name and 10-digit Phone are required.");
-
-        const btn = document.getElementById('confirm-btn');
-        btn.innerText = "PROCESSING..."; btn.disabled = true;
-
-        let finalItemsString = ""; for(let k in cart) finalItemsString += `${cart[k].name}(x${cart[k].qty}), `;
-
-        const data = {
-            hotel: "Hotel Pushkar", name: n, phone: p, items: finalItemsString.slice(0, -2),
-            total: "₹" + document.getElementById('grand-total').innerText, location: gpsLink
+    function submitOrder() {
+        const name = document.getElementById('cust-name').value;
+        const phone = document.getElementById('cust-phone').value;
+        if(!name || phone.length < 10) return alert("Enter valid Name & 10-digit Phone");
+        
+        const orderData = {
+            name, phone, gps: gpsLink,
+            items: JSON.stringify(cart),
+            total: document.getElementById('grand-total').innerText
         };
 
-        try {
-            await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(data), mode: 'no-cors' });
-            document.getElementById('success-screen').style.display = 'flex';
-        } catch(e) { 
-            alert("Error sending order. Try again.");
-            btn.innerText = "Place Order Now"; btn.disabled = false;
-        }
+        fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(orderData) })
+        .then(() => {
+            document.getElementById('success-screen').style.display = "flex";
+        });
     }
 </script>
 </body>
