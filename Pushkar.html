@@ -42,12 +42,11 @@
 
         #menu-page { display: none; max-width: 900px; margin: 0 auto; padding-bottom: 450px; }
         
-        /* SEARCH BAR STYLING */
         .search-container {
             padding: 15px;
             background: white;
             position: sticky;
-            top: 65px; /* Sits below tabs */
+            top: 65px;
             z-index: 999;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
@@ -168,8 +167,8 @@
         <div class="cart-popup" id="cart-popup">
             <div style="font-weight:bold; margin-bottom:15px; font-size: 1.1rem; border-bottom: 1px solid #eee; padding-bottom: 10px;">Finalize Your Order</div>
             
-            <input type="text" id="cust-name" class="delivery-input" placeholder="Your Full Name" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
-            <input type="tel" id="cust-phone" class="delivery-input" placeholder="10-Digit Mobile Number" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+            <input type="text" id="cust-name" class="delivery-input" placeholder="Your Full Name">
+            <input type="tel" id="cust-phone" class="delivery-input" placeholder="10-Digit Mobile Number" maxlength="10">
             
             <button class="loc-btn" id="loc-btn" onclick="getGPS()">📍 Tap to Share Delivery Location</button>
             
@@ -190,7 +189,9 @@
     </main>
 
 <script>
+    // THE URL EXTRACTED FROM YOUR PREVIOUS SCRIPT
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2CcnPwPfW3lFfxQKf7x0-oarxx28K4K2INt8yFAl1d5hwdCwJpITJdFYJxrOuDwDm/exec";
+    
     let cart = {}; let gpsLink = "";
     let disabledItems = JSON.parse(localStorage.getItem('pushkar_status')) || {};
 
@@ -476,7 +477,7 @@
             btn.onclick = (e) => {
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
                 e.target.classList.add('active'); 
-                document.getElementById('menu-search').value = ""; // Clear search on tab switch
+                document.getElementById('menu-search').value = "";
                 renderItems(cat);
             };
             tabs.appendChild(btn);
@@ -495,7 +496,7 @@
 
     function renderItems(cat) {
         document.getElementById('cat-title').innerText = cat;
-        document.getElementById('cat-banner').src = categoryImages[cat] || "https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=800&q=80";
+        document.getElementById('cat-banner').src = categoryImages[cat];
         const container = document.getElementById('items-container'); container.innerHTML = "";
         
         menuData[cat].forEach(item => {
@@ -569,21 +570,12 @@
             listHtml += `<div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>${cart[key].name} x ${cart[key].qty}</span><span>₹${cost}</span></div>`; 
         }
 
-        let gstAmount = 0;
-        let subtotalWithGST = 0;
-        let deliveryCharge = 0;
+        let gstAmount = 0, subtotalWithGST = 0, deliveryCharge = 0;
 
         if(baseSubtotal > 0) {
-            // Step 1: Add 5% GST
             gstAmount = Math.round(baseSubtotal * 0.05);
             subtotalWithGST = baseSubtotal + gstAmount;
-
-            // Step 2: Apply Delivery Logic on the Price with GST
-            if(subtotalWithGST > 100) {
-                deliveryCharge = Math.round(subtotalWithGST * 0.15); // 15% charge
-            } else {
-                deliveryCharge = 15; // Flat 15 rupees
-            }
+            deliveryCharge = subtotalWithGST > 100 ? Math.round(subtotalWithGST * 0.15) : 15;
         }
 
         document.getElementById('cart-summary').innerHTML = listHtml || "Your cart is empty";
@@ -615,20 +607,43 @@
         document.getElementById('confirm-btn').style.display = "none";
     }
 
+    // THE FIXED ORDER SUBMISSION LOGIC
     function submitOrder() {
-        const name = document.getElementById('cust-name').value;
-        const phone = document.getElementById('cust-phone').value;
+        const name = document.getElementById('cust-name').value.trim();
+        const phone = document.getElementById('cust-phone').value.trim();
+        const grandTotal = document.getElementById('grand-total').innerText;
+        
         if(!name || phone.length < 10) return alert("Enter valid Name & 10-digit Phone");
         
-        const orderData = {
-            name, phone, gps: gpsLink,
-            items: JSON.stringify(cart),
-            total: document.getElementById('grand-total').innerText
-        };
+        // Convert cart object to a readable string for the sheet
+        let itemSummary = "";
+        for(let k in cart) {
+            itemSummary += `${cart[k].name} (Qty: ${cart[k].qty}), `;
+        }
 
-        fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(orderData) })
+        // Data keys must match your Apps Script 'e.parameter.KEY' exactly
+        const formData = new URLSearchParams();
+        formData.append("name", name);
+        formData.append("phone", phone);
+        formData.append("gps", gpsLink);
+        formData.append("items", itemSummary);
+        formData.append("total", grandTotal);
+
+        document.getElementById('confirm-btn').innerText = "SENDING...";
+        document.getElementById('confirm-btn').disabled = true;
+
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors', // Standard for Google Apps Script Web Apps
+            body: formData
+        })
         .then(() => {
             document.getElementById('success-screen').style.display = "flex";
+        })
+        .catch(err => {
+            alert("Submission error. Please check your internet.");
+            document.getElementById('confirm-btn').innerText = "Place Order Now";
+            document.getElementById('confirm-btn').disabled = false;
         });
     }
 </script>
