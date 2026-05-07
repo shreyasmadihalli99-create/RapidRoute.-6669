@@ -243,6 +243,22 @@
             margin-bottom: 5px;
         }
 
+        .location-btn {
+            background: #0277bd;
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 12px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        .location-btn.success {
+            background: #2e7d32;
+        }
+
         .confirm-btn {
             background: #2e7d32;
             color: white;
@@ -254,6 +270,13 @@
             font-weight: 900;
             cursor: pointer;
             margin-top: 10px;
+            opacity: 0.4;
+            pointer-events: none; /* Locked by default */
+        }
+
+        .confirm-btn.unlocked {
+            opacity: 1;
+            pointer-events: auto;
         }
 
         #success-screen {
@@ -311,8 +334,11 @@
         <div class="cart-popup" id="cart-popup">
             <h3 style="margin-top: 0;">Order Details</h3>
             <input type="text" id="cust-name" class="delivery-input" placeholder="Your Name">
-            <input type="tel" id="cust-phone" class="delivery-input" placeholder="Mobile Number">
             
+            <input type="tel" id="cust-phone" class="delivery-input" placeholder="Mobile Number (10 Digits)" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, ''); validateForm();">
+            
+            <button id="loc-btn" class="location-btn" onclick="getLocation()">📍 Share My Location</button>
+
             <div id="cart-summary" style="max-height: 120px; overflow-y: auto; margin: 10px 0; border-bottom: 1px solid #eee;"></div>
             
             <div class="charge-row"><span>Subtotal:</span><span>₹<span id="sub-total">0</span></span></div>
@@ -324,7 +350,7 @@
                 <span>₹<span id="grand-total">0</span></span>
             </div>
             
-            <button class="confirm-btn" onclick="submitOrder()">Confirm & Send Order</button>
+            <button id="confirm-btn" class="confirm-btn" onclick="submitOrder()">Confirm & Send Order</button>
         </div>
     </main>
 
@@ -333,7 +359,9 @@
     
     let cart = {};
     let disabledItems = JSON.parse(localStorage.getItem('pushkar_status')) || {};
+    let userLocation = null;
 
+    // --- YOUR DATA REMAINS THE SAME ---
     const menuData = {
         "STARTERS": [
             { id: "s1", name: "ROASTED PAPAD", price: 30 },
@@ -576,6 +604,47 @@
         "VEG THALI": "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?q=80&w=800&auto=format&fit=crop"
     };
 
+    // --- NEW LOGIC FOR VALIDATION & LOCATION ---
+
+    function validateForm() {
+        const phone = document.getElementById('cust-phone').value;
+        const confirmBtn = document.getElementById('confirm-btn');
+        
+        // Unlocks ONLY if phone is 10 digits AND location is captured
+        if (phone.length === 10 && userLocation !== null) {
+            confirmBtn.classList.add('unlocked');
+        } else {
+            confirmBtn.classList.remove('unlocked');
+        }
+    }
+
+    function getLocation() {
+        const btn = document.getElementById('loc-btn');
+        btn.innerText = "⌛ Accessing GPS...";
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    btn.innerText = "✅ Location Shared";
+                    btn.classList.add('success');
+                    validateForm(); // Re-check button lock
+                },
+                (error) => {
+                    alert("Please allow location access to continue.");
+                    btn.innerText = "📍 Share My Location";
+                }
+            );
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    }
+
+    // --- EXISTING FUNCTIONS (KEEPING YOUR ORIGINAL WORK) ---
+
     function openAdmin() {
         const pin = prompt("Enter Admin PIN:");
         if (pin === "20106669") {
@@ -707,14 +776,13 @@
             `;
         }
 
-        // Logic applied:
-        const gst = Math.round(subtotal * 0.05); // 5% GST
+        const gst = Math.round(subtotal * 0.05);
         let delivery = 0;
         if (subtotal > 0) {
             if (subtotal < 100) {
-                delivery = 15; // Flat 15 if < 100
+                delivery = 15;
             } else {
-                delivery = Math.round(subtotal * 0.15); // 15% if >= 100
+                delivery = Math.round(subtotal * 0.15);
             }
         }
 
@@ -726,6 +794,7 @@
         document.getElementById('grand-total').innerText = grandTotal;
         
         popup.classList.toggle('active', count > 0);
+        validateForm(); // Check validation when items change
     }
 
     function filterMenu() {
@@ -741,8 +810,8 @@
         const name = document.getElementById('cust-name').value;
         const phone = document.getElementById('cust-phone').value;
 
-        if (!name || !phone) {
-            alert("Please provide your name and phone number!");
+        if (!name || phone.length !== 10 || !userLocation) {
+            alert("Please fill name, 10-digit phone and share location!");
             return;
         }
 
@@ -751,6 +820,10 @@
         formData.append("name", name);
         formData.append("phone", phone);
         
+        // Added location coordinates to Sheet data
+        formData.append("location", `Lat: ${userLocation.lat}, Lng: ${userLocation.lng}`);
+        formData.append("google_maps_link", `https://www.google.com/maps?q=${userLocation.lat},${userLocation.lng}`);
+
         let itemsStr = "";
         for (let id in cart) {
             itemsStr += `${cart[id].name} (Qty: ${cart[id].qty}), `;
@@ -767,7 +840,7 @@
             mode: 'no-cors',
             body: formData
         }).then(() => {
-            document.getElementById('success-screen').style.display = "flex";
+            document.getElementById('success-screen').style.display = 'flex';
             cart = {};
         });
     }
