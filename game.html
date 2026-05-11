@@ -1,1 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>GoldKeeper</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  background:#111;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:100vh;
+  font-family:'Press Start 2P',monospace;
+  overflow:hidden;touch-action:none;
+}
+#ui-top{
+  width:340px;display:flex;justify-content:space-between;
+  align-items:center;margin-bottom:5px;
+}
+.ui-box{
+  background:#1a1a1a;border:2px solid var(--accent,#FFD700);
+  border-radius:6px;padding:4px 8px;text-align:center;
+}
+.ui-label{font-size:.3rem;color:var(--accent,#FFD700);margin-bottom:2px;}
+.ui-val{font-size:.7rem;color:#fff;}
+#xp-row{
+  width:340px;display:flex;align-items:center;gap:8px;margin-bottom:4px;
+}
+#xp-label{font-size:.3rem;color:var(--accent,#FFD700);white-space:nowrap;}
+#xp-wrap{
+  flex:1;height:7px;background:#333;border:1px solid #555;
+  border-radius:4px;overflow:hidden;
+}
+#xp-bar{height:100%;width:0%;background:var(--accent,#FFD700);transition:width .5s;}
+#level-badge{
+  font-size:.35rem;color:#111;background:var(--accent,#FFD700);
+  border-radius:4px;padding:3px 6px;white-space:nowrap;
+}
+#timer-wrap{
+  width:340px;height:8px;background:#333;border:2px solid #555;
+  border-radius:4px;margin-bottom:5px;overflow:hidden;
+}
+#timer-bar{height:100%;width:100%;background:#00ffcc;transition:background .3s;}
+canvas{display:block;border:3px solid var(--accent,#FFD700);border-radius:4px;}
+#btn-row{display:flex;gap:80px;margin-top:10px;}
+.arrow-btn{
+  width:90px;height:65px;background:#1a1a1a;
+  border:3px solid var(--accent,#FFD700);border-radius:12px;
+  font-size:2rem;color:var(--accent,#FFD700);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  -webkit-tap-highlight-color:transparent;user-select:none;
+  box-shadow:0 5px 0 #7a6000;transition:background .08s,transform .08s;
+}
+.arrow-btn.pressed{
+  background:var(--accent,#FFD700);color:#111;
+  transform:translateY(4px);box-shadow:0 1px 0 #7a6000;
+}
+#canvas-wrap{position:relative;}
+#overlay{
+  position:absolute;top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,.92);
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:10px;z-index:10;border-radius:2px;
+  overflow-y:auto;padding:10px 0;
+}
+#overlay h2{font-size:.85rem;color:var(--accent,#FFD700);text-align:center;line-height:2;text-shadow:0 0 12px var(--accent,#FFD700);}
+#overlay p{font-size:.38rem;color:#ccc;text-align:center;line-height:2.3;}
+.start-btn{
+  background:var(--accent,#FFD700);color:#111;border:none;
+  font-family:'Press Start 2P',monospace;font-size:.55rem;
+  padding:11px 24px;border-radius:6px;cursor:pointer;
+  box-shadow:0 5px 0 #7a6000;transition:transform .1s,box-shadow .1s;
+}
+.start-btn:active{transform:translateY(4px);box-shadow:0 1px 0 #7a6000;}
+#powerup-banner{
+  position:absolute;top:8px;left:0;right:0;
+  text-align:center;font-size:.38rem;
+  color:#fff;background:rgba(0,0,0,.7);
+  padding:5px;border-radius:4px;
+  opacity:0;transition:opacity .3s;
+  pointer-events:none;z-index:9;
+}
+#powerup-banner.show{opacity:1;}
 
+/* Leaderboard styles */
+#leaderboard{
+  width:310px;background:#0d0d0d;border:2px solid var(--accent,#FFD700);
+  border-radius:6px;padding:8px;max-height:170px;overflow-y:auto;
+}
+#leaderboard h3{
+  font-size:.38rem;color:var(--accent,#FFD700);text-align:center;
+  margin-bottom:6px;letter-spacing:2px;
+}
+.lb-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:4px 6px;border-radius:4px;margin-bottom:3px;
+  font-size:.3rem;
+}
+.lb-row.me{background:rgba(255,215,0,0.12);border:1px solid var(--accent,#FFD700);}
+.lb-row.rank1{background:rgba(255,215,0,0.2);}
+.lb-rank{width:22px;color:var(--accent,#FFD700);}
+.lb-name{flex:1;color:#ccc;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.lb-name.me-name{color:var(--accent,#FFD700);}
+.lb-coins{color:#fff;min-width:40px;text-align:right;}
+.lb-lv{color:#888;min-width:28px;text-align:right;margin-left:6px;}
+
+/* Name input overlay */
+#name-overlay{
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,.96);
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:14px;z-index:100;
+}
+#name-overlay h2{font-size:.85rem;color:var(--accent,#FFD700);text-align:center;line-height:2;}
+#name-overlay p{font-size:.35rem;color:#aaa;text-align:center;}
+#name-input{
+  background:#1a1a1a;border:2px solid var(--accent,#FFD700);
+  color:#fff;font-family:'Press Start 2P',monospace;font-size:.55rem;
+  padding:10px 14px;border-radius:6px;width:240px;text-align:center;
+  outline:none;
+}
+</style>
+</head>
+<body>
+
+<!-- Name entry (first time only) -->
+<div id="name-overlay" style="display:none;">
+  <h2>⭐ WELCOME! ⭐</h2>
+  <p>ENTER YOUR NAME<br>TO TRACK YOUR SCORE</p>
+  <input id="name-input" type="text" maxlength="10" placeholder="PLAYER" autocomplete="off" spellcheck="false">
+  <button class="start-btn" id="name-confirm-btn">✔ CONFIRM</button>
+</div>
+
+<div id="ui-top">
+  <div class="ui-box"><div class="ui-label">SCORE</div><div class="ui-val" id="score-el">0</div></div>
+  <div class="ui-box"><div class="ui-label">LIVES</div><div class="ui-val" id="lives-el">❤❤❤</div></div>
+  <div class="ui-box"><div class="ui-label">BEST</div><div class="ui-val" id="best-el">0</div></div>
+</div>
+
+<div id="xp-row">
+  <div id="xp-label">XP</div>
+  <div id="xp-wrap"><div id="xp-bar"></div></div>
+  <div id="level-badge">LV 1</div>
+</div>
+
+<div id="timer-wrap"><div id="timer-bar"></div></div>
+
+<div id="canvas-wrap">
+  <canvas id="gc" width="340" height="420"></canvas>
+  <div id="overlay">
+    <h2>⭐ GOLD<br>KEEPER ⭐</h2>
+    <p>CATCH COINS & GIFTS<br>BOMBS = LOSE A LIFE<br>MISSING = NO LIFE LOST<br><br>HOLD ◀ ▶ TO MOVE</p>
+    <!-- Leaderboard injected here by JS -->
+    <div id="lb-container"></div>
+    <button class="start-btn" id="start-btn">▶ KICK OFF</button>
+  </div>
+  <div id="powerup-banner"></div>
+</div>
+
+<div id="btn-row">
+  <button class="arrow-btn" id="btn-left">◀</button>
+  <button class="arrow-btn" id="btn-right">▶</button>
+</div>
+
+<script>
+// ============================================================
+// PLAYER IDENTITY — unique per device via localStorage
+// ============================================================
+function generatePlayerId(){
+  // fingerprint-ish seed for theme selection (unchanged)
+  const c=document.createElement('canvas');c.width=50;c.height=20;
+  const x=c.getContext('2d');x.fillText('fp',10,15);
+  const d=x.getImageData(0,0,50,20).data;
+  let h=screen.width*1000+screen.height+screen.colorDepth;
+  for(let i=0;i<d.length;i+=17)h=(h*31+d[i])&0xffffffff;
+  return 'PL_'+Math.abs(h)+'_'+Date.now().toString(36);
+}
+
+// Each device gets a unique player key stored in localStorage
+let PLAYER_ID=localStorage.getItem('gk_player_id');
+if(!PLAYER_ID){
+  PLAYER_ID=generatePlayerId();
+  localStorage.setItem('gk_player_id',PLAYER_ID);
+}
+
+// ============================================================
+// THEME — seeded from player ID (deterministic per device)
+// ============================================================
+const THEMES=[
+  {name:'NIGHT',  accent:'#FFD700',p1:'#1a1a2e',p2:'#16213e',ground:'#0a0a1a',groundLine:'#2244aa'},
+  {name:'SUNSET', accent:'#ff6b35',p1:'#2d1b00',p2:'#3d2400',ground:'#1a0d00',groundLine:'#ff6b35'},
+  {name:'ARCTIC', accent:'#00eeff',p1:'#0a2040',p2:'#0d2850',ground:'#061428',groundLine:'#00aacc'},
+  {name:'CLASSIC',accent:'#FFD700',p1:'#1a6b2a',p2:'#1e7a30',ground:'#0c380c',groundLine:'#2a8a2a'},
+  {name:'PURPLE', accent:'#cc88ff',p1:'#1a0030',p2:'#220040',ground:'#0d0018',groundLine:'#8844cc'},
+];
+const _seed=(()=>{let h=0;for(let i=0;i<PLAYER_ID.length;i++)h=(h*31+PLAYER_ID.charCodeAt(i))&0xffffffff;return Math.abs(h);})();
+const THEME=THEMES[_seed%THEMES.length];
+document.documentElement.style.setProperty('--accent',THEME.accent);
+
+// ============================================================
+// PER-PLAYER SAVE  (key = gk_save_ + PLAYER_ID)
+// ============================================================
+const SAVE_KEY='gk_save_'+PLAYER_ID;
+function loadSave(){
+  try{return JSON.parse(localStorage.getItem(SAVE_KEY))||{xp:0,level:1,best:0,totalCoins:0,gamesPlayed:0,name:''};}
+  catch(e){return{xp:0,level:1,best:0,totalCoins:0,gamesPlayed:0,name:''};}
+}
+function writeSave(s){try{localStorage.setItem(SAVE_KEY,JSON.stringify(s));}catch(e){}}
+function xpForNextLevel(lv){return 5000;}
+function totalXpForLevel(lv){return(lv-1)*5000;}
+
+let save=loadSave();
+
+// ============================================================
+// LEADERBOARD — stored in localStorage with prefix gk_lb_
+// Each player's public record: name, totalCoins, level, playerId
+// ============================================================
+function getLBKey(pid){return 'gk_lb_'+pid;}
+
+function updateMyLBEntry(){
+  // Write this device's public leaderboard entry
+  const entry={
+    id:PLAYER_ID,
+    name:save.name||'PLAYER',
+    totalCoins:save.totalCoins||0,
+    level:save.level||1,
+    best:save.best||0,
+    ts:Date.now()
+  };
+  try{localStorage.setItem(getLBKey(PLAYER_ID),JSON.stringify(entry));}catch(e){}
+}
+
+function getAllLBEntries(){
+  const entries=[];
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k&&k.startsWith('gk_lb_')){
+      try{
+        const e=JSON.parse(localStorage.getItem(k));
+        if(e&&e.name)entries.push(e);
+      }catch(ex){}
+    }
+  }
+  // Sort by totalCoins desc, then by best score desc
+  entries.sort((a,b)=>(b.totalCoins-a.totalCoins)||(b.best-a.best));
+  return entries;
+}
+
+function renderLeaderboard(container){
+  const entries=getAllLBEntries();
+  if(entries.length===0){container.innerHTML='';return;}
+
+  const medals=['🥇','🥈','🥉'];
+  let rows='';
+  entries.forEach((e,i)=>{
+    const isMe=(e.id===PLAYER_ID);
+    const rank=medals[i]||(i+1);
+    rows+=`<div class="lb-row${isMe?' me':''}${i===0?' rank1':''}">
+      <span class="lb-rank">${rank}</span>
+      <span class="lb-name${isMe?' me-name':''}">${isMe?'▶ ':''}<span title="${e.name}">${e.name}</span></span>
+      <span class="lb-coins">🪙${e.totalCoins}</span>
+      <span class="lb-lv">LV${e.level}</span>
+    </div>`;
+  });
+
+  container.innerHTML=`
+    <div id="leaderboard">
+      <h3>🏆 LEADERBOARD 🏆</h3>
+      ${rows}
+    </div>`;
+}
+
+// ============================================================
+// NAME ENTRY (first-time players)
+// ============================================================
+function askNameIfNeeded(cb){
+  if(save.name&&save.name.trim()){cb();return;}
+  const nameOverlay=document.getElementById('name-overlay');
+  nameOverlay.style.display='flex';
+  const inp=document.getElementById('name-input');
+  const btn=document.getElementById('name-confirm-btn');
+  function confirm(){
+    const n=(inp.value||'').trim().toUpperCase()||'PLAYER';
+    save.name=n.substring(0,10);
+    writeSave(save);
+    updateMyLBEntry();
+    nameOverlay.style.display='none';
+    cb();
+  }
+  btn.onclick=confirm;
+  inp.onkeydown=e=>{if(e.key==='Enter')confirm();};
+  setTimeout(()=>inp.focus(),100);
+}
+
+// ============================================================
+// DOM refs
+// ============================================================
+const canvas=document.getElementById('gc');
+const ctx=canvas.getContext('2d');
+const W=canvas.width,H=canvas.height;
+const scoreEl=document.getElementById('score-el');
+const livesEl=document.getElementById('lives-el');
+const bestEl=document.getElementById('best-el');
+const xpBarEl=document.getElementById('xp-bar');
+const levelBadge=document.getElementById('level-badge');
+const timerBarEl=document.getElementById('timer-bar');
+const overlay=document.getElementById('overlay');
+const pwBanner=document.getElementById('powerup-banner');
+const lbContainer=document.getElementById('lb-container');
+
+// ============================================================
+// GAME VARS
+// ============================================================
+let score=0,lives=3,timeLeft=60;
+let keeperX=W/2;
+const KW=40,KH=50,KEEPER_Y=H-72;
+const SPEED_KEEPER=5;
+let keeperBoost=false;
+
+let items=[],gameRunning=false,stoppageActive=false;
+let timerIv=null,spawnIv=null,frameId=null;
+let flashMsg=null,leanDir=0;
+let powerUpActive=null;
+let nextPowerUpIn=20;
+let powerUpTimer=0;
+const keys={left:false,right:false};
+let speedMult=1;
+
+// ============================================================
+// INPUT
+// ============================================================
+function bindBtn(id,dir){
+  const btn=document.getElementById(id);
+  const press=(v)=>{
+    keys[dir]=v;
+    if(v)btn.classList.add('pressed');else btn.classList.remove('pressed');
+  };
+  ['mousedown','touchstart'].forEach(ev=>
+    btn.addEventListener(ev,e=>{e.preventDefault();press(true);},{passive:false}));
+  ['mouseup','mouseleave','touchend','touchcancel'].forEach(ev=>
+    btn.addEventListener(ev,e=>{e.preventDefault();press(false);},{passive:false}));
+}
+bindBtn('btn-left','left');
+bindBtn('btn-right','right');
+document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')keys.left=true;if(e.key==='ArrowRight')keys.right=true;});
+document.addEventListener('keyup',  e=>{if(e.key==='ArrowLeft')keys.left=false;if(e.key==='ArrowRight')keys.right=false;});
+
+// ============================================================
+// ITEMS
+// ============================================================
+const GOOD=[
+  {label:'🪙',pts:10,color:'#FFD700'},
+  {label:'💎',pts:25,color:'#00eeff'},
+  {label:'⭐',pts:15,color:'#ffee00'},
+  {label:'🎁',pts:30,color:'#ff88cc'},
+  {label:'💰',pts:20,color:'#FFD700'},
+];
+function spawnItem(){
+  if(!gameRunning)return;
+  const onlyRewards=powerUpActive&&powerUpActive.type==='rewards';
+  const isBomb=!onlyRewards&&(Math.random()<0.22);
+  const margin=24;
+  const x=margin+Math.random()*(W-margin*2);
+  const elapsed=60-timeLeft;
+  const baseSpd=2.4+elapsed/60*2.2;
+  const sp=(baseSpd+Math.random()*1.2)*speedMult;
+  if(isBomb){
+    items.push({x,y:8,speed:sp,bad:true,label:'💣',pts:0,color:'#ff3333'});
+  }else{
+    const g=GOOD[Math.floor(Math.random()*GOOD.length)];
+    items.push({x,y:8,speed:sp,bad:false,...g});
+  }
+}
+
+// ============================================================
+// POWER-UP SYSTEM
+// ============================================================
+const POWERUPS=[
+  {type:'slow',    label:'🐢 SLOW MOTION! Items slow down!', duration:8},
+  {type:'rewards', label:'🌟 REWARD SHOWER! No bombs!',       duration:8},
+  {type:'speed',   label:'⚡ TURBO KEEPER! Move faster!',     duration:8},
+  {type:'stoppage',label:'⏱ STOPPAGE TIME! +30 seconds!',    duration:0},
+];
+function triggerPowerUp(){
+  const pu=POWERUPS[Math.floor(Math.random()*POWERUPS.length)];
+  showBanner(pu.label);
+  if(pu.type==='stoppage'){
+    if(!stoppageActive){stoppageActive=true;timeLeft+=30;updateTimerBar();}
+    return;
+  }
+  powerUpActive={type:pu.type,timeLeft:pu.duration};
+  if(pu.type==='slow')  speedMult=0.4;
+  if(pu.type==='speed') keeperBoost=true;
+}
+function tickPowerUp(){
+  if(!powerUpActive)return;
+  powerUpActive.timeLeft--;
+  if(powerUpActive.timeLeft<=0){
+    if(powerUpActive.type==='slow')  speedMult=1;
+    if(powerUpActive.type==='speed') keeperBoost=false;
+    powerUpActive=null;
+  }
+}
+function showBanner(text){
+  pwBanner.textContent=text;pwBanner.classList.add('show');
+  setTimeout(()=>pwBanner.classList.remove('show'),3000);
+}
+
+// ============================================================
+// DRAW
+// ============================================================
+function drawBG(){
+  const sh=60,cs=[THEME.p1,THEME.p2];
+  for(let i=0;i<Math.ceil(H/sh);i++){ctx.fillStyle=cs[i%2];ctx.fillRect(0,i*sh,W,sh);}
+  ctx.strokeStyle='rgba(255,255,255,0.04)';ctx.lineWidth=1;
+  for(let x=0;x<W;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+}
+function drawGoal(){
+  const gw=200,gh=52,gx=(W-gw)/2;
+  ctx.fillStyle='rgba(255,255,255,0.05)';ctx.fillRect(gx,2,gw,gh);
+  ctx.strokeStyle='rgba(255,255,255,0.2)';ctx.lineWidth=1;
+  for(let y=2;y<gh+2;y+=13){ctx.beginPath();ctx.moveTo(gx,y);ctx.lineTo(gx+gw,y);ctx.stroke();}
+  for(let x=gx;x<gx+gw;x+=20){ctx.beginPath();ctx.moveTo(x,2);ctx.lineTo(x,gh+2);ctx.stroke();}
+  ctx.strokeStyle='#fff';ctx.lineWidth=5;ctx.strokeRect(gx,2,gw,gh);
+}
+function drawGround(){
+  ctx.fillStyle=THEME.ground;ctx.fillRect(0,H-34,W,34);
+  ctx.strokeStyle=THEME.groundLine;ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(0,H-34);ctx.lineTo(W,H-34);ctx.stroke();
+}
+function drawKeeper(cx,cy,lean){
+  ctx.save();ctx.translate(cx,cy);
+  if(lean<0)ctx.rotate(-0.14);else if(lean>0)ctx.rotate(0.14);
+  ctx.fillStyle='rgba(0,0,0,0.25)';ctx.beginPath();ctx.ellipse(0,KH/2+5,20,6,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#222';ctx.fillRect(-16,KH/2-4,15,8);ctx.fillRect(2,KH/2-4,15,8);
+  ctx.fillStyle='#eee';ctx.fillRect(-14,KH/2-16,11,14);ctx.fillRect(3,KH/2-16,11,14);
+  ctx.fillStyle='#154d1c';ctx.fillRect(-14,KH/2-28,28,14);
+  const jc=keeperBoost?'#ff6600':THEME.accent;
+  ctx.fillStyle=jc;ctx.fillRect(-14,KH/2-48,28,22);
+  ctx.fillStyle='rgba(0,0,0,0.3)';ctx.fillRect(-4,KH/2-48,8,22);
+  ctx.fillStyle=jc;ctx.font='bold 8px monospace';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillText('1',0,KH/2-37);
+  ctx.fillStyle=jc;ctx.fillRect(-26,KH/2-46,14,9);
+  ctx.fillStyle='#e85000';ctx.beginPath();ctx.arc(-26,KH/2-42,8,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.fillStyle=jc;ctx.fillRect(12,KH/2-46,14,9);
+  ctx.fillStyle='#e85000';ctx.beginPath();ctx.arc(26,KH/2-42,8,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.fillStyle='#f5c5a0';ctx.beginPath();ctx.arc(0,KH/2-58,13,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#1a6b2a';ctx.fillRect(-13,KH/2-72,26,12);
+  ctx.fillStyle=THEME.accent;ctx.fillRect(-15,KH/2-62,30,4);
+  ctx.fillStyle='#333';ctx.fillRect(-5,KH/2-61,3,3);ctx.fillRect(2,KH/2-61,3,3);
+  ctx.restore();
+}
+function drawItem(it){
+  if(it.bad){
+    ctx.fillStyle='#cc0000';ctx.beginPath();ctx.arc(it.x,it.y,14,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='#ff6666';ctx.lineWidth=2;ctx.stroke();
+    ctx.font='18px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('💣',it.x,it.y);
+  }else{
+    ctx.shadowColor=it.color;ctx.shadowBlur=12;
+    ctx.font='20px serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(it.label,it.x,it.y);ctx.shadowBlur=0;
+  }
+}
+function drawFlash(){
+  if(!flashMsg)return;
+  flashMsg.life--;
+  const a=flashMsg.life/35;
+  ctx.save();ctx.globalAlpha=a;
+  ctx.font='bold 11px "Press Start 2P",monospace';
+  ctx.fillStyle=flashMsg.color;ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(flashMsg.text,flashMsg.x,flashMsg.y-(35-flashMsg.life)*1.4);
+  ctx.restore();
+  if(flashMsg.life<=0)flashMsg=null;
+}
+
+// ============================================================
+// PLAYER NAME display on canvas during game
+// ============================================================
+function drawPlayerName(){
+  if(!save.name)return;
+  ctx.save();
+  ctx.font='5px "Press Start 2P",monospace';
+  ctx.fillStyle='rgba(255,255,255,0.35)';
+  ctx.textAlign='left';ctx.textBaseline='top';
+  ctx.fillText(save.name,4,4);
+  ctx.restore();
+}
+
+// ============================================================
+// GAME LOOP
+// ============================================================
+function loop(){
+  if(!gameRunning)return;
+  const spd=keeperBoost?SPEED_KEEPER*1.9:SPEED_KEEPER;
+  if(keys.left){keeperX=Math.max(KW/2+5,keeperX-spd);leanDir=-1;}
+  else if(keys.right){keeperX=Math.min(W-KW/2-5,keeperX+spd);leanDir=1;}
+  else leanDir=0;
+
+  ctx.clearRect(0,0,W,H);
+  drawBG();drawGoal();drawGround();
+
+  for(let i=items.length-1;i>=0;i--){
+    const it=items[i];
+    it.y+=it.speed;
+    drawItem(it);
+    if(Math.abs(it.x-keeperX)<34&&it.y>=KEEPER_Y-10&&it.y<=KEEPER_Y+30){
+      items.splice(i,1);
+      if(!it.bad){
+        score+=it.pts;
+        scoreEl.textContent=score;
+        if(score>save.best){save.best=score;bestEl.textContent=save.best;}
+        flashMsg={text:'+'+it.pts,color:it.color,x:it.x,y:it.y,life:35};
+      }else{
+        lives--;updateLives();
+        flashMsg={text:'OUCH!',color:'#ff3333',x:it.x,y:it.y,life:35};
+        if(lives<=0){endGame(false);return;}
+      }
+      continue;
+    }
+    if(it.y>H-28){items.splice(i,1);}
+  }
+
+  drawKeeper(keeperX,KEEPER_Y,leanDir);
+  drawFlash();
+  drawPlayerName();
+  frameId=requestAnimationFrame(loop);
+}
+
+// ============================================================
+// TIMER
+// ============================================================
+function updateTimerBar(){
+  const maxT=stoppageActive?90:60;
+  const pct=(timeLeft/maxT)*100;
+  timerBarEl.style.width=pct+'%';
+  timerBarEl.style.background=pct<25?'#ff3333':pct<50?'#ffaa00':'#00ffcc';
+}
+function tickTimer(){
+  if(!gameRunning)return;
+  tickPowerUp();
+  powerUpTimer++;
+  if(powerUpTimer>=nextPowerUpIn){
+    powerUpTimer=0;
+    nextPowerUpIn=15+Math.floor(Math.random()*12);
+    triggerPowerUp();
+  }
+  timeLeft--;updateTimerBar();
+  if(timeLeft<=0)endGame(true);
+}
+
+// ============================================================
+// LIVES / XP UI
+// ============================================================
+function updateLives(){
+  const l=Math.max(0,lives);
+  livesEl.textContent='❤'.repeat(l)+(l<3?'🖤'.repeat(3-l):'');
+}
+function updateXPUI(){
+  const lvXp=xpForNextLevel(save.level);
+  const currentXp=save.xp-totalXpForLevel(save.level);
+  const pct=Math.min(100,(currentXp/lvXp)*100);
+  xpBarEl.style.width=pct+'%';
+  levelBadge.textContent='LV '+save.level;
+}
+
+// ============================================================
+// START / END
+// ============================================================
+function startGame(){
+  overlay.style.display='none';
+  score=0;lives=3;timeLeft=60;items=[];flashMsg=null;
+  keeperX=W/2;speedMult=1;keeperBoost=false;
+  powerUpActive=null;powerUpTimer=0;stoppageActive=false;
+  nextPowerUpIn=18+Math.floor(Math.random()*8);
+  scoreEl.textContent='0';
+  bestEl.textContent=save.best;
+  updateLives();updateTimerBar();
+
+  gameRunning=true;
+  clearInterval(timerIv);clearInterval(spawnIv);cancelAnimationFrame(frameId);
+  timerIv=setInterval(tickTimer,1000);
+  spawnIv=setInterval(spawnItem,820);
+  loop();
+}
+
+function endGame(timeUp){
+  gameRunning=false;
+  clearInterval(timerIv);clearInterval(spawnIv);cancelAnimationFrame(frameId);
+  items=[];speedMult=1;keeperBoost=false;
+
+  const xpGained=score;
+  save.xp+=xpGained;
+  save.gamesPlayed=(save.gamesPlayed||0)+1;
+  if(score>save.best)save.best=score;
+
+  // *** Accumulate TOTAL COINS (all-time) for leaderboard ***
+  save.totalCoins=(save.totalCoins||0)+score;
+
+  // level up check
+  let leveledUp=false;
+  while(save.xp>=totalXpForLevel(save.level)+xpForNextLevel(save.level)){
+    save.level++;leveledUp=true;
+  }
+  writeSave(save);
+  updateMyLBEntry(); // push this player's updated record to the shared leaderboard
+  updateXPUI();
+  bestEl.textContent=save.best;
+
+  const title=timeUp
+    ?(score>=500?'🏆 LEGEND!':score>=200?'⭐ GREAT SAVE!':'⏱ TIME UP!')
+    :'💔 GAME OVER';
+
+  let extra='';
+  if(leveledUp)extra=`<p style="color:${THEME.accent};font-size:.5rem;">🎉 LEVEL UP! NOW LV ${save.level}</p>`;
+
+  // Build leaderboard HTML for end screen
+  const entries=getAllLBEntries();
+  const medals=['🥇','🥈','🥉'];
+  let lbRows='';
+  entries.forEach((e,i)=>{
+    const isMe=(e.id===PLAYER_ID);
+    const rank=medals[i]||(i+1);
+    lbRows+=`<div class="lb-row${isMe?' me':''}${i===0?' rank1':''}">
+      <span class="lb-rank">${rank}</span>
+      <span class="lb-name${isMe?' me-name':''}">${isMe?'▶ ':''}<span>${e.name}</span></span>
+      <span class="lb-coins">🪙${e.totalCoins}</span>
+      <span class="lb-lv">LV${e.level}</span>
+    </div>`;
+  });
+  const lbHtml=entries.length>0?`<div id="leaderboard"><h3>🏆 LEADERBOARD 🏆</h3>${lbRows}</div>`:'';
+
+  overlay.innerHTML=`
+    <h2>${title}</h2>
+    <p>SCORE: ${score}<br>TOTAL COINS: ${save.totalCoins}<br><br>XP GAINED: +${xpGained}<br><br>BEST: ${save.best}</p>
+    ${extra}
+    ${lbHtml}
+    <button class="start-btn" onclick="startGame()">▶ PLAY AGAIN</button>
+  `;
+  overlay.style.display='flex';
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function init(){
+  updateXPUI();
+  bestEl.textContent=save.best;
+  // Show leaderboard on start screen
+  renderLeaderboard(lbContainer);
+  document.getElementById('start-btn').onclick=()=>{
+    askNameIfNeeded(startGame);
+  };
+}
+
+// First run: ask for name before anything
+if(!save.name){
+  // Will ask on first KICK OFF press
+  init();
+}else{
+  updateMyLBEntry(); // refresh leaderboard entry in case data changed
+  init();
+}
+</script>
+</body>
+</html>
